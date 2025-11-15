@@ -109,6 +109,12 @@ df_english = df_english.dropna(subset=["Age Group"], how="all")
 df_malay = df_malay.dropna(subset=["Kumpulan Umur"], how="all")
 
 # --------------------------------------------------------
+# FIX ROW NUMBER CONFUSION
+# --------------------------------------------------------
+df_english = df_english.reset_index(drop=True)
+df_malay = df_malay.reset_index(drop=True)
+
+# --------------------------------------------------------
 # SHOW OUTPUT
 # --------------------------------------------------------
 st.subheader("English Responses Only")

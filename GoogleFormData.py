@@ -2,14 +2,17 @@ import streamlit as st
 import pandas as pd
 
 st.header("Survey Dataset: Public Opinions on School Traffic Congestion During Peak Hours")
+
+# Load Google Sheet CSV
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS8nPPwgVKnGxpQLQFTH6EQLpO6l1l2BlEAdGqmb0Bq7FGQzViLwKbb78NMjJSA1-eHl-Ebq5Wl4LRU/pub?gid=745446698&single=true&output=csv"
 df = pd.read_csv(url)
 
-# Exclude columns by name
+# Remove unnecessary columns
 df = df.drop(columns=["Timestamp", "Score"])
 
-# Rename columns to fixed names
-# Mapping of English column names
+# --------------------------------------------------------
+# 1) FIXED NAMES FOR ENGLISH COLUMNS
+# --------------------------------------------------------
 fixed_columns_en = {
     df.columns[0]: "Age Group",
     df.columns[1]: "Status",
@@ -45,4 +48,58 @@ fixed_columns_en = {
 
 df_english = df.rename(columns=fixed_columns_en)
 
-st.dataframe(df_english)
+# --------------------------------------------------------
+# 2) FIXED NAMES FOR MALAY COLUMNS
+# --------------------------------------------------------
+# (Assuming Malay columns are in positions 30 onward — adjust based on your sheet)
+fixed_columns_my = {
+    fixed_columns_malay = {
+    df.columns[30]: "Kumpulan Umur",
+    df.columns[31]: "Status",
+    df.columns[32]: "Jantina",
+    df.columns[33]: "Bangsa",
+    df.columns[34]: "Jenis Kawasan",
+    df.columns[35]: "Faktor Cuaca Hujan",
+    df.columns[36]: "Faktor Peningkatan Populasi",
+    df.columns[37]: "Faktor Pemandu Tidak Berdisiplin",
+    df.columns[38]: "Faktor Kerosakan Jalan",
+    df.columns[39]: "Faktor Pelajar Tidak Berkongsi Kenderaan",
+    df.columns[40]: "Faktor Bertolak Lewat ke Tempat Kerja",
+    df.columns[41]: "Faktor Jalan Sempit",
+    df.columns[42]: "Faktor Satu Pintu Masuk/Keluar",
+    df.columns[43]: "Faktor Kekurangan Jejambat Pejalan Kaki",
+    df.columns[44]: "Faktor Kekurangan Ruang Parkir",
+    df.columns[45]: "Faktor Ibu Bapa Lewat Hantar/Ambil Anak",
+    df.columns[46]: "Faktor Pembinaan / Kerja Jalan",
+    df.columns[47]: "Kesan Kemalangan Jalan Raya",
+    df.columns[48]: "Kesan Pembaziran Masa",
+    df.columns[49]: "Kesan Tekanan pada Pengguna Jalan",
+    df.columns[50]: "Kesan Pelajar Lewat ke Sekolah",
+    df.columns[51]: "Kesan Pencemaran Alam Sekitar",
+    df.columns[52]: "Kesan Pembaziran Bahan Api",
+    df.columns[53]: "Langkah Jejambat Pejalan Kaki",
+    df.columns[54]: "Langkah Melebarkan Jalan",
+    df.columns[55]: "Langkah Berkongsi Kenderaan",
+    df.columns[56]: "Langkah Dua Pintu Masuk/Keluar",
+    df.columns[57]: "Langkah Tiba Awal ke Sekolah",
+    df.columns[58]: "Langkah Menempatkan Pegawai Trafik",
+    df.columns[59]: "Langkah Kawasan Khas Hantar/Tunggu Anak"
+}
+
+df_malay = df.rename(columns=fixed_columns_my)
+
+
+# --------------------------------------------------------
+# 3) SPLIT DATA BASED ON LANGUAGE
+# --------------------------------------------------------
+english_only = df_english[df_english["Age Group"].notna()]
+malay_only   = df_malay[df_malay["Kumpulan Umur"].notna()]
+
+# --------------------------------------------------------
+# 4) DISPLAY RESULTS
+# --------------------------------------------------------
+st.subheader("English Responses Only")
+st.dataframe(english_only)
+
+st.subheader("Malay Responses Only")
+st.dataframe(malay_only)

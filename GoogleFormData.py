@@ -10,6 +10,12 @@ df = pd.read_csv(url)
 # Remove unnecessary columns
 df = df.drop(columns=["Timestamp", "Score", "What language do you prefer? Apakah bahasa pilihan anda?"])
 
+#Count total submitted
+total_all = len(df)
+goal = 100
+scaled_total = (total_all / goal) * 100  # How much of the target is completed
+st.write(f"Total Respondents: {scaled_total}")
+
 # --------------------------------------------------------
 # 1) FIXED NAMES FOR ENGLISH COLUMNS
 # --------------------------------------------------------

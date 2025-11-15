@@ -8,7 +8,7 @@ url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS8nPPwgVKnGxpQLQFTH6EQLp
 df = pd.read_csv(url)
 
 # Remove unnecessary columns
-df = df.drop(columns=["Timestamp", "Score", "What language do you prefer? Apakah bahasa pilihan anda?"])
+df = df.drop(columns=["Timestamp", "Score", "What language do you prefer? Apakah bahasa pilihan anda?"], errors="ignore")
 
 #Count total submitted
 total_all = len(df)

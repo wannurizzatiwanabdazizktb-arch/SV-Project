@@ -9,7 +9,7 @@ df = pd.read_csv(url)
 
 # Remove unnecessary columns
 df = df.drop(columns=["Timestamp", "Score", "What language do you prefer?
-  Apakah bahasa pilihan anda? "])
+  Apakah bahasa pilihan anda?"])
 
 # --------------------------------------------------------
 # 1) FIXED NAMES FOR ENGLISH COLUMNS

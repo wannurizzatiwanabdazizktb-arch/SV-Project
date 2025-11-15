@@ -12,9 +12,7 @@ df = df.drop(columns=["Timestamp", "Score", "What language do you prefer? Apakah
 
 #Count total submitted
 total_all = len(df)
-goal = 100
-scaled_total = (total_all / goal) * 100  # How much of the target is completed
-st.write(f"Total Respondents: {scaled_total}")
+st.write(f"Total Respondents: {total_all}/100  ")
 
 # --------------------------------------------------------
 # 1) FIXED NAMES FOR ENGLISH COLUMNS

@@ -8,7 +8,7 @@ url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS8nPPwgVKnGxpQLQFTH6EQLp
 df = pd.read_csv(url)
 
 # Remove unnecessary columns
-df = df.drop(columns=["Timestamp", "Score"])
+df = df.drop(columns=["Timestamp", "Score", "What language do you prefer? Apakah bahasa pilihan anda?"])
 
 # --------------------------------------------------------
 # 1) FIXED NAMES FOR ENGLISH COLUMNS
@@ -89,16 +89,26 @@ df_malay = df.rename(columns=fixed_columns_my)
 
 
 # --------------------------------------------------------
-# 3) SPLIT DATA BASED ON LANGUAGE
+# KEEP ONLY RELEVANT COLUMNS FOR EACH LANGUAGE
 # --------------------------------------------------------
-english_only = df_english[df_english["Age Group"].notna()]
-malay_only   = df_malay[df_malay["Kumpulan Umur"].notna()]
+
+# English only → keep English columns only
+df_english = df_english[list(fixed_columns_en.values())]
+
+# Malay only → keep Malay columns only
+df_malay = df_malay[list(fixed_columns_my.values())]
 
 # --------------------------------------------------------
-# 4) DISPLAY RESULTS
+# REMOVE EMPTY ROWS (people who answered in the other language)
+# --------------------------------------------------------
+df_english = df_english.dropna(subset=["Age Group"], how="all")
+df_malay = df_malay.dropna(subset=["Kumpulan Umur"], how="all")
+
+# --------------------------------------------------------
+# SHOW OUTPUT
 # --------------------------------------------------------
 st.subheader("English Responses Only")
-st.dataframe(english_only)
+st.dataframe(df_english)
 
 st.subheader("Malay Responses Only")
-st.dataframe(malay_only)
+st.dataframe(df_malay)

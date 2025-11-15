@@ -53,7 +53,6 @@ df_english = df.rename(columns=fixed_columns_en)
 # --------------------------------------------------------
 # (Assuming Malay columns are in positions 30 onward — adjust based on your sheet)
 fixed_columns_my = {
-    fixed_columns_malay = {
     df.columns[30]: "Kumpulan Umur",
     df.columns[31]: "Status",
     df.columns[32]: "Jantina",

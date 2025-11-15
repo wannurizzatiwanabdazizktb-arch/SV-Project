@@ -122,3 +122,4 @@ st.dataframe(df_english)
 
 st.subheader("Malay Responses Only")
 st.dataframe(df_malay)
+st.write(df.columns.tolist())

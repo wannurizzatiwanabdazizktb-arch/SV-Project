@@ -43,6 +43,6 @@ fixed_columns_en = {
     df.columns[29]: "Special Drop-off Area Step"
 }
 
-df_english = df.rename(columns=fixed_columns)
+df_english = df.rename(columns=fixed_columns_en)
 
 st.dataframe(df_english)

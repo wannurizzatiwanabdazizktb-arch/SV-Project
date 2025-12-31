@@ -137,3 +137,93 @@ st.dataframe(df_cleaned)
 total_all = len(df_cleaned)
 st.write(f"Total Respondents: {total_all}")
 
+#-----------------------
+# CONTOH
+#-----------------------
+
+import plotly.graph_objects as go
+
+urban_df = df_cleaned[df_cleaned['Area Type'] == 'Urban areas']
+
+def classify_item(col):
+    if 'Factor' in col:
+        return 'Factor'
+    elif 'Effect' in col:
+        return 'Effect'
+    elif 'Step' in col:
+        return 'Step'
+    else:
+        return 'Other'
+
+disagreement_data = []
+
+for col in likert_cols:
+    if col in urban_df.columns:
+        count_sd = (urban_df[col] == 1).sum()
+        count_d  = (urban_df[col] == 2).sum()
+
+        if count_sd > 0 or count_d > 0:
+            disagreement_data.append({
+                'Likert Scale Item': col,
+                'Item Category': classify_item(col),
+                'Strongly Disagree (1)': count_sd,
+                'Disagree (2)': count_d
+            })
+
+disagreement_df = pd.DataFrame(disagreement_data)
+
+disagreement_df['Total'] = (
+    disagreement_df['Strongly Disagree (1)'] +
+    disagreement_df['Disagree (2)']
+)
+
+disagreement_df = disagreement_df.sort_values('Total')
+
+fig = go.Figure()
+
+# --- Strongly Disagree ---
+fig.add_trace(
+    go.Bar(
+        x=disagreement_df['Strongly Disagree (1)'],
+        y=disagreement_df['Likert Scale Item'],
+        orientation='h',
+        name='Strongly Disagree (1)',
+        marker=dict(color='#1f77b4'),
+        customdata=disagreement_df[['Item Category', 'Strongly Disagree (1)']],
+        hovertemplate=
+            '<b>Likert Scale Item:</b> %{y}<br>' +
+            '<b>Item Category:</b> %{customdata[0]}<br>' +
+            '<b>Disagreement Level:</b> Strongly Disagree (1)<br>' +
+            '<b>Number of Disagreement Responses:</b> %{customdata[1]}<extra></extra>'
+    )
+)
+
+# --- Disagree ---
+fig.add_trace(
+    go.Bar(
+        x=disagreement_df['Disagree (2)'],
+        y=disagreement_df['Likert Scale Item'],
+        orientation='h',
+        name='Disagree (2)',
+        marker=dict(color='#2ca02c'),
+        customdata=disagreement_df[['Item Category', 'Disagree (2)']],
+        hovertemplate=
+            '<b>Likert Scale Item:</b> %{y}<br>' +
+            '<b>Item Category:</b> %{customdata[0]}<br>' +
+            '<b>Disagreement Level:</b> Disagree (2)<br>' +
+            '<b>Number of Disagreement Responses:</b> %{customdata[1]}<extra></extra>'
+    )
+)
+
+
+fig.update_layout(
+    title='Disagreement Responses (1 vs 2) among Urban Respondents',
+    xaxis_title='Number of Disagreement Responses',
+    yaxis_title='Likert Scale Item',
+    legend_title_text='Disagreement Level',
+    barmode='group',
+    template='plotly_white',
+    height=900
+)
+
+fig.show()

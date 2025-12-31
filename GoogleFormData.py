@@ -127,6 +127,13 @@ st.dataframe(df_malay)
 # Cleaned Dataset
 #--------------------------
 # Load Google Sheet CSV
-url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS8nPPwgVKnGxpQLQFTH6EQLpO6l1l2BlEAdGqmb0Bq7FGQzViLwKbb78NMjJSA1-eHl-Ebq5Wl4LRU/pub?gid=745446698&single=true&output=csv"
-df = pd.read_csv(url)
+url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data.csv"
+df_cleaned = pd.read_csv(url)
+
+st.subheader("Cleaned Dataset")
+st.dataframe(df_cleaned)
+
+#Count total submitted
+total_all = len(df_cleaned)
+st.write(f"Total Respondents: {total_all}")
 

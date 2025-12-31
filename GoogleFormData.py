@@ -210,4 +210,4 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig)
-
+st.dataframe(disagreement_df)

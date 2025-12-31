@@ -145,6 +145,11 @@ import plotly.graph_objects as go
 
 urban_df = df_cleaned[df_cleaned['Area Type'] == 'Urban areas']
 
+likert_cols = [
+    col for col in df_cleaned.columns
+    if 'Factor' in col or 'Effect' in col or 'Step' in col
+]
+
 def classify_item(col):
     if 'Factor' in col:
         return 'Factor'
@@ -181,49 +186,28 @@ disagreement_df = disagreement_df.sort_values('Total')
 
 fig = go.Figure()
 
-# --- Strongly Disagree ---
-fig.add_trace(
-    go.Bar(
-        x=disagreement_df['Strongly Disagree (1)'],
-        y=disagreement_df['Likert Scale Item'],
-        orientation='h',
-        name='Strongly Disagree (1)',
-        marker=dict(color='#1f77b4'),
-        customdata=disagreement_df[['Item Category', 'Strongly Disagree (1)']],
-        hovertemplate=
-            '<b>Likert Scale Item:</b> %{y}<br>' +
-            '<b>Item Category:</b> %{customdata[0]}<br>' +
-            '<b>Disagreement Level:</b> Strongly Disagree (1)<br>' +
-            '<b>Number of Disagreement Responses:</b> %{customdata[1]}<extra></extra>'
-    )
-)
+fig.add_trace(go.Bar(
+    x=disagreement_df['Strongly Disagree (1)'],
+    y=disagreement_df['Likert Scale Item'],
+    orientation='h',
+    name='Strongly Disagree (1)'
+))
 
-# --- Disagree ---
-fig.add_trace(
-    go.Bar(
-        x=disagreement_df['Disagree (2)'],
-        y=disagreement_df['Likert Scale Item'],
-        orientation='h',
-        name='Disagree (2)',
-        marker=dict(color='#2ca02c'),
-        customdata=disagreement_df[['Item Category', 'Disagree (2)']],
-        hovertemplate=
-            '<b>Likert Scale Item:</b> %{y}<br>' +
-            '<b>Item Category:</b> %{customdata[0]}<br>' +
-            '<b>Disagreement Level:</b> Disagree (2)<br>' +
-            '<b>Number of Disagreement Responses:</b> %{customdata[1]}<extra></extra>'
-    )
-)
-
+fig.add_trace(go.Bar(
+    x=disagreement_df['Disagree (2)'],
+    y=disagreement_df['Likert Scale Item'],
+    orientation='h',
+    name='Disagree (2)'
+))
 
 fig.update_layout(
     title='Disagreement Responses (1 vs 2) among Urban Respondents',
     xaxis_title='Number of Disagreement Responses',
     yaxis_title='Likert Scale Item',
-    legend_title_text='Disagreement Level',
     barmode='group',
     template='plotly_white',
     height=900
 )
 
-fig.show()
+st.plotly_chart(fig, use_container_width=True)
+

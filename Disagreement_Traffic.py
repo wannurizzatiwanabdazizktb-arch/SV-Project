@@ -3,6 +3,26 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 
+# ---------------------------------------------------------
+# PAGE SETTINGS
+# ---------------------------------------------------------
+st.set_page_config(
+    page_title="Crime Clustering Dashboard",
+    page_icon="📊",
+    layout="wide"
+)
+
+# Sidebar
+with st.sidebar:
+    st.title("📊 Crime Analytics Dashboard Menu")
+    st.write("Gain insights into relationships between socioeconomic factors and crime patterns across cities.")
+    st.markdown("---")
+    st.subheader("📂 Navigation")
+    st.info("Use the menu to explore different analysis modules.")
+    st.markdown("---")
+    st.caption("👩🏻‍💻 Created by **Nurul Ain Maisarah Hamidin (2025)** | Scientific Visualization Project 🌟")
+
+
 def create_disagreement_heatmap(df, factor_cols, effect_cols, step_cols):
     all_likert_cols = factor_cols + effect_cols + step_cols
     heatmap_data_detailed = []

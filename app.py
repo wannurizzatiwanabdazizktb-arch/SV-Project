@@ -1,17 +1,44 @@
 import streamlit as st
 
-st.set_page_config(page_title="Traffic Congestion During Peak Hours in Front of Schools Dashboard")
+st.set_page_config(
+    page_title="Traffic Congestion Dashboard",
+    layout="wide"
+)
 
-# Import pages
-page1 = st.Page("Disagreement_Traffic.py", title="Disagreement Traffic Congestion Survey")
-page2 = st.Page("Izzati.py", title="Traffic Congestion Survey")
-page3 = st.Page("Fathin.py", title="Traffic Congestion Survey")
-page3 = st.Page("Khalida.py", title="Traffic Congestion Survey")
+# Define pages (MAKE SURE PATH IS CORRECT)
+page1 = st.Page(
+    "page/Disagreement_Traffic.py",
+    title="Disagreement Traffic Congestion Survey",
+    icon="📊"
+)
+
+page2 = st.Page(
+    "page/Izzati.py",
+    title="Traffic Congestion Survey – Izzati",
+    icon="📈"
+)
+
+page3 = st.Page(
+    "page/Fathin.py",
+    title="Traffic Congestion Survey – Fathin",
+    icon="📉"
+)
+
+page4 = st.Page(
+    "page/Khalida.py",
+    title="Traffic Congestion Survey – Khalida",
+    icon="📌"
+)
 
 # Navigation
 navigation = st.navigation(
     {
-        "Traffic Congestion During Peak Hours in Front of Schools Dashboard": [page1, page2, page3, page4]
+        "Traffic Congestion During Peak Hours in Front of Schools Dashboard": [
+            page1,
+            page2,
+            page3,
+            page4
+        ]
     }
 )
 

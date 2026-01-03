@@ -15,128 +15,86 @@ st.set_page_config(
 # Sidebar
 with st.sidebar:
     st.title("📊 Traffic Congestion Survey")
-    st.write("??.")
     st.markdown("---")
-    st.subheader("📂 Navigation")
     st.info("Use the menu to explore different analysis modules.")
-    st.markdown("---")
-    st.caption("👩🏻‍💻 Created by **Nurul Ain Maisarah Hamidin (2025)** | Scientific Visualization Project 🌟")
+    st.caption("👩🏻‍💻 Created by Nurul Ain Maisarah Hamidin (2025)")
 
+# ---------------------------------------------------------
+# LOAD DATA
+# ---------------------------------------------------------
+@st.cache_data
+def load_data():
+    return pd.read_csv("cleaned_data.csv")
 
-import pandas as pd
-import streamlit as st
+merged_df = load_data()
 
-# --- Data Processing ---
-result_original = {}
+# ---------------------------------------------------------
+# DEFINE LIKERT COLUMNS (EDIT TO MATCH CSV)
+# ---------------------------------------------------------
+likert_cols = merged_df.columns[3:10]  # adjust if needed
+
+# Example grouping
+factor_cols = likert_cols[:3]
+effect_cols = likert_cols[3:5]
+step_cols = likert_cols[5:]
+
+all_likert_cols = factor_cols.tolist() + effect_cols.tolist() + step_cols.tolist()
+
+# ---------------------------------------------------------
+# DISAGREEMENT COUNT
+# ---------------------------------------------------------
+result = {}
 
 for col in likert_cols:
-    # Filtering for 'Strongly Disagree' (1) and 'Disagree' (2)
-    result_original[col] = (
+    result[col] = (
         merged_df[merged_df[col].isin([1, 2])]
-        .groupby('Area Type')[col]
+        .groupby("Area Type")[col]
         .count()
     )
 
-# Create the DataFrame and handle missing values
-disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int)
+disagree_df = pd.DataFrame(result).fillna(0).astype(int)
 
-# --- Streamlit Display ---
-st.subheader("Count of 'Strongly Disagree' (1) and 'Disagree' (2) responses by Area Type")
+st.subheader("Count of Strongly Disagree (1) & Disagree (2)")
+st.dataframe(disagree_df, use_container_width=True)
 
-# Option 1: Interactive Table (Users can sort and scroll)
-st.dataframe(disagree_area_type_original, use_container_width=True)
+# ---------------------------------------------------------
+# HEATMAP
+# ---------------------------------------------------------
+heatmap_data = []
 
-# Option 2: Static Table (Closer to the HTML look)
-# st.table(disagree_area_type_original)
-
-import pandas as pd
-import plotly.graph_objects as go
-import numpy as np
-import streamlit as st
-
-# --- Streamlit Title & Layout ---
-st.title("How respondents from all area type choose most disagreements")
-st.markdown("Revealing patterns of 'Strongly Disagree' and 'Disagree' counts for Factors, Effects, and Steps.")
-
-# --- Data Processing ---
-heatmap_data_detailed = []
-
-# Ensure these lists (factor_cols, effect_cols, step_cols) exist
-# all_likert_cols = factor_cols + effect_cols + step_cols
-
-for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
+for area in merged_df["Area Type"].unique():
     for col in all_likert_cols:
-        # Check if the area exists in the data to avoid errors
-        area_data = merged_df[merged_df['Area Type'] == area]
-        
-        count_sd = (area_data[col] == 1).sum()
-        count_d  = (area_data[col] == 2).sum()
-        total_disagreement_count = count_sd + count_d
+        area_data = merged_df[merged_df["Area Type"] == area]
+        sd = (area_data[col] == 1).sum()
+        d = (area_data[col] == 2).sum()
 
-        if total_disagreement_count > 0:
-            heatmap_data_detailed.append({
-                'Area Type': area,
-                'Likert Item': col,
-                'Total Disagreement Count': total_disagreement_count,
-                'Strongly Disagree (1)': count_sd,
-                'Disagree (2)': count_d,
-                'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step')
-            })
+        heatmap_data.append({
+            "Area Type": area,
+            "Likert Item": col,
+            "Total": sd + d,
+            "SD": sd,
+            "D": d
+        })
 
-heatmap_df_detailed = pd.DataFrame(heatmap_data_detailed)
+heatmap_df = pd.DataFrame(heatmap_data)
 
-# Categorical sorting for Y-axis
-item_order = [i for i in factor_cols + effect_cols + step_cols if i in heatmap_df_detailed['Likert Item'].values]
-heatmap_df_detailed['Likert Item'] = pd.Categorical(heatmap_df_detailed['Likert Item'], categories=item_order, ordered=True)
+pivot = heatmap_df.pivot(
+    index="Likert Item",
+    columns="Area Type",
+    values="Total"
+).fillna(0)
 
-# Pivot tables
-heatmap_pivot_z = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
-heatmap_pivot_sd = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Strongly Disagree (1)').fillna(0)
-heatmap_pivot_d = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Disagree (2)').fillna(0)
-
-# Construct customdata array
-customdata_array = np.stack([heatmap_pivot_sd.values, heatmap_pivot_d.values], axis=-1)
-
-# --- Create Plotly Figure ---
-fig = go.Figure(data=go.Heatmap(
-    z=heatmap_pivot_z.values,
-    x=heatmap_pivot_z.columns,
-    y=heatmap_pivot_z.index,
-    colorscale='YlGnBu',
-    text=heatmap_pivot_z.values,
-    texttemplate="%{text}",
-    showscale=True,
-    hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total Disagreement: %{z}<br>Strongly Disagree (1): %{customdata[0]}<br>Disagree (2): %{customdata[1]}<extra></extra>',
-    customdata=customdata_array
+fig = go.Figure(go.Heatmap(
+    z=pivot.values,
+    x=pivot.columns,
+    y=pivot.index,
+    colorscale="YlGnBu",
+    text=pivot.values,
+    texttemplate="%{text}"
 ))
 
-# Grid Lines
-for i in range(len(heatmap_pivot_z.index)+1):
-    fig.add_shape(type='line', x0=-0.5, x1=len(heatmap_pivot_z.columns)-0.5, y0=i-0.5, y1=i-0.5, line=dict(color='white', width=2))
-for j in range(len(heatmap_pivot_z.columns)+1):
-    fig.add_shape(type='line', y0=-0.5, y1=len(heatmap_pivot_z.index)-0.5, x0=j-0.5, x1=j-0.5, line=dict(color='white', width=2))
-
-fig.update_layout(
-    xaxis_title="Area Type",
-    yaxis_title="Likert Scale Item",
-    template='plotly_white',
-    height=900,
-    margin=dict(l=200) # Added margin to ensure long Likert labels aren't cut off
-)
-
-# --- Display in Streamlit ---
+fig.update_layout(height=800)
 st.plotly_chart(fig, use_container_width=True)
-
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-# --- Title and Description ---
-st.title("Likert Scale Disagreement Analysis")
-st.markdown("""
-This chart displays the total count of **'Strongly Disagree'** and **'Disagree'** responses 
-for each factor, effect, and step across different area types.
-""")
 
 # --- Data Preparation ---
 data = {

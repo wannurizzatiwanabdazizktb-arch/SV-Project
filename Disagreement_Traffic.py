@@ -7,15 +7,15 @@ import numpy as np
 # PAGE SETTINGS
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="Crime Clustering Dashboard",
+    page_title="Disagreement Traffic Congestion Survey",
     page_icon="📊",
     layout="wide"
 )
 
 # Sidebar
 with st.sidebar:
-    st.title("📊 Crime Analytics Dashboard Menu")
-    st.write("Gain insights into relationships between socioeconomic factors and crime patterns across cities.")
+    st.title("📊 Traffic Congestion Survey")
+    st.write("??.")
     st.markdown("---")
     st.subheader("📂 Navigation")
     st.info("Use the menu to explore different analysis modules.")

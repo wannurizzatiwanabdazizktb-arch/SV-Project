@@ -1,3 +1,7 @@
+
+import streamlit as st
+import pandas as pd
+
 st.header("Survey Dataset: Public Opinions on School Traffic Congestion During Peak Hours")
 
 # Load Google Sheet CSV

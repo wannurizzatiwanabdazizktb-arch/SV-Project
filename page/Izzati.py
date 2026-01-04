@@ -2,9 +2,16 @@
 
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 import plotly.graph_objects as go
-import numpy as np
+from plotly.subplots import make_subplots
 
+st.header("Exploring Traffic Factors and Congestion Effects infront School of Rural Areas)
+st.write(
+    """
+    This dashboard explores the relationship between traffic-related factors and congestion effects in rural areas.
+    """
+)
 # Load Dataset
 
 # Bar Chart: Ranking of factor that caused trafic congestion.

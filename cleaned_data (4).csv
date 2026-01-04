@@ -1,0 +1,39 @@
+Age Group,Status,Gender,Race,Area Type,Lack of Parking Space Factor,Rainy Weather Factor,Single Gate Factor,Leaving Work Late Factor,Increasing Population Factor,Students Not Sharing Vehicles,Lack of Pedestrian Bridge Factor,Damaged Road Factor,Construction/Roadworks Factor,Late Drop-off/Pick-up Factor,Narrow Road Factor,Undisciplined Driver Factor,Unintended Road Accidents Effect,Time Wastage Effect,Pressure on Road Users Effect,Students Late to School Effect,Environmental Pollution Effect,Fuel Wastage Effect
+18 – 25 years old,University Student,Female,Malay,Rural areas,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+18 – 25 years old,University Student,Male,Malay,Rural areas,3,3,3,4,4,3,3,3,4,3,3,3,3,3,3,3,4,4
+46 – 55 years old,Parents,Male,Malay,Rural areas,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4
+Below 18 years old,Student ( Primary / Secondary),Female,Malay,Rural areas,5,4,4,4,4,4,4,5,5,4,5,5,4,5,5,5,4,4
+Below 18 years old,Student ( Primary / Secondary),Female,Malay,Rural areas,5,4,4,4,4,4,4,5,5,4,5,5,4,5,5,5,4,4
+Below 18 years old,Student ( Primary / Secondary),Female,Malay,Rural areas,5,4,4,4,4,4,4,5,5,4,5,5,4,5,5,5,4,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,5,5,4,5,3,5,5,5,4,5,5,5,5,5,5,5,5
+46 – 55 years old,Parents,Male,Malay,Rural areas,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+Above 55 years old,Parents,Female,Malay,Rural areas,5,5,5,5,5,4,5,5,5,5,5,5,5,5,5,5,5,5
+18 – 25 years old,Teacher,Female,Malay,Rural areas,3,4,1,3,4,1,4,4,4,4,4,3,4,4,3,2,3,4
+18 – 25 years old,University Student,Male,Malay,Rural areas,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+26 – 35 years old,Parents,Female,Malay,Rural areas,5,5,4,1,4,1,5,5,5,4,5,5,5,5,5,5,5,5
+18 – 25 years old,Resident / Road User,Female,Malay,Rural areas,5,5,1,5,5,1,5,5,5,1,5,5,5,5,5,5,5,5
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,5,4,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,4,5,5,5,3,5,5,5,5,5,5,5,5,5,5,5,5
+18 – 25 years old,Resident / Road User,Female,Malay,Rural areas,4,3,4,2,4,2,5,5,4,1,4,3,2,5,5,4,3,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,2,2,1,5,4,2,5,4,1,5,4,4,5,4,5,5,4
+18 – 25 years old,University Student,Male,Malay,Rural areas,2,4,4,4,4,4,4,4,4,1,4,4,4,4,4,4,4,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,4,3,4,2,2,1,4,4,4,3,3,4,3,4,4,4,4,4
+18 – 25 years old,Resident / Road User,Female,Malay,Rural areas,5,5,5,5,5,3,5,5,5,2,5,5,4,4,5,4,4,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,4,4,5,5,5,3,3,5,4,4,4,4,4,4,5,5,4,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,5,3,4,4,3,4,3,4,3,3,5,4,5,5,5,3,4
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,5,5,3,5,4,4,5,5,3,5,5,5,5,5,5,5,4
+26 – 35 years old,University Student,Female,Others,Rural areas,5,3,4,5,5,4,1,4,4,4,4,4,3,5,5,4,3,4
+18 – 25 years old,University Student,Male,Malay,Rural areas,5,5,3,1,3,3,5,4,4,4,4,4,4,5,5,3,5,5
+18 – 25 years old,University Student,Male,Malay,Rural areas,5,5,4,5,3,3,4,5,5,5,5,3,4,5,5,5,5,3
+Below 18 years old,Student ( Primary / Secondary),Female,Malay,Rural areas,2,5,2,4,2,2,3,4,3,4,5,4,3,5,5,5,4,4
+18 – 25 years old,Student ( Primary / Secondary),Male,Malay,Rural areas,5,1,1,5,5,1,5,1,1,5,5,5,5,5,1,5,1,1
+26 – 35 years old,Resident / Road User,Male,Malay,Rural areas,4,4,2,3,5,2,3,2,4,3,4,2,4,5,5,5,5,4
+18 – 25 years old,University Student,Male,Malay,Rural areas,5,4,4,3,4,3,4,5,5,4,4,4,4,5,4,5,4,3
+26 – 35 years old,Parents,Female,Malay,Rural areas,5,5,3,4,5,3,4,5,4,1,5,4,4,2,4,5,3,3
+46 – 55 years old,Parents,Female,Malay,Rural areas,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+Below 18 years old,Student ( Primary / Secondary),Male,Malay,Rural areas,3,5,4,3,3,2,3,4,2,5,5,2,5,5,4,4,4,5
+18 – 25 years old,University Student,Female,Malay,Rural areas,5,4,4,5,5,4,5,4,5,5,4,5,5,5,5,4,4,5
+18 – 25 years old,University Student,Male,Malay,Rural areas,5,4,5,4,5,5,5,5,5,4,4,5,4,5,5,5,4,4

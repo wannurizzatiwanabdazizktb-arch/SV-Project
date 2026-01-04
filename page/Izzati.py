@@ -23,6 +23,9 @@ df_clean = pd.read_csv(url)
 # Bar Chart: Ranking of factor that caused trafic congestion.
 #------------------------------------------------------------
 
+# --- Title Graph ---
+st.subheader("Bar Chart: Ranking of factor that caused trafic congestion.")
+
 # --- Grouping columns ---
 factors_columns = [
     "Lack of Parking Space Factor",

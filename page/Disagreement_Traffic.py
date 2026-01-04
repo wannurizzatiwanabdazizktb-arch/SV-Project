@@ -65,10 +65,10 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 heatmap_data_detailed = []
 
 # Define your categories (assumed to be pre-defined)
-# all_likert_cols, factor_cols, effect_cols, step_cols = [...] 
+# likert_cols, factor_cols, effect_cols, step_cols = [...] 
 
 for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
-    for col in all_likert_cols:
+    for col in likert_cols:
         count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
         count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
         total_disagreement_count = count_sd + count_d
@@ -208,6 +208,9 @@ st.plotly_chart(fig, use_container_width=True)
 # ---------------------------------------------------------
 # MODULE 3: TABLE ANALYSIS
 # ---------------------------------------------------------
+
+heatmap_pivot = heatmap_pivot_z.copy()
+
 
 # 1. Calculate the total disagreement count (Same logic as yours)
 heatmap_pivot['Total Disagreement Count'] = heatmap_pivot[['Rural areas', 'Suburban areas', 'Urban areas']].sum(axis=1)

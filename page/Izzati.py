@@ -118,12 +118,127 @@ fig.update_layout(legend=dict(orientation="h", y=-0.1))
 st.plotly_chart(fig, use_container_width=True)
 
 #------------------------------------------------
-# Heatmap: Traffic Factors vs Congestion Effects.
+# Rectangular correlation matrix: Factors vs Effects
 #------------------------------------------------
+
+# --- Title Graph ---
+st.subheader("3. Rectangular correlation matrix: Traffic Factors vs Congestion Effects")
+
+# --- Define values ---
+heatmap_rect = heatmap_df.loc[factors_columns, effect_columns]
+
+# Round values for display
+z_values = heatmap_rect.round(2).values
+
+# --- Plotly Visualization
+fig = go.Figure(
+    data=go.Heatmap(
+        z=z_values,
+        x=heatmap_rect.columns,
+        y=heatmap_rect.index,
+        colorscale="sunset",
+        zmin=-1, zmax=1,
+        colorbar=dict(title="Spearman r"),
+        text=z_values,           # numbers to display
+        texttemplate="%{text}",  # show numbers inside cells
+        textfont={"size":12},    # font size
+    )
+)
+
+fig.update_layout(
+    title="Spearman Correlation Heatmap: Factors vs Congestion Effects",
+    xaxis_tickangle=-45,
+    yaxis_autorange='reversed',  # highest factor on top
+    width=1000,
+    height=800
+)
+
+fig.data[0].hovertemplate = "Factor: %{y}<br>Effect: %{x}<br>Correlation = %{z}<extra></extra>"
+
+# --- Show figure in Streamlit ---
+st.plotly_chart(fig, use_container_width=True)
 
 #--------------------------------------------------------- 
 # Radar Chart: Percentage score of effect from one factor.
 #---------------------------------------------------------
+
+# --- Title Graph ---
+st.subheader("3. Radar Chart: Percentage score of effect from one factor.")
+
+# --- Define values ---
+agree = df_clean[df_clean[selected_factor].isin([4,5])]
+disagree = df_clean[df_clean[selected_factor].isin([1,2,3])]
+disagree
+
+agree_effect = agree[effect_columns].isin([4,5]).mean() * 100
+disagree_effect = disagree[effect_columns].isin([4,5]).mean() * 100
+
+
+compare_df = (
+    pd.DataFrame({
+        "Agree (4–5)": agree_effect,
+        "Disagree (1–2)": disagree_effect
+    })
+    .round(1)
+)
+
+labels = compare_df.index.tolist()
+labels += [labels[0]]  # close the loop
+
+agree_values = compare_df["Agree (4–5)"].tolist()
+agree_values += [agree_values[0]]
+
+disagree_values = compare_df["Disagree (1–2)"].tolist()
+disagree_values += [disagree_values[0]]
+
+# --- Plotly Visualization ---
+fig = go.Figure()
+
+# Agree group
+fig.add_trace(
+    go.Scatterpolar(
+        r=agree_values,
+        theta=labels,
+        fill='toself',
+        name="Agree with Factor (4–5)",
+        line=dict(color="green"),
+         hovertemplate=(
+            "<b>Effect:</b> %{theta}<br>"
+            "<b>Agreement:</b> %{r:.1f}%"
+            "<extra></extra>"
+        )
+    )
+)
+
+# Disagree group
+fig.add_trace(
+    go.Scatterpolar(
+        r=disagree_values,
+        theta=labels,
+        fill='toself',
+        name="Not Sure with Factor (1–3)",
+        line=dict(color="purple"),
+         hovertemplate=(
+            "<b>Effect:</b> %{theta}<br>"
+            "<b>Agreement:</b> %{r:.1f}%"
+            "<extra></extra>"
+        )
+    )
+)
+
+fig.update_layout(
+    title=f"Comparison of Congestion Effects by Perception of {selected_factor} (Rural)",
+    polar=dict(
+        radialaxis=dict(
+            visible=True,
+            range=[0, 100]
+        )
+    ),
+    showlegend=True,
+)
+
+# --- Show figure in Streamlit ---
+st.plotly_chart(fig, use_container_width=True)
 
 #----------------------------------------------------------------
 # Box Plot: Congestion Effect by Severity of a Key Traffic Factor

@@ -24,7 +24,7 @@ df_clean = pd.read_csv(url)
 #------------------------------------------------------------
 
 # --- Title Graph ---
-st.subheader("Bar Chart: Ranking of factor that caused trafic congestion.")
+st.subheader("1. Bar Chart: Ranking of factor that caused trafic congestion.")
 
 # --- Grouping columns ---
 factors_columns = [
@@ -76,8 +76,55 @@ st.plotly_chart(fig, use_container_width=True)
 # Pie Chart: Percentage distribution of effect from the traffic congestion.
 #--------------------------------------------------------------------------
 
+# --- Title Graph ---
+st.subheader("2. Pie Chart: Percentage distribution of effect from the traffic congestion.")
+
+# --- Grouping columns ---
+effect_columns = [
+    "Unintended Road Accidents Effect",
+    "Time Wastage Effect",
+    "Pressure on Road Users Effect",
+    "Students Late to School Effect",
+    "Environmental Pollution Effect",
+    "Fuel Wastage Effect",
+]
+
+# --- Calculate Percentage ---
+# Count values and convert to percentages
+pie_df = (
+    df_clean[effect_columns]
+    .apply(lambda x: x.isin([4,5]).mean() * 100)
+    .sort_values(ascending=False)
+    .reset_index()
+)
+pie_df.columns = ["Effect Congestion", "Percentage"]
+pie_df["Percentage"] = pd.to_numeric(pie_df["Percentage"], errors='coerce')  # convert to numeric
+pie_df["Percentage"] = pie_df["Percentage"].round(1)  # round to 1 decimal place
+
+# --- Plotly Visualization ---
+fig = px.pie(
+    pie_df,
+    names = 'Effect Congestion',
+    values = "Percentage",
+    title=f"Distribution of {'Effect Congestion'} (Rural Areas)",
+    color_discrete_sequence=["purple", "yellow", "green", "lime", "brown", "orange"]  # You can change color theme
+)
+
+# Optional: show % inside pie slices
+fig.update_traces(textinfo='percent', hoverinfo='label+percent')
+fig.update_layout(legend=dict(orientation="h", y=-0.1))
+
+# --- Show figure in Streamlit ---
+st.plotly_chart(fig, use_container_width=True)
+
+#------------------------------------------------
 # Heatmap: Traffic Factors vs Congestion Effects.
+#------------------------------------------------
 
+#--------------------------------------------------------- 
 # Radar Chart: Percentage score of effect from one factor.
+#---------------------------------------------------------
 
+#----------------------------------------------------------------
 # Box Plot: Congestion Effect by Severity of a Key Traffic Factor
+#----------------------------------------------------------------

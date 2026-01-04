@@ -14,7 +14,7 @@ page1 = st.Page(
 
 page2 = st.Page(
     "page/Izzati.py",
-    title="Traffic Congestion Survey – Izzati",
+    title="Relationship Between Factor & Effect",
     icon="📈"
 )
 

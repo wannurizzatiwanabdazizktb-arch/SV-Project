@@ -12,11 +12,66 @@ st.write(
     This dashboard explores the relationship between traffic-related factors and congestion effects in rural areas.
     """
 )
+          
 # Load Dataset
+url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data%20(Izzati).csv"
 
+# Read the dataset
+df_clean = pd.read_csv(url)
+
+#------------------------------------------------------------ 
 # Bar Chart: Ranking of factor that caused trafic congestion.
+#------------------------------------------------------------
 
+# --- Grouping columns ---
+factors_columns = [
+    "Lack of Parking Space Factor",
+    "Rainy Weather Factor",
+    "Single Gate Factor",
+    "Leaving Work Late Factor",
+    "Increasing Population Factor",
+    "Students Not Sharing Vehicles",
+    "Lack of Pedestrian Bridge Factor",
+    "Damaged Road Factor",
+    "Construction/Roadworks Factor",
+    "Late Drop-off/Pick-up Factor",
+    "Narrow Road Factor",
+    "Undisciplined Driver Factor"
+]
+
+# --- Calculate % agree ---
+ranking_df = (
+    df_clean[factors_columns]
+    .apply(lambda x: x.isin([4,5]).mean() * 100)
+    .sort_values(ascending=False)
+    .reset_index()
+)
+ranking_df.columns = ["Traffic Factor", "Percent Agree"]
+ranking_df["Percent Agree"] = ranking_df["Percent Agree"].round(1)
+
+# --- Plotly bar chart ---
+custom_colors = [[0, "green"], [0.5, "yellow"], [1, "purple"]]
+
+fig = px.bar(
+    ranking_df,
+    x="Percent Agree",
+    y="Traffic Factor",
+    orientation='h',
+    text="Percent Agree",
+    color="Percent Agree",
+    color_continuous_scale=custom_colors,
+    title="Ranking of Traffic Congestion Factors (Rural Areas)",
+    labels={"Percent Agree":"% of Respondents Agreeing (4–5)", "Traffic Factor":"Traffic Factor"}
+)
+fig.update_layout(yaxis={'categoryorder':'total ascending'})
+fig.update_traces(texttemplate="%{text}%", textposition='inside')
+
+# --- Streamlit Display ---
+st.plotly_chart(fig, use_container_width=True)
+
+#--------------------------------------------------------------------------
 # Pie Chart: Percentage distribution of effect from the traffic congestion.
+#--------------------------------------------------------------------------
 
 # Heatmap: Traffic Factors vs Congestion Effects.
 

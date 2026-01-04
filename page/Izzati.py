@@ -6,7 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-st.header("Exploring Traffic Factors and Congestion Effects infront School of Rural Areas)
+st.header("Exploring Traffic Factors and Congestion Effects infront School of Rural Areas")
 st.write(
     """
     This dashboard explores the relationship between traffic-related factors and congestion effects in rural areas.

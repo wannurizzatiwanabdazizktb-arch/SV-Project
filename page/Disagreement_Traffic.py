@@ -1,3 +1,7 @@
+# =========================================================
+# Traffic Congestion Survey Analysis of Disagreement Likert Scale
+# Enhanced Version — by Nurul Ain Maisarah Hamidin (2026)
+# =========================================================
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -55,6 +59,57 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 
 # Option 2: Static Table (Better for simple, non-interactive reports)
 # st.table(disagree_area_type_original)
+
+# ---------------------------------------------------------
+# KPI METRICS (SUMMARY BOX)
+# ---------------------------------------------------------
+
+st.markdown("## 📌 Key Dataset Summary")
+
+# ---- KPI Calculations ----
+total_respondents = merged_df.shape[0]
+total_likert_items = len(likert_cols)
+
+# Total disagreement responses (1 & 2) across all items and areas
+total_disagreements = merged_df[likert_cols].isin([1, 2]).sum().sum()
+
+# Area type with highest disagreement
+area_disagreement_sum = (
+    merged_df[merged_df[likert_cols].isin([1, 2]).any(axis=1)]
+    .groupby('Area Type')[likert_cols]
+    .apply(lambda x: x.isin([1, 2]).sum().sum())
+)
+
+highest_disagreement_area = area_disagreement_sum.idxmax()
+
+# ---- KPI Display ----
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric(
+    label="Total Respondents",
+    value=f"{total_respondents}",
+    help="Number of survey participants included in the analysis"
+)
+
+col2.metric(
+    label="Likert Items Analyzed",
+    value=f"{total_likert_items}",
+    help="Total number of factors, effects, and steps evaluated"
+)
+
+col3.metric(
+    label="Total Disagreement Responses",
+    value=f"{total_disagreements}",
+    help="Combined count of 'Strongly Disagree (1)' and 'Disagree (2)' responses"
+)
+
+col4.metric(
+    label="Highest Disagreement Area",
+    value=highest_disagreement_area,
+    help="Area type with the greatest number of disagreement responses"
+)
+
+st.markdown("---")
 
 # ---------------------------------------------------------
 # MODULE 1: HEATMAP & OVERALL DISAGREEMENT

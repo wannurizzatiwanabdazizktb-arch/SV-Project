@@ -62,73 +62,69 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 # ---------------------------------------------------------
 # KPI METRICS (INTERPRETIVE SUMMARY BOX)
 # ---------------------------------------------------------
-
 with st.expander(
     "Most Disagreement Count on Factor, Effect & Step",
     expanded=False
 ):
-    
-st.subheader(
-    "How respondents from all area types choose most disagreements (factors, effects, and step), "
-    "to reveal the pattern of each Likert scale item count."
-)
-st.markdown("## Most higly Disagreement Insights by Category")
 
-col1, col2, col3, col4 = st.columns(4)
-
-# ---- COL 1: FACTOR ----
-col1.metric(
-    label="Most Disagreement Factor",
-    value="33",
-    help=(
-        "Students Not Sharing Vehicles. "
-        "Rural areas (9), "
-        "Suburban areas (6), "
-        "Urban areas (18). "
-        "Disagree (20) and Strongly Disagree (13). "
+    st.subheader(
+        "How respondents from all area types choose most disagreements (factors, effects, and step), "
+        "to reveal the pattern of each Likert scale item count."
     )
-)
 
-# ---- COL 2: EFFECT ----
-col2.metric(
-    label="Most Disagreement Effect",
-    value="11",
-    help=(
-        "Unintended Road Accidents Effect. "
-        "Rural areas (1), "
-        "Suburban areas (1), " 
-        "Urban areas (9). "
-        "Disagree (9) and Strongly Disagree (2). "
+    st.markdown("## Most highly Disagreement Insights by Category")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric(
+        label="Most Disagreement Factor",
+        value="33",
+        help=(
+            "Students Not Sharing Vehicles. "
+            "Rural areas (9), "
+            "Suburban areas (6), "
+            "Urban areas (18). "
+            "Disagree (20) and Strongly Disagree (13). "
+        )
     )
-)
 
-# ---- COL 3: STEP ----
-col3.metric(
-    label="Most Disagreement Step",
-    value="14",
-    help=(
-        "Vehicle Sharing Step, "
-        "Rural areas (6), "
-        "Suburban areas (2), " 
-        "Urban areas (6). "
-        "Disagree (8) and Strongly Disagree (6). "
+    col2.metric(
+        label="Most Disagreement Effect",
+        value="11",
+        help=(
+            "Unintended Road Accidents Effect. "
+            "Rural areas (1), "
+            "Suburban areas (1), "
+            "Urban areas (9). "
+            "Disagree (9) and Strongly Disagree (2). "
+        )
     )
-)
 
-# ---- COL 4: OVERALL CONCLUSION ----
-col4.metric(
-    label="Lowest Disagreement Item",
-    value="2",
-    help=(
-        "Pressure on Road User Effect, "
-        "Rural areas (1), "
-        "Suburban areas (0), " 
-        "Urban areas (1). "
-        "Disagree (1) and Strongly Disagree (1). "
+    col3.metric(
+        label="Most Disagreement Step",
+        value="14",
+        help=(
+            "Vehicle Sharing Step, "
+            "Rural areas (6), "
+            "Suburban areas (2), "
+            "Urban areas (6). "
+            "Disagree (8) and Strongly Disagree (6). "
+        )
     )
-)
 
-st.markdown("---")
+    col4.metric(
+        label="Lowest Disagreement Item",
+        value="2",
+        help=(
+            "Pressure on Road User Effect, "
+            "Rural areas (1), "
+            "Suburban areas (0), "
+            "Urban areas (1). "
+            "Disagree (1) and Strongly Disagree (1). "
+        )
+    )
+
+    st.markdown("---")
 
 # ---------------------------------------------------------
 # MODULE 1: HEATMAP & OVERALL DISAGREEMENT

@@ -168,6 +168,7 @@ st.plotly_chart(fig, use_container_width=True)
 st.subheader("3. Radar Chart: Percentage score of effect from one factor.")
 
 # --- Define values ---
+selected_factor = "Narrow Road Factor"
 agree = df_clean[df_clean[selected_factor].isin([4,5])]
 disagree = df_clean[df_clean[selected_factor].isin([1,2,3])]
 disagree

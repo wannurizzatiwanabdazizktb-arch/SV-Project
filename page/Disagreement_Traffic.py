@@ -59,94 +59,11 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 # Option 2: Static Table (Better for simple, non-interactive reports)
 # st.table(disagree_area_type_original)
 
-with st.expander("Most Disagreement Count on Factor, Effect & Step", expanded=False):
+    with st.expander(
+    "Most Disagreement Count on Factor, Effect & Step",
+    expanded=False
+):
 
-    # ---------------------------------------------------------
-    # KPI METRICS (INTERPRETIVE SUMMARY BOX)
-    # ---------------------------------------------------------
-
-    st.subheader(
-        "How respondents from all area types choose most disagreements (factors, effects, and step), "
-        "to reveal the pattern of each Likert scale item count."
-    )
-    st.markdown("## Most highly Disagreement Insights by Category")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric(
-        label="Most Disagreement Factor",
-        value="33",
-        help=(
-            "Students Not Sharing Vehicles. "
-            "Rural areas (9), Suburban areas (6), Urban areas (18). "
-            "Disagree (20) and Strongly Disagree (13)."
-        )
-    )
-
-    col2.metric(
-        label="Most Disagreement Effect",
-        value="11",
-        help=(
-            "Unintended Road Accidents Effect. "
-            "Rural areas (1), Suburban areas (1), Urban areas (9). "
-            "Disagree (9) and Strongly Disagree (2)."
-        )
-    )
-
-    col3.metric(
-        label="Most Disagreement Step",
-        value="14",
-        help=(
-            "Vehicle Sharing Step. "
-            "Rural areas (6), Suburban areas (2), Urban areas (6). "
-            "Disagree (8) and Strongly Disagree (6)."
-        )
-    )
-
-    col4.metric(
-        label="Lowest Disagreement Item",
-        value="2",
-        help=(
-            "Pressure on Road User Effect. "
-            "Rural areas (1), Suburban areas (0), Urban areas (1). "
-            "Disagree (1) and Strongly Disagree (1)."
-        )
-    )
-
-    st.markdown("---")
-
-    # ---------------------------------------------------------
-    # MODULE 1: HEATMAP
-    # ---------------------------------------------------------
-
-    st.title("Disagreement Heatmap Analysis")
-    st.plotly_chart(fig, use_container_width=True)
-
-    # ---------------------------------------------------------
-    # MODULE 2: BAR CHART
-    # ---------------------------------------------------------
-
-    st.title("Disagreement Horizontal Bar Chart Analysis")
-    st.plotly_chart(fig, use_container_width=True)
-
-    # ---------------------------------------------------------
-    # MODULE 3: TABLE ANALYSIS
-    # ---------------------------------------------------------
-
-    st.header("Total Disagreement Summary")
-    st.dataframe(summary_table_all_areas, use_container_width=True, hide_index=True)
-
-    # ---------------------------------------------------------
-    # MODULE 4: INTERPRETATION
-    # ---------------------------------------------------------
-
-    st.subheader("Interpretation and Conclusion")
-    st.markdown("""
-    **Overall**, respondents across all area types tend to reject behaviour-based explanations
-    and solutions, while showing stronger acceptance of structural and infrastructural causes
-    of traffic congestion.
-    """)
-    
 # ---------------------------------------------------------
 # KPI METRICS (INTERPRETIVE SUMMARY BOX)
 # ---------------------------------------------------------

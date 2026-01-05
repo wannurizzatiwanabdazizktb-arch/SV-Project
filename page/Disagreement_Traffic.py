@@ -199,7 +199,7 @@ for j in range(len(heatmap_pivot_z.columns)+1):
     fig.add_shape(type='line', y0=-0.5, y1=len(heatmap_pivot_z.index)-0.5, x0=j-0.5, x1=j-0.5, line=dict(color='white', width=2))
 
 fig.update_layout(
-    title="Disagreement Responses (1 & 2) Across Area Types",
+    title="Disagreement Responses (1 & 2) Across Area Types on All Category",
     xaxis_title="Area Type",
     yaxis_title="Likert Scale Item",
     template='plotly_white',
@@ -269,8 +269,8 @@ fig = px.bar(
 fig.update_layout(yaxis={'categoryorder':'total ascending'})
 
 # --- Streamlit Display ---
-st.title("Disagreement Analysis Dashboard")
-st.write("This chart visualizes the level of disagreement across different Likert items and area types.")
+st.title("Disagreement horizontal bar chart Analysis")
+st.write("Most Disagreement Count (1 & 2) Across Area Types on All Category.")
 
 # Display the plot
 st.plotly_chart(fig, use_container_width=True)
@@ -299,10 +299,14 @@ st.dataframe(summary_table_all_areas, use_container_width=True, hide_index=True)
 # st.table(summary_table_all_areas)
 st.markdown("""
 
+st.plotly_chart(fig, use_container_width=True) 
 # ---------------------------------------------------------
 # MODULE 4: INTERPRETATION AND ANALYSIS
 # ---------------------------------------------------------
-### Interpretation of How respondents from all area types choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count
+
+
+
+### Interpretation of how respondents from all area types choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count
 
 Graphs 1 and 2 illustrate how respondents from rural, suburban, and urban areas expressed disagreement (Likert scale 1–2) toward traffic-related **factors**, **effects**, and **steps**, using a heatmap and a horizontal bar chart titled *“Disagreement Responses (1 & 2) Across Area Types”* and *“Total Disagreement Counts (1 & 2) for Each Likert Item Across All Area Types”*.
 

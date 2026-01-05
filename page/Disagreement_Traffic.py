@@ -51,8 +51,7 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 
 # --- Streamlit Display Section ---
 
-st.title("Survey Analysis Dashboard")
-st.subheader("Count of 'Strongly Disagree' (1) and 'Disagree' (2) responses by Area Type")
+st.title("Disagreement (Likert 1–2) responses regarding traffic-related factors, effects, and steps across Area Types ")
 
 # Option 1: Interactive Table (Allows sorting and resizing)
 st.dataframe(disagree_area_type_original, use_container_width=True)
@@ -64,6 +63,8 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 # KPI METRICS (INTERPRETIVE SUMMARY BOX)
 # ---------------------------------------------------------
 
+st.subheader("How respondents from all area types choose most disagreements (factors, effects, and step), 
+to reveal the pattern of each Likert scale item count. ")
 st.markdown("## Most higly Disagreement Insights by Category")
 
 col1, col2, col3, col4 = st.columns(4)

@@ -295,3 +295,28 @@ st.dataframe(summary_table_all_areas, use_container_width=True, hide_index=True)
 
 # Option 2: Static Table (Use this if you want a non-interactive, print-style table)
 # st.table(summary_table_all_areas)
+st.markdown("""
+
+# ---------------------------------------------------------
+# MODULE 4: INTERPRETATION AND ANALYSIS
+# ---------------------------------------------------------
+### Interpretation of How respondents from all area types choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count
+
+Graphs 1 and 2 illustrate how respondents from rural, suburban, and urban areas expressed disagreement (Likert scale 1–2) toward traffic-related **factors**, **effects**, and **steps**, using a heatmap and a horizontal bar chart titled *“Disagreement Responses (1 & 2) Across Area Types”* and *“Total Disagreement Counts (1 & 2) for Each Likert Item Across All Area Types”*.
+
+Items with higher disagreement counts indicate that respondents perceive them as **less important, less relevant, or less viable** in explaining or addressing traffic congestion. The analysis reveals that the factor **“Students Not Sharing Vehicles”** recorded the highest overall disagreement (33), with rural areas (9), suburban areas (6), and particularly urban areas (18), comprising 20 responses of *Disagree* and 13 of *Strongly Disagree*. This suggests a strong lack of belief in the practicality and importance of student vehicle sharing as a solution to traffic congestion, especially in urban contexts.
+
+In contrast, the **“Narrow Road Factor”** recorded one of the lowest disagreement counts (5), indicating broad recognition that infrastructure limitations are a significant contributor to traffic congestion. This comparison highlights that **infrastructure-related factors are perceived as more credible and impactful than behavioural factors**.
+
+Regarding traffic effects, the **“Unintended Road Accidents Effect”** showed a moderate level of disagreement (11), with rural (1), suburban (1), and urban areas (9), consisting of 9 *Disagree* and 2 *Strongly Disagree* responses. This suggests uncertainty—particularly in urban areas—about the direct causal relationship between congestion and road accidents, implying that congestion may contribute more to stress and near-miss situations rather than actual accidents.
+
+For mitigation steps, the **“Vehicle Sharing Step”** recorded a notable disagreement level (14), involving rural (6), suburban (2), and urban areas (6), with 8 *Disagree* and 6 *Strongly Disagree* responses. This reflects resistance toward strategies that require behavioural or personal lifestyle changes.
+
+In conclusion, the most disagreed items by category are:
+- **Factor:** Students Not Sharing Vehicles (33)
+- **Effect:** Unintended Road Accidents Effect (11)
+- **Step:** Vehicle Sharing Step (14)
+
+Overall, the findings indicate that respondents tend to **reject behaviour-based explanations and solutions**, while showing stronger agreement with **structural and infrastructural causes** of traffic congestion. All analyses presented in Graphs 1 through 6 are based on the dataset **prior to outlier handling**.
+""")
+

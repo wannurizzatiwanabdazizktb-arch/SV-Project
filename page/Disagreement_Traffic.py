@@ -61,52 +61,67 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 # st.table(disagree_area_type_original)
 
 # ---------------------------------------------------------
-# KPI METRICS (SUMMARY BOX)
+# KPI METRICS (INTERPRETIVE SUMMARY BOX)
 # ---------------------------------------------------------
 
-st.markdown("## 📌 Key Dataset Summary")
+st.markdown("## Most higly Disagreement Insights by Category")
 
-# ---- KPI Calculations ----
-total_respondents = merged_df.shape[0]
-total_likert_items = len(likert_cols)
-
-# Total disagreement responses (1 & 2) across all items and areas
-total_disagreements = merged_df[likert_cols].isin([1, 2]).sum().sum()
-
-# Area type with highest disagreement
-area_disagreement_sum = (
-    merged_df[merged_df[likert_cols].isin([1, 2]).any(axis=1)]
-    .groupby('Area Type')[likert_cols]
-    .apply(lambda x: x.isin([1, 2]).sum().sum())
-)
-
-highest_disagreement_area = area_disagreement_sum.idxmax()
-
-# ---- KPI Display ----
 col1, col2, col3, col4 = st.columns(4)
 
+# ---- COL 1: FACTOR ----
 col1.metric(
-    label="Total Respondents",
-    value=f"{total_respondents}",
-    help="Number of survey participants included in the analysis"
+    label="Most Disagreed Factor",
+    value="Students Not Sharing Vehicles (33)",
+    help=(
+        "This factor records the largest overall degree of disagreement (33). "
+        "Disagreement is observed across all area types: rural areas (9), "
+        "suburban areas (6), and urban areas (18). "
+        "The responses consist of Disagree (20) and Strongly Disagree (13), "
+        "indicating a strong non-belief in the viability and importance of "
+        "students sharing vehicles as a solution to traffic congestion."
+    )
 )
 
+# ---- COL 2: EFFECT ----
 col2.metric(
-    label="Likert Items Analyzed",
-    value=f"{total_likert_items}",
-    help="Total number of factors, effects, and steps evaluated"
+    label="Most Disagreed Effect",
+    value="Unintended Road Accidents Effect (11)",
+    help=(
+        "This effect shows a total disagreement count of 11, with responses "
+        "from rural areas (1), suburban areas (1), and urban areas (9). "
+        "The disagreement consists of Disagree (9) and Strongly Disagree (2). "
+        "This suggests uncertainty, particularly in urban areas, regarding the "
+        "direct cause-and-effect relationship between traffic congestion and "
+        "road accidents."
+    )
 )
 
+# ---- COL 3: STEP ----
 col3.metric(
-    label="Total Disagreement Responses",
-    value=f"{total_disagreements}",
-    help="Combined count of 'Strongly Disagree (1)' and 'Disagree (2)' responses"
+    label="Most Disagreed Step",
+    value="Vehicle Sharing Step (14)",
+    help=(
+        "The Vehicle Sharing Step records 14 disagreement responses, "
+        "distributed across rural (6), suburban (2), and urban areas (6). "
+        "These include Disagree (8) and Strongly Disagree (6). "
+        "The findings indicate resistance toward steps that require "
+        "behavioural or personal changes among road users."
+    )
 )
 
+# ---- COL 4: OVERALL CONCLUSION ----
 col4.metric(
-    label="Highest Disagreement Area",
-    value=highest_disagreement_area,
-    help="Area type with the greatest number of disagreement responses"
+    label="Overall Disagreement Pattern",
+    value="Behaviour-Based Components",
+    help=(
+        "Across all components, the most popular choices of disagreement are: "
+        "Factor – Students Not Sharing Vehicles (33), "
+        "Effect – Unintended Road Accidents Effect (11), "
+        "and Step – Vehicle Sharing Step (14). "
+        "This pattern highlights that respondents are more sceptical of "
+        "behaviour-based factors, effects, and steps compared to "
+        "infrastructure-related components."
+    )
 )
 
 st.markdown("---")

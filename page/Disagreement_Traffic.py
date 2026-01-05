@@ -102,7 +102,7 @@ col3.metric(
         "Vehicle Sharing Step, "
         "Rural areas (6), "
         "Suburban areas (2), " 
-        "Urban areas (6). 
+        "Urban areas (6). "
         "Disagree (8) and Strongly Disagree (6). "
     )
 )
@@ -115,7 +115,7 @@ col4.metric(
         "Pressure on Road User Effect, "
         "Rural areas (1), "
         "Suburban areas (0), " 
-        "Urban areas (1). 
+        "Urban areas (1). "
         "Disagree (10) and Strongly Disagree (-1). "
     )
 )

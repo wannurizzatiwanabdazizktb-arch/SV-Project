@@ -65,7 +65,6 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 with st.expander(
     "Most Disagreement Count on Factor, Effect & Step",
     expanded=False
-):
 
     st.subheader(
         "How respondents from all area types choose most disagreements (factors, effects, and step), "
@@ -131,10 +130,6 @@ with st.expander(
 # ---------------------------------------------------------
 # How respondents from all area type choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count.
 # --- Data Processing (Same as your logic) ---
-with st.expander(
-    "Most Disagreement Count on Factor, Effect & Step",
-    expanded=False
-):
     
 heatmap_data_detailed = []
 
@@ -219,9 +214,6 @@ st.plotly_chart(fig, use_container_width=True)
 # MODULE 2: BAR CHART ANALYSIS
 # ---------------------------------------------------------
 # 1. Prepare the Data
-with st.expander(
-    "Most Disagreement Count on Factor, Effect & Step",
-    expanded=False
 ):
 data = {
     'Likert Item': [
@@ -286,10 +278,6 @@ st.plotly_chart(fig, use_container_width=True)
 # ---------------------------------------------------------
 # MODULE 3: TABLE ANALYSIS
 # ---------------------------------------------------------
-with st.expander(
-    "Most Disagreement Count on Factor, Effect & Step",
-    expanded=False
-):
     
 heatmap_pivot = heatmap_pivot_z.copy()
 
@@ -347,3 +335,4 @@ The most disagreed items by category are:
 Overall, respondents across all area types tend to reject behaviour-based explanations and solutions, while showing stronger acceptance of structural and infrastructural causes
 of traffic congestion.
 """)
+): 

@@ -14,14 +14,13 @@ st.write(
 )
 
 st.markdown("### 📊 Survey Overview (Rural Perspective)")
-st.markdown("""
-- **Total Respondents:** 180  
-- **Study Area:** Rural School Zone  
-- **Measurement Scale:** Likert Scale (1–5)  
-- **Gender Distribution:**  
-  - Male: 78 (43%)  
-  - Female: 102 (57%)
-""")
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Total Respondents", "38")
+col2.metric("Study Perspective", "Rural")
+col3.metric("Measurement Scale", "Likert 1–5")
+col4.metric("Gender Distribution", "F: 26 | M: 12")
 
           
 # Load Dataset

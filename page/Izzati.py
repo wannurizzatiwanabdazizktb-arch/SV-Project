@@ -255,7 +255,7 @@ key_factor = "Narrow Road Factor"
 congestion_effect = "Time Wastage Effect"
 
 # Subset
-df_subset = df_rural[[key_factor, congestion_effect]].dropna().copy()
+df_subset = df_clean[[key_factor, congestion_effect]].dropna().copy()
 
 # Recode factor into severity
 df_subset["Factor Severity"] = pd.cut(

@@ -125,6 +125,8 @@ st.plotly_chart(fig, use_container_width=True)
 st.subheader("3. Rectangular correlation matrix: Traffic Factors vs Congestion Effects")
 
 # --- Define values ---
+heatmap_cols = factors_columns + effect_columns
+heatmap_corr = df_clean[heatmap_cols].corr(method="spearman")
 heatmap_rect = heatmap_df.loc[factors_columns, effect_columns]
 
 # Round values for display
@@ -243,3 +245,40 @@ st.plotly_chart(fig, use_container_width=True)
 #----------------------------------------------------------------
 # Box Plot: Congestion Effect by Severity of a Key Traffic Factor
 #----------------------------------------------------------------
+
+# --- Title Graph ---
+st.subheader("4. Stacked Bar Chart: Congestion Effect by Severity of a Key Traffic Factor.")
+
+# --- Define Values ---
+key_factor = "Narrow Road Factor"
+congestion_effect = "Time Wastage Effect"
+
+# Subset
+df_subset = df_rural[[key_factor, congestion_effect]].dropna().copy()
+
+# Recode factor into severity
+df_subset["Factor Severity"] = pd.cut(
+    df_subset[key_factor],
+    bins=[0, 2, 3, 5],
+    labels=["Low (1–2)", "Medium (3)", "High (4–5)"]
+)
+
+freq_df = df_subset.groupby(["Factor Severity", congestion_effect]).size().reset_index(name="Frequency")
+
+# --- Plotly Visualization ---
+fig = px.bar(
+    freq_df,
+    x="Factor Severity",
+    y="Frequency",
+    color=congestion_effect,
+    barmode="group",
+    title=f"Distribution of {congestion_effect} by Severity of {key_factor} (Rural Areas)",
+    labels={
+        "Factor Severity": "Severity of Traffic Factor",
+        "Frequency": "Number of Respondents",
+        congestion_effect: "Congestion Effect (Likert Scale)"
+    }
+)
+
+# --- Show figure in Streamlit ---
+st.plotly_chart(fig, use_container_width=True)

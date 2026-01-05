@@ -131,7 +131,11 @@ with st.expander(
 # ---------------------------------------------------------
 # How respondents from all area type choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count.
 # --- Data Processing (Same as your logic) ---
-
+with st.expander(
+    "Most Disagreement Count on Factor, Effect & Step",
+    expanded=False
+):
+    
 heatmap_data_detailed = []
 
 # Define your categories (assumed to be pre-defined)
@@ -302,9 +306,7 @@ st.dataframe(summary_table_all_areas, use_container_width=True, hide_index=True)
 # ---------------------------------------------------------
 # MODULE 4: INTERPRETATION AND ANALYSIS
 # ---------------------------------------------------------
-# ---------------------------------------------------------
-# MODULE 4: INTERPRETATION AND ANALYSIS
-# ---------------------------------------------------------
+st.markdown("""
 # Overall, higher disagreement counts indicate that respondents
 # perceive an item as less important, less relevant, or less
 # effective in explaining or addressing traffic congestion.

@@ -17,10 +17,14 @@ st.markdown("### 📊 Survey Overview (Rural Perspective)")
 
 col1, col2, col3, col4 = st.columns(4)
 
-col1.metric("Total Respondents", "38")
-col2.metric("Study Perspective", "Rural")
-col3.metric("Measurement Scale", "Likert 1–5")
-col4.metric("Gender Distribution", "F: 26 | M: 12")
+col1.metric("Total Respondents", "38",  help="Number of respondents who participated in the survey. Shows the sample size for all visualizations.", 
+    border=True)
+col2.metric("Study Perspective", "Rural", help="This survey captures respondents’ perceptions of traffic congestion factors and effects near rural school zones. It reflects opinions, not direct measurements or cause-effect relationships.", 
+    border=True)
+col3.metric("Measurement Scale", "Likert 1–5", help="Likert scale (1 = Strongly Disagree, 5 = Strongly Agree) used to rate traffic factors and congestion effects.", 
+    border=True)
+col4.metric("Gender Distribution", "F: 26 | M: 12", help="Number of respondents by gender. This is only for demographic context and does not affect analysis of traffic factors or effects.", 
+    border=True)
 
           
 # Load Dataset

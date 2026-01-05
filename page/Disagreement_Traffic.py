@@ -59,15 +59,15 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 # Option 2: Static Table (Better for simple, non-interactive reports)
 # st.table(disagree_area_type_original)
 
-    with st.expander(
-    "Most Disagreement Count on Factor, Effect & Step",
-    expanded=False
-):
-
 # ---------------------------------------------------------
 # KPI METRICS (INTERPRETIVE SUMMARY BOX)
 # ---------------------------------------------------------
 
+with st.expander(
+    "Most Disagreement Count on Factor, Effect & Step",
+    expanded=False
+):
+    
 st.subheader(
     "How respondents from all area types choose most disagreements (factors, effects, and step), "
     "to reveal the pattern of each Likert scale item count."

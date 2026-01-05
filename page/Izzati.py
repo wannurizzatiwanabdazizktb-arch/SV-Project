@@ -127,7 +127,7 @@ st.subheader("3. Rectangular correlation matrix: Traffic Factors vs Congestion E
 # --- Define values ---
 heatmap_cols = factors_columns + effect_columns
 heatmap_corr = df_clean[heatmap_cols].corr(method="spearman")
-heatmap_rect = heatmap_df.loc[factors_columns, effect_columns]
+heatmap_rect = heatmap_corr.loc[factors_columns, effect_columns]
 
 # Round values for display
 z_values = heatmap_rect.round(2).values

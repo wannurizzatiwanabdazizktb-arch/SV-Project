@@ -6,14 +6,14 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-st.header("Exploring Traffic Factors and Congestion Effects infront School of Rural Areas")
+st.header("Exploring Traffic Factors and Congestion Effects Infront School of Rural Areas")
 st.write(
     """
-    This dashboard explores the relationship between traffic-related factors and congestion effects in rural areas.
+    This dashboard explores the relationship between traffic-related factors and congestion effects in rural areas. It aims to rank traffic factors based on respondents’ perceptions and analyze how they influence congestion near schools.
     """
 )
 
-st.markdown("### 📊 Survey Overview (Rural Perspective)")
+st.markdown("### 📊 Survey Overview")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -38,7 +38,7 @@ df_clean = pd.read_csv(url)
 #------------------------------------------------------------
 
 # --- Title Graph ---
-st.subheader("1. Bar Chart: Ranking of factor that caused trafic congestion.")
+st.subheader("1. Bar Chart: Ranking of Factor That Caused Trafic Congestion.")
 
 # --- Grouping columns ---
 factors_columns = [
@@ -87,11 +87,11 @@ fig.update_traces(texttemplate="%{text}%", textposition='inside')
 st.plotly_chart(fig, use_container_width=True)
 
 #--------------------------------------------------------------------------
-# Pie Chart: Percentage distribution of effect from the traffic congestion.
+# Pie Chart: Percentage Distribution of Effect From The Traffic Congestion.
 #--------------------------------------------------------------------------
 
 # --- Title Graph ---
-st.subheader("2. Pie Chart: Percentage distribution of effect from the traffic congestion.")
+st.subheader("2. Pie Chart: Percentage Distribution of Effect From The Traffic Congestion.")
 
 # --- Grouping columns ---
 effect_columns = [
@@ -132,11 +132,11 @@ fig.update_layout(legend=dict(orientation="h", y=-0.1))
 st.plotly_chart(fig, use_container_width=True)
 
 #------------------------------------------------
-# Rectangular correlation matrix: Factors vs Effects
+# Rectangular Correlation Matrix: Factors Vs Effects
 #------------------------------------------------
 
 # --- Title Graph ---
-st.subheader("3. Rectangular correlation matrix: Traffic Factors vs Congestion Effects")
+st.subheader("3. Rectangular Correlation Matrix: Traffic Factors Vs Congestion Effects")
 
 # --- Define values ---
 heatmap_cols = factors_columns + effect_columns
@@ -175,11 +175,11 @@ fig.data[0].hovertemplate = "Factor: %{y}<br>Effect: %{x}<br>Correlation = %{z}<
 st.plotly_chart(fig, use_container_width=True)
 
 #--------------------------------------------------------- 
-# Radar Chart: Percentage score of effect from one factor.
+# Radar Chart: Percentage Score of effect from one factor.
 #---------------------------------------------------------
 
 # --- Title Graph ---
-st.subheader("3. Radar Chart: Percentage score of effect from one factor.")
+st.subheader("3. Radar Chart: Percentage Score of Effect From One Factor.")
 
 # --- Define values ---
 selected_factor = "Narrow Road Factor"

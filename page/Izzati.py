@@ -12,6 +12,17 @@ st.write(
     This dashboard explores the relationship between traffic-related factors and congestion effects in rural areas.
     """
 )
+
+st.markdown("### 📊 Survey Overview (Rural Perspective)")
+st.markdown("""
+- **Total Respondents:** 180  
+- **Study Area:** Rural School Zone  
+- **Measurement Scale:** Likert Scale (1–5)  
+- **Gender Distribution:**  
+  - Male: 78 (43%)  
+  - Female: 102 (57%)
+""")
+
           
 # Load Dataset
 url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data%20(Izzati).csv"

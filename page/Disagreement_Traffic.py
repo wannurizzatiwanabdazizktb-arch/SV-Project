@@ -63,8 +63,10 @@ st.dataframe(disagree_area_type_original, use_container_width=True)
 # KPI METRICS (INTERPRETIVE SUMMARY BOX)
 # ---------------------------------------------------------
 
-st.subheader("How respondents from all area types choose most disagreements (factors, effects, and step), 
-to reveal the pattern of each Likert scale item count. ")
+st.subheader(
+    "How respondents from all area types choose most disagreements (factors, effects, and step), "
+    "to reveal the pattern of each Likert scale item count."
+)
 st.markdown("## Most higly Disagreement Insights by Category")
 
 col1, col2, col3, col4 = st.columns(4)
@@ -117,7 +119,7 @@ col4.metric(
         "Rural areas (1), "
         "Suburban areas (0), " 
         "Urban areas (1). "
-        "Disagree (10) and Strongly Disagree (-1). "
+        "Disagree (1) and Strongly Disagree (1). "
     )
 )
 

@@ -219,6 +219,10 @@ st.plotly_chart(fig, use_container_width=True)
 # MODULE 2: BAR CHART ANALYSIS
 # ---------------------------------------------------------
 # 1. Prepare the Data
+with st.expander(
+    "Most Disagreement Count on Factor, Effect & Step",
+    expanded=False
+):
 data = {
     'Likert Item': [
         'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
@@ -282,7 +286,11 @@ st.plotly_chart(fig, use_container_width=True)
 # ---------------------------------------------------------
 # MODULE 3: TABLE ANALYSIS
 # ---------------------------------------------------------
-
+with st.expander(
+    "Most Disagreement Count on Factor, Effect & Step",
+    expanded=False
+):
+    
 heatmap_pivot = heatmap_pivot_z.copy()
 
 
@@ -307,47 +315,35 @@ st.dataframe(summary_table_all_areas, use_container_width=True, hide_index=True)
 # MODULE 4: INTERPRETATION AND ANALYSIS
 # ---------------------------------------------------------
 st.markdown("""
-# Overall, higher disagreement counts indicate that respondents
-# perceive an item as less important, less relevant, or less
-# effective in explaining or addressing traffic congestion.
+## Interpretation and Analysis
 
-# FACTORS:
-# The factor “Students Not Sharing Vehicles” recorded the highest
-# overall disagreement (33), with rural (9), suburban (6), and
-# urban (18) areas contributing to this total. This shows strong
-# rejection of behavioural explanations for traffic congestion,
-# particularly in urban areas.
+Overall, higher disagreement counts indicate that respondents perceive an item as less important, less relevant, or less effective in explaining or addressing traffic congestion.
 
-# EFFECTS:
-# The “Unintended Road Accidents Effect” showed a moderate level of
-# disagreement (11), mainly from urban respondents (9). This
-# indicates uncertainty about the direct cause-and-effect
-# relationship between traffic congestion and road accidents.
-# Respondents may associate congestion more with stress, delays,
-# and near-miss situations rather than actual accidents.
+### FACTORS:
+The factor “Students Not Sharing Vehicles” recorded the highest
+Overall disagreement (33), with rural (9), suburban (6), and urban (18) areas contributing to this total. This shows strong rejection of behavioural explanations for traffic congestion,
+particularly in urban areas.
 
-# STEPS:
-# The “Vehicle Sharing Step” recorded notable disagreement (14),
-# with similar contributions from rural (6) and urban (6) areas.
-# This reflects resistance towards solutions that require personal
-# or behavioural changes, such as sharing vehicles.
+### EFFECTS:
+The “Unintended Road Accidents Effect” showed a moderate level of disagreement (11), mainly from urban respondents (9). This
+indicates uncertainty about the direct cause-and-effect relationship between traffic congestion and road accidents.
+Respondents may associate congestion more with stress, delays, and near-miss situations rather than actual accidents.
 
-# LOWEST DISAGREEMENT:
-# In contrast, the “Narrow Road Factor” recorded one of the lowest
-# disagreement counts (5), indicating strong agreement that road
-# infrastructure limitations are a genuine cause of congestion.
-# This suggests that respondents place greater trust in
-# infrastructure-related factors than behavioural ones.
+### STEPS:
+The “Vehicle Sharing Step” recorded notable disagreement (14), with similar contributions from rural (6) and urban (6) areas.
+This reflects resistance towards solutions that require personal or behavioural changes, such as sharing vehicles.
 
-# CONCLUSION:
-# The most disagreed items by category are:
-# - Factor: Students Not Sharing Vehicles (33)
-# - Effect: Unintended Road Accidents Effect (11)
-# - Step: Vehicle Sharing Step (14)
-# - Lowest Disagreement: Narrow Road Factor (5)
+### LOWEST DISAGREEMENT:
+In contrast, the “Narrow Road Factor” recorded one of the lowest disagreement counts (5), indicating strong agreement that road infrastructure limitations are a genuine cause of congestion.
+This suggests that respondents place greater trust in infrastructure-related factors than behavioural ones.
 
-# Overall, respondents across all area types tend to reject
-# behaviour-based explanations and solutions, while showing
-# stronger acceptance of structural and infrastructural causes
-# of traffic congestion.
-#
+### CONCLUSION:
+The most disagreed items by category are:
+- Factor: Students Not Sharing Vehicles (33)
+- Effect: Unintended Road Accidents Effect (11)
+- Step: Vehicle Sharing Step (14)
+- Lowest Disagreement: Narrow Road Factor (5)
+
+Overall, respondents across all area types tend to reject behaviour-based explanations and solutions, while showing stronger acceptance of structural and infrastructural causes
+of traffic congestion.
+""")

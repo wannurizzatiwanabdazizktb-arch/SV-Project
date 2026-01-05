@@ -70,57 +70,53 @@ col1, col2, col3, col4 = st.columns(4)
 
 # ---- COL 1: FACTOR ----
 col1.metric(
-    label="Most Disagreed Factor",
-    value="Students Not Sharing Vehicles (33)",
+    label="Most Disagreement Factor",
+    value="33",
     help=(
-        "This factor records the largest overall degree of disagreement (33). "
-        "Disagreement is observed across all area types: rural areas (9), "
-        "suburban areas (6), and urban areas (18). "
-        "The responses consist of Disagree (20) and Strongly Disagree (13), "
-        "indicating a strong non-belief in the viability and importance of "
-        "students sharing vehicles as a solution to traffic congestion."
+        "Students Not Sharing Vehicles. "
+        "Rural areas (9), "
+        "Suburban areas (6), "
+        "Urban areas (18). "
+        "Disagree (20) and Strongly Disagree (13). "
     )
 )
 
 # ---- COL 2: EFFECT ----
 col2.metric(
-    label="Most Disagreed Effect",
-    value="Unintended Road Accidents Effect (11)",
+    label="Most Disagreement Effect",
+    value="11",
     help=(
-        "This effect shows a total disagreement count of 11, with responses "
-        "from rural areas (1), suburban areas (1), and urban areas (9). "
-        "The disagreement consists of Disagree (9) and Strongly Disagree (2). "
-        "This suggests uncertainty, particularly in urban areas, regarding the "
-        "direct cause-and-effect relationship between traffic congestion and "
-        "road accidents."
+        "Unintended Road Accidents Effect. "
+        "Rural areas (1), "
+        "Suburban areas (1), " 
+        "Urban areas (9). "
+        "Disagree (9) and Strongly Disagree (2). "
     )
 )
 
 # ---- COL 3: STEP ----
 col3.metric(
-    label="Most Disagreed Step",
-    value="Vehicle Sharing Step (14)",
+    label="Most Disagreement Step",
+    value="14",
     help=(
-        "The Vehicle Sharing Step records 14 disagreement responses, "
-        "distributed across rural (6), suburban (2), and urban areas (6). "
-        "These include Disagree (8) and Strongly Disagree (6). "
-        "The findings indicate resistance toward steps that require "
-        "behavioural or personal changes among road users."
+        "Vehicle Sharing Step, "
+        "Rural areas (6), "
+        "Suburban areas (2), " 
+        "Urban areas (6). 
+        "Disagree (8) and Strongly Disagree (6). "
     )
 )
 
 # ---- COL 4: OVERALL CONCLUSION ----
 col4.metric(
-    label="Overall Disagreement Pattern",
-    value="Behaviour-Based Components",
+    label="Lowest Disagreement Item",
+    value="2",
     help=(
-        "Across all components, the most popular choices of disagreement are: "
-        "Factor – Students Not Sharing Vehicles (33), "
-        "Effect – Unintended Road Accidents Effect (11), "
-        "and Step – Vehicle Sharing Step (14). "
-        "This pattern highlights that respondents are more sceptical of "
-        "behaviour-based factors, effects, and steps compared to "
-        "infrastructure-related components."
+        "Pressure on Road User Effect, "
+        "Rural areas (1), "
+        "Suburban areas (0), " 
+        "Urban areas (1). 
+        "Disagree (10) and Strongly Disagree (-1). "
     )
 )
 

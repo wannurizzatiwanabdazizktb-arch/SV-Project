@@ -5,6 +5,11 @@ import numpy as np
 
 # 1. Konfigurasi Halaman Streamlit
 st.set_page_config(page_title="Analysis of Factors and Perceptions of Traffic Congestion in School Areas", layout="wide")
+st.write(
+    """
+    This visual analysis reveals the main causes of congestion at schools through demographic and status comparisons. Through heatmaps and regression models, we can see how environmental factors influence traffic flow, helping to design more effective data-driven solutions.
+    """
+)
 
 # 2. Masukkan URL data mentah
 DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"

@@ -22,14 +22,6 @@ factor_cols = [col for col in data.columns if col.startswith('Faktor')]
 kesan_cols = [col for col in data.columns if col.startswith('Kesan')]
 langkah_cols = [col for col in data.columns if col.startswith('Langkah')]
 
-# --- 🟢 LANGKAH PENTING: Takrifkan filtered_data di sini ---
-st.sidebar.header("Dashboard Filters")
-selected_status = st.sidebar.multiselect("Select Status:", options=data['Status'].unique(), default=data['Status'].unique())
-selected_area = st.sidebar.multiselect("Select Area Type:", options=data['Jenis Kawasan'].unique(), default=data['Jenis Kawasan'].unique())
-
-# Baris ini MESTI ada sebelum st.metric dipanggil
-filtered_data = data[(data['Status'].isin(selected_status)) & (data['Jenis Kawasan'].isin(selected_area))]
-
 # --- 4. Paparan Header & KPI ---
 st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
 

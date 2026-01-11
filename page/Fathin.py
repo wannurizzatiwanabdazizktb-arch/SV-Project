@@ -26,7 +26,9 @@ st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
 st.write(
     """
     This visual analysis reveals the main causes of congestion at schools through demographic and status comparisons. Through heatmaps and regression models, we can see how environmental factors influence traffic flow, helping to design more effective data-driven solutions.
+    """
 )
+
 
 factor_means = data[factor_cols].mean().sort_values(ascending=True).reset_index()
 factor_means.columns = ['Factor', 'Average Score']

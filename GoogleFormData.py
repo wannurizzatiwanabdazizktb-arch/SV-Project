@@ -20,7 +20,7 @@ page2 = st.Page(
 
 page3 = st.Page(
     "page/Fathin.py",
-    title="Traffic Congestion Survey – Fathin",
+    title="Analysis of Traffic Congestion – Fatin",
     icon="📉"
 )
 

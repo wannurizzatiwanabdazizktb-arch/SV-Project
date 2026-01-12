@@ -96,13 +96,13 @@ try:
     with c1:
         f_select = st.selectbox("Select Factor (X):", factor_cols, key="factor_box")
     with c2:
-        k_select = st.selectbox("Select Effect (Y):", kesan_cols, key="effect_box")
+        k_select = st.selectbox("Select impact (Y):", kesan_cols, key="impact_box")
 
     # Ensure selections are valid before trying to use .replace()
     if f_select and k_select:
         # Clean labels for the plot title
         f_label = f_select.replace(' Factor', '').replace(' factor', '')
-        k_label = k_select.replace(' Effect', '').replace(' effect', '')
+        k_label = k_select.replace(' impact', '').replace(' impact', '')
 
         fig5 = px.scatter(
             data, x=f_select, y=k_select, trendline="ols", 

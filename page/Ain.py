@@ -1,169 +1,106 @@
 # =========================================================
-# Traffic Congestion Survey Analysis of Disagreement Likert Item
-# Enhanced Version — by Nurul Ain Maisarah Hamidin (2026)
+# Traffic Congestion Survey Analysis of Disagreement
+# Cloud Version (GitHub) — by Nurul Ain Maisarah Hamidin
 # =========================================================
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
-# 1. PAGE SETTINGS (Must be the first Streamlit command)
+# ---------------------------------------------------------
+# 1. PAGE CONFIGURATION
+# ---------------------------------------------------------
 st.set_page_config(
     page_title="Traffic Congestion Survey Analysis",
     page_icon="📊",
     layout="wide"
-    
-# 2. LOAD DATA
-@st.cache_data
-def load_data():
-    # Ensure this file exists in your directory
-    return pd.read_csv("cleaned_data.csv")
+)
 
-try:
-    merged_df = load_data()
-except FileNotFoundError:
-    st.error("CSV file not found. Please ensure 'cleaned_data.csv' is in the folder.")
+# ---------------------------------------------------------
+# 2. DATA LOADING & PROCESSING (GITHUB SOURCE)
+# ---------------------------------------------------------
+@st.cache_data
+def load_and_process_data():
+    # YOUR RAW GITHUB URL
+    URL = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data.csv"
+    
+    try:
+        # Pandas can read directly from the URL
+        df = pd.read_csv(URL)
+        
+        # Define Likert Columns (assuming they start from index 3 to 27)
+        likert_cols = df.columns[3:28].tolist()
+        
+        # Aggregate Disagreement (Likert 1 & 2) by Area Type
+        result_map = {}
+        for col in likert_cols:
+            # Filters rows where response is 1 or 2, then counts by Area Type
+            result_map[col] = (
+                df[df[col].isin([1, 2])]
+                .groupby('Area Type')[col]
+                .count()
+            )
+        
+        disagreement_df = pd.DataFrame(result_map).fillna(0).astype(int)
+        
+        return df, disagreement_df, likert_cols
+    
+    except Exception as e:
+        st.error(f"Error loading data from GitHub: {e}")
+        return None, None, None
+
+# Load the data
+merged_df, disagree_area_type_original, likert_cols = load_and_process_data()
+
+if merged_df is None:
     st.stop()
 
-# 3. DEFINE COLUMNS & CATEGORIES
-# Adjust indices [3:10] based on your actual CSV structure
-likert_cols = merged_df.columns[3:28].tolist() 
-factor_cols = [col for col in likert_cols if 'Factor' in col]
-effect_cols = [col for col in likert_cols if 'Effect' in col]
-step_cols   = [col for col in likert_cols if 'Step' in col]
-
-# 4. DEFINE COLUMNS & CATEGORIES
-# Assuming merged_df and likert_cols are already defined
-
-result_original = {}
-
-for col in likert_cols:
-    result_original[col] = (
-        merged_df[merged_df[col].isin([1, 2])]
-        .groupby('Area Type')[col]
-        .count()
-    )
-
-# Create the DataFrame and fill missing values
-disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int)
-
-# --- Streamlit Display Section ---
-
+# ---------------------------------------------------------
+# 3. CUSTOM STYLES (CSS)
+# ---------------------------------------------------------
 st.markdown("""
 <style>
     .center-title {
         text-align: center; font-size: 2.2rem; font-weight: 800;
         background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        margin-bottom: 0.2rem; letter-spacing: -1px;
+        margin-bottom: 0.2rem;
     }
     .subtitle {
-        text-align: center; font-size: 1rem; color: #666;
-        font-family: 'Inter', sans-serif; letter-spacing: 1px; margin-bottom: 1rem;
+        text-align: center; font-size: 1rem; color: #666; margin-bottom: 1rem;
     }
     .divider {
         height: 3px; background: linear-gradient(90deg, transparent, #4facfe, #764ba2, transparent);
-        margin: 10px auto 30px auto; width: 80%; border-radius: 50%;
+        margin: 10px auto 30px auto; width: 80%;
     }
-    /* Unified Expander Style */
-    .stExpander {
-        background-color: #1E1E1E !important;
-        border: 2px solid #4facfe !important;
-        border-radius: 15px !important;
-        animation: glow 3s infinite;
-    }
-    @keyframes glow {
-        0% { box-shadow: 0 0 5px #4facfe; }
-        50% { box-shadow: 0 0 20px #00f2fe; }
-        100% { box-shadow: 0 0 5px #4facfe; }
-    }
-    .metric-card {
-        background: #ffffff; border-radius: 12px; padding: 15px;
-        text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        border-bottom: 4px solid #ddd; transition: 0.2s;
-    }
-    .metric-card:hover { transform: translateY(-3px); }
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------
-# 3. Header Section
-# --------------------
-st.markdown('<div class="center-title">isagreement (Likert 1–2) responses across Area Types</div>', unsafe_allow_html=True)
+# ---------------------------------------------------------
+# 4. HEADER SECTION
+# ---------------------------------------------------------
+st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-# Option 1: Interactive Table (Allows sorting and resizing)
+# ---------------------------------------------------------
+# 5. DATA DISPLAY
+# ---------------------------------------------------------
+st.subheader("Interactive Disagreement Matrix (Rural, Suburban, Urban)")
 st.dataframe(disagree_area_type_original, use_container_width=True)
 
-# Option 2: Static Table (Better for simple, non-interactive reports)
-# st.table(disagree_area_type_original)
-
 # ---------------------------------------------------------
-# KPI METRICS (INTERPRETIVE SUMMARY BOX)
+# 6. KPI METRICS
 # ---------------------------------------------------------
-with st.expander(
-    "Most Disagreement Count on Factor, Effect & Step",
-    expanded=False
-    
-
-    st.subheader(
-        "How respondents from all area types choose most disagreements (factors, effects, and step), "
-        "to reveal the pattern of each Likert scale item count."
-    )
-
-    st.markdown("## Most highly Disagreement Insights by Category")
-
+with st.expander("🔍 View Key Disagreement Insights", expanded=True):
     col1, col2, col3, col4 = st.columns(4)
 
-    col1.metric(
-        label="Most Disagreement Factor",
-        value="33",
-        help=(
-            "Students Not Sharing Vehicles. "
-            "Rural areas (9), "
-            "Suburban areas (6), "
-            "Urban areas (18). "
-            "Disagree (20) and Strongly Disagree (13). "
-        )
-    )
-
-    col2.metric(
-        label="Most Disagreement Effect",
-        value="11",
-        help=(
-            "Unintended Road Accidents Effect. "
-            "Rural areas (1), "
-            "Suburban areas (1), "
-            "Urban areas (9). "
-            "Disagree (9) and Strongly Disagree (2). "
-        )
-    )
-
-    col3.metric(
-        label="Most Disagreement Step",
-        value="14",
-        help=(
-            "Vehicle Sharing Step, "
-            "Rural areas (6), "
-            "Suburban areas (2), "
-            "Urban areas (6). "
-            "Disagree (8) and Strongly Disagree (6). "
-        )
-    )
-
-    col4.metric(
-        label="Lowest Disagreement Item",
-        value="2",
-        help=(
-            "Pressure on Road User Effect, "
-            "Rural areas (1), "
-            "Suburban areas (0), "
-            "Urban areas (1). "
-            "Disagree (1) and Strongly Disagree (1). "
-        )
-    )
+    col1.metric("Factor Disagreement", "33", help="Students Not Sharing Vehicles")
+    col2.metric("Effect Disagreement", "11", help="Unintended Road Accidents")
+    col3.metric("Step Disagreement", "14", help="Vehicle Sharing Step")
+    col4.metric("Lowest Disagreement", "2", help="Pressure on Road Users")
 
     st.markdown("---")
-
+    st.info("Data source: GitHub Repository (wannurizzatiwanabdazizktb-arch)")

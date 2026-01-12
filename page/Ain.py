@@ -104,9 +104,8 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 # ---------------------------------------------------------
 # 5. DATA DISPLAY: PROFESSIONAL DESIGN (Streamlit Version)
 # ---------------------------------------------------------
-with st.expander("📊 Before Outlier Disagreement Table", expanded=True):
-    st.markdown("### Interactive Disagreement Matrix")
-    st.info("Count of 'Strongly Disagree' (1) and 'Disagree' (2) responses by Area Type.")
+with st.expander("Before Outlier Disagreement Table", expanded=True):
+    st.markdown("### Disagreement across Area Type")
 
     # Apply professional styling to the DataFrame
     # 1. Background gradient (Heatmap) to identify high values quickly
@@ -125,18 +124,5 @@ with st.expander("📊 Before Outlier Disagreement Table", expanded=True):
         height=500
     )
 
-    st.caption("💡 *Tip: Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
+    st.caption("💡 Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
     
-# ---------------------------------------------------------
-# 6. KPI METRICS
-# ---------------------------------------------------------
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    col1.metric("Factor Disagreement", "33", help="Students Not Sharing Vehicles")
-    col2.metric("Effect Disagreement", "11", help="Unintended Road Accidents")
-    col3.metric("Step Disagreement", "14", help="Vehicle Sharing Step")
-    col4.metric("Lowest Disagreement", "2", help="Pressure on Road Users")
-
-    st.markdown("---")
-    st.info("Data source: GitHub Repository (wannurizzatiwanabdazizktb-arch)")

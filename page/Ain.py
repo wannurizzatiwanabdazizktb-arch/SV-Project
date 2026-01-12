@@ -88,13 +88,14 @@ st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 # ---------------------------------------------------------
 # 5. DATA DISPLAY
 # ---------------------------------------------------------
+with st.expander("Before Outlier Disagreement Table", expanded=True):
 st.subheader("Interactive Disagreement Matrix (Rural, Suburban, Urban)")
 st.dataframe(disagree_area_type_original, use_container_width=True)
 
 # ---------------------------------------------------------
 # 6. KPI METRICS
 # ---------------------------------------------------------
-with st.expander("🔍 View Key Disagreement Insights", expanded=True):
+
     col1, col2, col3, col4 = st.columns(4)
 
     col1.metric("Factor Disagreement", "33", help="Students Not Sharing Vehicles")

@@ -7,7 +7,7 @@ import numpy as np
 st.set_page_config(page_title="Analysis of Traffic Congestion", layout="wide")
 
 # 2. URL Data
-DATA_URL = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data%20(Izzati).csv"
+DATA_URL = "https://raw.githubusercontent.com/atyn104/SV/refs/heads/main/project_dataSV_data.csv"
 
 @st.cache_data
 def load_data():

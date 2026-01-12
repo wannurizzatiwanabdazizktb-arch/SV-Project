@@ -86,12 +86,26 @@ st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 5. DATA DISPLAY
+# 5. DATA DISPLAY (PROFESSIONAL DESIGN)
 # ---------------------------------------------------------
-with st.expander("Before Outlier Disagreement Table", expanded=True):
-st.subheader("Interactive Disagreement Matrix (Rural, Suburban, Urban)")
-st.dataframe(disagree_area_type_original, use_container_width=True)
+with st.expander("📊 Before Outlier Disagreement Table", expanded=True):
+    st.markdown("### Interactive Disagreement Matrix")
+    st.write("This table shows the count of 'Strongly Disagree' and 'Disagree' responses across different area types.")
 
+    # Apply professional styling to the DataFrame
+    # 1. Background gradient (Heatmap) to identify high values quickly
+    # 2. Highlight the maximum value in each column
+    # 3. Use a cleaner font/color scheme
+    styled_df = disagree_area_type_original.style \
+        .background_gradient(cmap='YlGnBu', axis=0) \
+        .highlight_max(axis=0, color='#ffcc00') \
+        .format("{:,}") # Adds thousand separators if needed
+
+    # Display the styled table in Streamlit
+    st.dataframe(styled_df, use_container_width=True, height=500)
+
+    st.caption("💡 *Tip: Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
+    
 # ---------------------------------------------------------
 # 6. KPI METRICS
 # ---------------------------------------------------------

@@ -3,105 +3,82 @@ import plotly.express as px
 import streamlit as st
 import numpy as np
 
-st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
-st.write(
-    """
-    This visual analysis reveals the main causes of congestion at schools through demographic and status comparisons. Through heatmaps and regression models, we can see how environmental factors influence traffic flow, helping to design more effective data-driven solutions.
-    """
-)
-
-# 2. URL Data
+# URL Data
 DATA_URL = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data%20(Izzati).csv"
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv(DATA_URL)
-    return df
+    df = pd.read_csv(DATA_URL)
+    return df
 
-data = load_data()
+try:
+    data = load_data()
 
-# --- PERSEDIAAN DATA ---
-factor_cols = [col for col in data.columns if col.startswith('Faktor')]
-kesan_cols = [col for col in data.columns if col.startswith('Kesan')]
-langkah_cols = [col for col in data.columns if col.startswith('Langkah')]
+    # --- PERSEDIAAN DATA ---
+    factor_cols = [col for col in data.columns if col.startswith('Faktor')]
+    kesan_cols = [col for col in data.columns if col.startswith('Kesan')]
+    langkah_cols = [col for col in data.columns if col.startswith('Langkah')]
 
-# --- BAHAGIAN 1: PURATA SKOR ---
-factor_means = data[factor_cols].mean().sort_values(ascending=True).reset_index()
-factor_means.columns = ['Factor', 'Average Score']
-factor_means['Factor'] = factor_means['Factor'].str.replace('Faktor ', '')
+    # --- BAHAGIAN 1: PURATA SKOR ---
+    st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
+    st.write("Analisis visual ini mendedahkan punca utama kesesakan melalui perbandingan demografi dan status.")
 
-fig1 = px.bar(
-    factor_means, x='Average Score', y='Factor', orientation='h',
-    title='<b>1. Average Factor Scores (Overall)</b>',
-    color='Average Score', color_continuous_scale='Viridis', text_auto='.2f'
-)
-st.plotly_chart(fig1, use_container_width=True)
+    factor_means = data[factor_cols].mean().sort_values(ascending=True).reset_index()
+    factor_means.columns = ['Factor', 'Average Score']
+    factor_means['Factor'] = factor_means['Factor'].str.replace('Faktor ', '')
 
-st.markdown("---")
+    fig1 = px.bar(
+        factor_means, x='Average Score', y='Factor', orientation='h',
+        title='<b>1. Average Factor Scores (Overall)</b>',
+        color='Average Score', color_continuous_scale='Viridis', text_auto='.2f'
+    )
+    st.plotly_chart(fig1, use_container_width=True)
 
-# --- BAHAGIAN 2: PERBANDINGAN DEMOGRAFI ---
-st.subheader("🏙️ Demographic Analysis")
+    st.markdown("---")
 
-melted_data = data.melt(id_vars=['Jenis Kawasan'], value_vars=factor_cols, var_name='Factor', value_name='Average Score')
-melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '')
-comparison_data = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
+    # --- BAHAGIAN 2: PERBANDINGAN DEMOGRAFI ---
+    st.subheader("Sub-Analysis: Demographic")
+    melted_data = data.melt(id_vars=['Jenis Kawasan'], value_vars=factor_cols, var_name='Factor', value_name='Average Score')
+    melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '')
+    comparison_data = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
 
-fig2 = px.bar(
-    comparison_data, x='Average Score', y='Factor', color='Jenis Kawasan',
-    barmode='group', orientation='h', title='<b>2. Comparison: Urban vs. Rural Areas</b>',
-    text_auto='.2f'
-)
-fig2.update_layout(height=700)
-st.plotly_chart(fig2, use_container_width=True)
+    fig2 = px.bar(
+        comparison_data, x='Average Score', y='Factor', color='Jenis Kawasan',
+        barmode='group', orientation='h', title='<b>2. Comparison: Urban vs. Rural Areas</b>',
+        text_auto='.2f'
+    )
+    st.plotly_chart(fig2, use_container_width=True)
 
-st.markdown("---")
+    st.markdown("---")
 
-# --- BAHAGIAN 3: HEATMAP ---
-st.subheader("🌡️ Heatmap Analysis")
+    # --- BAHAGIAN 3: HEATMAP ---
+    st.subheader("🌡️ Heatmap Analysis")
+    heatmap_df = data.groupby('Status')[factor_cols].mean()
+    heatmap_df.columns = [col.replace('Faktor ', '') for col in heatmap_df.columns]
 
-heatmap_df = data.groupby('Status')[factor_cols].mean()
-heatmap_df.columns = [col.replace('Faktor ', '') for col in heatmap_df.columns]
+    fig3 = px.imshow(
+        heatmap_df, color_continuous_scale='YlGnBu',
+        title='<b>3. Heatmap: Factors by Status</b>', text_auto=".2f", aspect="auto"
+    )
+    st.plotly_chart(fig3, use_container_width=True)
 
-fig3 = px.imshow(
-    heatmap_df, color_continuous_scale='YlGnBu',
-    title='<b>3. Heatmap: Factors by Status</b>', text_auto=".2f", aspect="auto"
-)
-st.plotly_chart(fig3, use_container_width=True)
+    st.markdown("---")
 
-st.markdown("---")
+    # --- BAHAGIAN 4: HUBUNGAN (SCATTER PLOT) ---
+    st.subheader("🔗 Relationship Analysis")
+    c1, c2 = st.columns(2)
+    with c1:
+        f_select = st.selectbox("Select Factor (X):", factor_cols)
+    with c2:
+        k_select = st.selectbox("Select Impact (Y):", kesan_cols)
 
-# --- BAHAGIAN 4: HUBUNGAN (SCATTER PLOT) ---
-st.subheader("🔗 Relationship Analysis")
+    # Nota: trendline="ols" memerlukan 'statsmodels' dalam requirements.txt
+    fig5 = px.scatter(
+        data, x=f_select, y=k_select, trendline="ols", 
+        trendline_color_override="red", opacity=0.5,
+        title=f"Regression: {f_select} vs {k_select}"
+    )
+    st.plotly_chart(fig5, use_container_width=True)
 
-c1, c2 = st.columns(2)
-with c1:
-    f_select = st.selectbox("Select Factor (X):", factor_cols)
-with c2:
-    k_select = st.selectbox("Select Impact (Y):", kesan_cols)
-
-# Nota: trendline="ols" memerlukan 'statsmodels' dipasang
-fig5 = px.scatter(
-    data, x=f_select, y=k_select, trendline="ols", 
-    trendline_color_override="red", opacity=0.5,
-    title=f"Regression: {f_select.replace('Faktor ','')} vs {k_select.replace('Kesan ','')}"
-)
-st.plotly_chart(fig5, use_container_width=True)
-
-st.markdown("---")
-
-# --- BAHAGIAN 5: PUNCA VS LANGKAH ---
-st.subheader("💡 Summary: Main Causes vs. Solutions")
-
-f_plot = data[factor_cols].mean().sort_values(ascending=True).reset_index()
-f_plot.columns = ['Factor', 'Score']
-f_plot['Factor'] = f_plot['Factor'].str.replace('Faktor ', '')
-
-fig6 = px.bar(f_plot, x='Score', y='Factor', orientation='h', title='<b>Main Causes</b>', color_discrete_sequence=['#e74c3c'], text_auto='.2f')
-st.plotly_chart(fig6, use_container_width=True)
-
-l_plot = data[langkah_cols].mean().sort_values(ascending=True).reset_index()
-l_plot.columns = ['Measure', 'Score']
-l_plot['Measure'] = l_plot['Measure'].str.replace('Langkah ', '')
-
-fig7 = px.bar(l_plot, x='Score', y='Measure', orientation='h', title='<b>Most Agreed Solutions</b>', color_discrete_sequence=['#2ecc71'], text_auto='.2f')
-st.plotly_chart(fig7, use_container_width=True)
+except Exception as e:
+    st.error(f"Gagal memuatkan data atau ralat analisis: {e}")

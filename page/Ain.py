@@ -1,5 +1,5 @@
 # =========================================================
-# Traffic Congestion Survey Analysis of Disagreement Likert Scale
+# Traffic Congestion Survey Analysis of Disagreement Likert Item
 # Enhanced Version — by Nurul Ain Maisarah Hamidin (2026)
 # =========================================================
 import streamlit as st
@@ -51,7 +51,49 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 
 # --- Streamlit Display Section ---
 
-st.title("Disagreement (Likert 1–2) responses regarding traffic-related factors, effects, and steps across Area Types ")
+st.markdown("""
+<style>
+    .center-title {
+        text-align: center; font-size: 2.2rem; font-weight: 800;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        margin-bottom: 0.2rem; letter-spacing: -1px;
+    }
+    .subtitle {
+        text-align: center; font-size: 1rem; color: #666;
+        font-family: 'Inter', sans-serif; letter-spacing: 1px; margin-bottom: 1rem;
+    }
+    .divider {
+        height: 3px; background: linear-gradient(90deg, transparent, #4facfe, #764ba2, transparent);
+        margin: 10px auto 30px auto; width: 80%; border-radius: 50%;
+    }
+    /* Unified Expander Style */
+    .stExpander {
+        background-color: #1E1E1E !important;
+        border: 2px solid #4facfe !important;
+        border-radius: 15px !important;
+        animation: glow 3s infinite;
+    }
+    @keyframes glow {
+        0% { box-shadow: 0 0 5px #4facfe; }
+        50% { box-shadow: 0 0 20px #00f2fe; }
+        100% { box-shadow: 0 0 5px #4facfe; }
+    }
+    .metric-card {
+        background: #ffffff; border-radius: 12px; padding: 15px;
+        text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-bottom: 4px solid #ddd; transition: 0.2s;
+    }
+    .metric-card:hover { transform: translateY(-3px); }
+</style>
+""", unsafe_allow_html=True)
+
+# --------------------
+# 3. Header Section
+# --------------------
+st.markdown('<div class="center-title">isagreement (Likert 1–2) responses across Area Types</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 # Option 1: Interactive Table (Allows sorting and resizing)
 st.dataframe(disagree_area_type_original, use_container_width=True)
@@ -125,213 +167,4 @@ with st.expander(
     )
 
     st.markdown("---")
-
-# ---------------------------------------------------------
-# MODULE 1: HEATMAP & OVERALL DISAGREEMENT
-# ---------------------------------------------------------
-# How respondents from all area type choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count.
-# --- Data Processing (Same as your logic) ---
-    
-heatmap_data_detailed = []
-
-# Define your categories (assumed to be pre-defined)
-# likert_cols, factor_cols, effect_cols, step_cols = [...] 
-
-for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
-    for col in likert_cols:
-        count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
-        count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
-        total_disagreement_count = count_sd + count_d
-
-        if total_disagreement_count > 0:
-            heatmap_data_detailed.append({
-                'Area Type': area,
-                'Likert Item': col,
-                'Total Disagreement Count': total_disagreement_count,
-                'Strongly Disagree (1)': count_sd,
-                'Disagree (2)': count_d,
-                'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step')
-            })
-
-heatmap_df_detailed = pd.DataFrame(heatmap_data_detailed)
-
-# Sorting and Pivoting
-item_order = (
-    heatmap_df_detailed[heatmap_df_detailed['Category']=='Factor']['Likert Item'].unique().tolist() +
-    heatmap_df_detailed[heatmap_df_detailed['Category']=='Effect']['Likert Item'].unique().tolist() +
-    heatmap_df_detailed[heatmap_df_detailed['Category']=='Step']['Likert Item'].unique().tolist()
-)
-heatmap_df_detailed['Likert Item'] = pd.Categorical(heatmap_df_detailed['Likert Item'], categories=item_order, ordered=True)
-
-heatmap_pivot_z = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
-heatmap_pivot_sd = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Strongly Disagree (1)').fillna(0)
-heatmap_pivot_d = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Disagree (2)').fillna(0)
-
-# Build CustomData Array
-customdata_array = []
-for likert_item in heatmap_pivot_z.index:
-    row_data = []
-    for area_type in heatmap_pivot_z.columns:
-        sd_val = heatmap_pivot_sd.loc[likert_item, area_type] if area_type in heatmap_pivot_sd.columns else 0
-        d_val = heatmap_pivot_d.loc[likert_item, area_type] if area_type in heatmap_pivot_d.columns else 0
-        row_data.append([sd_val, d_val])
-    customdata_array.append(row_data)
-
-customdata_array = np.array(customdata_array)
-
-# --- Create Plotly Figure ---
-
-fig = go.Figure(data=go.Heatmap(
-    z=heatmap_pivot_z.values,
-    x=heatmap_pivot_z.columns,
-    y=heatmap_pivot_z.index,
-    colorscale='YlGnBu',
-    text=heatmap_pivot_z.values,
-    texttemplate="%{text}",
-    showscale=True,
-    hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total Disagreement: %{z}<br>Strongly Disagree (1): %{customdata[0]}<br>Disagree (2): %{customdata[1]}<extra></extra>',
-    customdata=customdata_array
-))
-
-# Add grid lines
-for i in range(len(heatmap_pivot_z.index)+1):
-    fig.add_shape(type='line', x0=-0.5, x1=len(heatmap_pivot_z.columns)-0.5, y0=i-0.5, y1=i-0.5, line=dict(color='white', width=2))
-for j in range(len(heatmap_pivot_z.columns)+1):
-    fig.add_shape(type='line', y0=-0.5, y1=len(heatmap_pivot_z.index)-0.5, x0=j-0.5, x1=j-0.5, line=dict(color='white', width=2))
-
-fig.update_layout(
-    title="Disagreement Responses (1 & 2) Across Area Types on All Category",
-    xaxis_title="Area Type",
-    yaxis_title="Likert Scale Item",
-    template='plotly_white',
-    height=900
-)
-
-# --- Streamlit Display ---
-
-st.title("Disagreement Heatmap Analysis")
-st.plotly_chart(fig, use_container_width=True)
-# ---------------------------------------------------------
-# MODULE 2: BAR CHART ANALYSIS
-# ---------------------------------------------------------
-# 1. Prepare the Data
-data = {
-    'Likert Item': [
-        'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
-        'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
-        'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 'Late Drop-off/Pick-up Factor',
-        'Construction/Roadworks Factor', 'Narrow Road Factor', 'Unintended Road Accidents Effect',
-        'Time Wastage Effect', 'Pressure on Road Users Effect', 'Students Late to School Effect',
-        'Environmental Pollution Effect', 'Fuel Wastage Effect', 'Students Not Sharing Vehicles',
-        'Widening Road Step', 'Vehicle Sharing Step', 'Two Gates Step', 'Arrive Early Step',
-        'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step'
-    ],
-    'Rural areas': [
-        2.0, 2.0, 2.0, 2.0, 5.0, 6.0, 2.0, 2.0, 6.0, 2.0, 0.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0, 9.0, 1.0, 6.0, 1.0, 2.0, 1.0, 0.0, 0.0
-    ],
-    'Suburban areas': [
-        0.0, 2.0, 2.0, 1.0, 2.0, 1.0, 1.0, 0.0, 4.0, 1.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 1.0, 1.0, 6.0, 0.0, 2.0, 0.0, 1.0, 0.0, 0.0, 0.0
-    ],
-    'Urban areas': [
-        6.0, 6.0, 5.0, 6.0, 10.0, 14.0, 7.0, 7.0, 12.0, 7.0, 5.0, 9.0, 2.0,
-        1.0, 2.0, 1.0, 6.0, 18.0, 1.0, 6.0, 2.0, 2.0, 2.0, 2.0, 2.0
-    ],
-    'Total Disagreement Count': [
-        8.0, 10.0, 9.0, 9.0, 17.0, 21.0, 10.0, 9.0, 22.0, 10.0, 5.0, 11.0, 3.0,
-        2.0, 3.0, 3.0, 8.0, 33.0, 2.0, 14.0, 3.0, 5.0, 3.0, 2.0, 2.0
-    ]
-}
-disagreement_summary_df = pd.DataFrame(data)
-
-# 2. Sort the Data
-disagreement_summary_df_sorted = disagreement_summary_df.sort_values(
-    'Total Disagreement Count', ascending=True
-)
-
-# 3. Create Plotly Figure
-fig = px.bar(
-    disagreement_summary_df_sorted,
-    x='Total Disagreement Count',
-    y='Likert Item',
-    orientation='h',
-    title='Total Disagreement Counts (1 & 2) for Each Likert Item Across All Area Types',
-    labels={
-        'Total Disagreement Count': 'Total Number of Disagreement Responses',
-        'Likert Item': 'Likert Scale Item'
-    },
-    hover_data=['Rural areas', 'Suburban areas', 'Urban areas'], 
-    height=800,
-    color='Total Disagreement Count', # Optional: adds a color gradient
-    color_continuous_scale='Reds'      # Optional: highlights higher disagreement
-)
-
-fig.update_layout(yaxis={'categoryorder':'total ascending'})
-
-# --- Streamlit Display ---
-st.title("Disagreement horizontal bar chart Analysis")
-st.write("Most Disagreement Count (1 & 2) Across Area Types on All Category.")
-
-# Display the plot
-st.plotly_chart(fig, use_container_width=True)
-# ---------------------------------------------------------
-# MODULE 3: TABLE ANALYSIS
-# ---------------------------------------------------------
-heatmap_pivot = heatmap_pivot_z.copy()
-
-
-# 1. Calculate the total disagreement count (Same logic as yours)
-heatmap_pivot['Total Disagreement Count'] = heatmap_pivot[['Rural areas', 'Suburban areas', 'Urban areas']].sum(axis=1)
-
-# 2. Reset index to make 'Likert Item' a regular column
-summary_table_all_areas = heatmap_pivot.reset_index()
-
-# --- Streamlit Display Section ---
-
-st.header("Total Disagreement Summary")
-st.write("Counts of 'Strongly Disagree' (1) and 'Disagree' (2) for each Likert Item across all Area Types:")
-
-# Option 1: Interactive Dataframe (Allows sorting, searching, and filtering)
-st.dataframe(summary_table_all_areas, use_container_width=True, hide_index=True)
-
-# Option 2: Static Table (Use this if you want a non-interactive, print-style table)
-# st.table(summary_table_all_areas)
-
-# ---------------------------------------------------------
-# MODULE 4: INTERPRETATION AND ANALYSIS
-# ---------------------------------------------------------
-st.markdown("""
-## Interpretation and Analysis
-
-Overall, higher disagreement counts indicate that respondents perceive an item as less important, less relevant, or less effective in explaining or addressing traffic congestion.
-
-### FACTORS:
-The factor “Students Not Sharing Vehicles” recorded the highest
-Overall disagreement (33), with rural (9), suburban (6), and urban (18) areas contributing to this total. This shows strong rejection of behavioural explanations for traffic congestion,
-particularly in urban areas.
-
-### EFFECTS:
-The “Unintended Road Accidents Effect” showed a moderate level of disagreement (11), mainly from urban respondents (9). This
-indicates uncertainty about the direct cause-and-effect relationship between traffic congestion and road accidents.
-Respondents may associate congestion more with stress, delays, and near-miss situations rather than actual accidents.
-
-### STEPS:
-The “Vehicle Sharing Step” recorded notable disagreement (14), with similar contributions from rural (6) and urban (6) areas.
-This reflects resistance towards solutions that require personal or behavioural changes, such as sharing vehicles.
-
-### LOWEST DISAGREEMENT:
-In contrast, the “Narrow Road Factor” recorded one of the lowest disagreement counts (5), indicating strong agreement that road infrastructure limitations are a genuine cause of congestion.
-This suggests that respondents place greater trust in infrastructure-related factors than behavioural ones.
-
-### CONCLUSION:
-The most disagreed items by category are:
-- Factor: Students Not Sharing Vehicles (33)
-- Effect: Unintended Road Accidents Effect (11)
-- Step: Vehicle Sharing Step (14)
-- Lowest Disagreement: Narrow Road Factor (5)
-
-Overall, respondents across all area types tend to reject behaviour-based explanations and solutions, while showing stronger acceptance of structural and infrastructural causes
-of traffic congestion.
-""")
 

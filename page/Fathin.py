@@ -3,8 +3,12 @@ import plotly.express as px
 import streamlit as st
 import numpy as np
 
-# 1. Konfigurasi Halaman
-st.set_page_config(page_title="Analysis of Traffic Congestion", layout="wide")
+st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
+st.write(
+    """
+    This visual analysis reveals the main causes of congestion at schools through demographic and status comparisons. Through heatmaps and regression models, we can see how environmental factors influence traffic flow, helping to design more effective data-driven solutions.
+    """
+)
 
 # 2. URL Data
 DATA_URL = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data%20(Izzati).csv"
@@ -22,14 +26,6 @@ kesan_cols = [col for col in data.columns if col.startswith('Kesan')]
 langkah_cols = [col for col in data.columns if col.startswith('Langkah')]
 
 # --- BAHAGIAN 1: PURATA SKOR ---
-st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
-st.write(
-    """
-    This visual analysis reveals the main causes of congestion at schools through demographic and status comparisons. Through heatmaps and regression models, we can see how environmental factors influence traffic flow, helping to design more effective data-driven solutions.
-    """
-)
-
-
 factor_means = data[factor_cols].mean().sort_values(ascending=True).reset_index()
 factor_means.columns = ['Factor', 'Average Score']
 factor_means['Factor'] = factor_means['Factor'].str.replace('Faktor ', '')

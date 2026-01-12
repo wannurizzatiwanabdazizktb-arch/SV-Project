@@ -120,4 +120,26 @@ with st.expander("📊 Disagreement across Area Type", expanded=True):
     )
 
     st.caption("💡 *Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
+
+
+
+st.markdown("### 📊 Survey Overview")
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Total Disagreement", "191",  help="Number of respondents who participated in the survey. Shows the sample size for all visualizations.", 
+    border=True)
+col2.metric("Total Strongly Disagreement (1)", "82", help="Rural Areas : 29
+Suburban Areas: 7
+Urban Areas : 57", 
+    border=True)
+col3.metric("Total Disagreement (2)", "109", help="Rural Areas : 26
+Suburban Areas: 13
+Urban Areas : 83", 
+    border=True)
+col4.metric("Most Disagreemeny Item", "22", help="Late Drop-off/Pick-up Factor
+Rural Areas : 6
+Suburban Areas: 4
+Urban Areas : 12", 
+    border=True)
     

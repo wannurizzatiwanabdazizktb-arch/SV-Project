@@ -101,28 +101,23 @@ for col in likert_cols:
 # Create the DataFrame, fill missing values with 0, and convert to integer
 disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int)
 
-# ---------------------------------------------------------
-# 5. DATA DISPLAY: PROFESSIONAL DESIGN (Streamlit Version)
-# ---------------------------------------------------------
-with st.expander("Before Outlier Disagreement Table", expanded=True):
-    st.markdown("### Disagreement across Area Type")
-
-    # Apply professional styling to the DataFrame
-    # 1. Background gradient (Heatmap) to identify high values quickly
-    # 2. Highlight the maximum value in each column
-    # 3. Format with thousand separators
+# --------------------
+# 5. DATA DISPLAY 
+# --------------------
+with st.expander("📊 Disagreement across Area Type", expanded=True):
+    # Professional styling
     styled_df = disagree_area_type_original.style \
         .background_gradient(cmap='YlGnBu', axis=0) \
         .highlight_max(axis=0, color='#FFD700') \
         .format("{:,}")
 
-    # Display using Streamlit's native dataframe component
-    # This replaces display(HTML(...)) and provides a much better UI
+    # FIXED: Reduced height and set container width
+    # 150-180 height is perfect for a 3-row table
     st.dataframe(
         styled_df, 
         use_container_width=True, 
-        height=500
+        height=170 
     )
 
-    st.caption("💡 Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
+    st.caption("💡 *Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
     

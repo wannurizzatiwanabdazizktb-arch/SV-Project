@@ -13,8 +13,7 @@ st.set_page_config(
     page_title="Traffic Congestion Survey Analysis",
     page_icon="📊",
     layout="wide"
-)
-
+    
 # 2. LOAD DATA
 @st.cache_data
 def load_data():

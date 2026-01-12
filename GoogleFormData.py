@@ -7,7 +7,7 @@ st.set_page_config(
 
 # Define pages (MAKE SURE PATH IS CORRECT)
 page1 = st.Page(
-    "page/Disagreement_Traffic.py",
+    "page/Ain.py",
     title="Disagreement Traffic Congestion Survey",
     icon="📊"
 )

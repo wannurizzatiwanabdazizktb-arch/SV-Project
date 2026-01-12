@@ -21,11 +21,11 @@ try:
     # --- DATA PREPARATION ---
     # Case-insensitive column search to avoid 'NoneType' errors if spelling differs
     factor_cols = [col for col in data.columns if 'factor' in col.lower()]
-    kesan_cols = [col for col in data.columns if 'effect' in col.lower()]
+    kesan_cols = [col for col in data.columns if 'impact' in col.lower()]
 
     # Safety check: If columns aren't found, stop and alert the user
     if not factor_cols or not kesan_cols:
-        st.error("⚠️ Error: Could not find columns containing 'Factor' or 'Effect'.")
+        st.error("⚠️ Error: Could not find columns containing 'Factor' or 'impact'.")
         st.write("Available columns in your CSV:", list(data.columns))
         st.stop()
 

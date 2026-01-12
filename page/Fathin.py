@@ -33,8 +33,7 @@ try:
     st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
     st.write(
         """
-        This visual analysis reveals the main causes of congestion through demographic comparisons. 
-        Through heatmaps and regression models, we can see how environmental factors influence traffic flow.
+        This visual is to analyze the relationship between the factors causing traffic congestion and its impact on road users, as well as evaluate the effectiveness of the proposed intervention measures by taking into account the influence of the demographic profile of the respondents and differences in area categories at the study location.
         """
     )
     

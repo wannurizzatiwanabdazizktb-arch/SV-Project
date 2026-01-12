@@ -86,23 +86,44 @@ st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 5. DATA DISPLAY (PROFESSIONAL DESIGN)
+# DATA PROCESSING: Disagreement Counts by Area Type
+# ---------------------------------------------------------
+# This logic creates the DataFrame based on Likert values 1 and 2
+result_original = {}
+
+for col in likert_cols:
+    result_original[col] = (
+        merged_df[merged_df[col].isin([1, 2])]
+        .groupby('Area Type')[col]
+        .count()
+    )
+
+# Create the DataFrame, fill missing values with 0, and convert to integer
+disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int)
+
+# ---------------------------------------------------------
+# 5. DATA DISPLAY: PROFESSIONAL DESIGN (Streamlit Version)
 # ---------------------------------------------------------
 with st.expander("📊 Before Outlier Disagreement Table", expanded=True):
     st.markdown("### Interactive Disagreement Matrix")
-    st.write("This table shows the count of 'Strongly Disagree' and 'Disagree' responses across different area types.")
+    st.info("Count of 'Strongly Disagree' (1) and 'Disagree' (2) responses by Area Type.")
 
     # Apply professional styling to the DataFrame
     # 1. Background gradient (Heatmap) to identify high values quickly
     # 2. Highlight the maximum value in each column
-    # 3. Use a cleaner font/color scheme
+    # 3. Format with thousand separators
     styled_df = disagree_area_type_original.style \
         .background_gradient(cmap='YlGnBu', axis=0) \
-        .highlight_max(axis=0, color='#ffcc00') \
-        .format("{:,}") # Adds thousand separators if needed
+        .highlight_max(axis=0, color='#FFD700') \
+        .format("{:,}")
 
-    # Display the styled table in Streamlit
-    st.dataframe(styled_df, use_container_width=True, height=500)
+    # Display using Streamlit's native dataframe component
+    # This replaces display(HTML(...)) and provides a much better UI
+    st.dataframe(
+        styled_df, 
+        use_container_width=True, 
+        height=500
+    )
 
     st.caption("💡 *Tip: Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
     

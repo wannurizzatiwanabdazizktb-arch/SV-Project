@@ -8,7 +8,7 @@ st.set_page_config(page_title="Analysis of Traffic Congestion", layout="wide")
 
 # 2. URL Data
 # Menggunakan URL raw GitHub yang anda berikan
-DATA_URL = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/cleaned_data%20(Izzati).csv"
+DATA_URL = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/project_dataSV(Fatin).csv"
 
 @st.cache_data
 def load_data():

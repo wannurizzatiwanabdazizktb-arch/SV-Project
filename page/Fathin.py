@@ -11,8 +11,8 @@ DATA_URL = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv(DATA_URL)
-    return df
+    df = pd.read_csv(DATA_URL)
+    return df
 
 data = load_data()
 
@@ -24,9 +24,9 @@ langkah_cols = [col for col in data.columns if col.startswith('Langkah')]
 # --- BAHAGIAN 1: PURATA SKOR ---
 st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
 st.write(
-    """
-    This visual analysis reveals the main causes of congestion at schools through demographic and status comparisons. Through heatmaps and regression models, we can see how environmental factors influence traffic flow, helping to design more effective data-driven solutions.
-    """
+    """
+    This visual analysis reveals the main causes of congestion at schools through demographic and status comparisons. Through heatmaps and regression models, we can see how environmental factors influence traffic flow, helping to design more effective data-driven solutions.
+    """
 )
 
 
@@ -35,9 +35,9 @@ factor_means.columns = ['Factor', 'Average Score']
 factor_means['Factor'] = factor_means['Factor'].str.replace('Faktor ', '')
 
 fig1 = px.bar(
-    factor_means, x='Average Score', y='Factor', orientation='h',
-    title='<b>1. Average Factor Scores (Overall)</b>',
-    color='Average Score', color_continuous_scale='Viridis', text_auto='.2f'
+    factor_means, x='Average Score', y='Factor', orientation='h',
+    title='<b>1. Average Factor Scores (Overall)</b>',
+    color='Average Score', color_continuous_scale='Viridis', text_auto='.2f'
 )
 st.plotly_chart(fig1, use_container_width=True)
 
@@ -51,9 +51,9 @@ melted_data['Factor'] = melted_data['Factor'].str.replace('Faktor ', '')
 comparison_data = melted_data.groupby(['Jenis Kawasan', 'Factor'])['Average Score'].mean().reset_index()
 
 fig2 = px.bar(
-    comparison_data, x='Average Score', y='Factor', color='Jenis Kawasan',
-    barmode='group', orientation='h', title='<b>2. Comparison: Urban vs. Rural Areas</b>',
-    text_auto='.2f'
+    comparison_data, x='Average Score', y='Factor', color='Jenis Kawasan',
+    barmode='group', orientation='h', title='<b>2. Comparison: Urban vs. Rural Areas</b>',
+    text_auto='.2f'
 )
 fig2.update_layout(height=700)
 st.plotly_chart(fig2, use_container_width=True)
@@ -67,8 +67,8 @@ heatmap_df = data.groupby('Status')[factor_cols].mean()
 heatmap_df.columns = [col.replace('Faktor ', '') for col in heatmap_df.columns]
 
 fig3 = px.imshow(
-    heatmap_df, color_continuous_scale='YlGnBu',
-    title='<b>3. Heatmap: Factors by Status</b>', text_auto=".2f", aspect="auto"
+    heatmap_df, color_continuous_scale='YlGnBu',
+    title='<b>3. Heatmap: Factors by Status</b>', text_auto=".2f", aspect="auto"
 )
 st.plotly_chart(fig3, use_container_width=True)
 
@@ -79,15 +79,15 @@ st.subheader("🔗 Relationship Analysis")
 
 c1, c2 = st.columns(2)
 with c1:
-    f_select = st.selectbox("Select Factor (X):", factor_cols)
+    f_select = st.selectbox("Select Factor (X):", factor_cols)
 with c2:
-    k_select = st.selectbox("Select Impact (Y):", kesan_cols)
+    k_select = st.selectbox("Select Impact (Y):", kesan_cols)
 
 # Nota: trendline="ols" memerlukan 'statsmodels' dipasang
 fig5 = px.scatter(
-    data, x=f_select, y=k_select, trendline="ols", 
-    trendline_color_override="red", opacity=0.5,
-    title=f"Regression: {f_select.replace('Faktor ','')} vs {k_select.replace('Kesan ','')}"
+    data, x=f_select, y=k_select, trendline="ols", 
+    trendline_color_override="red", opacity=0.5,
+    title=f"Regression: {f_select.replace('Faktor ','')} vs {k_select.replace('Kesan ','')}"
 )
 st.plotly_chart(fig5, use_container_width=True)
 

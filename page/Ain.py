@@ -266,24 +266,28 @@ st.markdown("""
 # ---------------------------------------------------------
 # 4. SINGLE COMBINED EXPANDER
 # ---------------------------------------------------------
-with st.expander("Heatmap, Horizontal Bar Chart", expanded=False):
+with st.expander("📊 Heatmap & Regional Trend Analysis", expanded=False):
+    
+    # --- DATA CLEANING (Global for this expander) ---
+    # Filter out "Students Not Sharing Vehicle" as requested
+    filtered_heatmap_df = heatmap_df[heatmap_df['Likert Item'] != 'Students Not Sharing Vehicles'].copy()
     
     # --- PART A: HEATMAP ---
-    st.subheader("1. Disagreement Distribution Heatmap")
+    st.markdown('<div class="matrix-title">Area-Wise Disagreement Heatmap</div>', unsafe_allow_html=True)
     
-    pivot_z = heatmap_df.pivot(index='Likert Item', columns='Area Type', values='Total').fillna(0)
-    pivot_sd = heatmap_df.pivot(index='Likert Item', columns='Area Type', values='SD').fillna(0)
-    pivot_d = heatmap_df.pivot(index='Likert Item', columns='Area Type', values='D').fillna(0)
+    pivot_z = filtered_heatmap_df.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement').fillna(0)
+    pivot_sd = filtered_heatmap_df.pivot(index='Likert Item', columns='Area Type', values='Strongly Disagree(1)').fillna(0)
+    pivot_d = filtered_heatmap_df.pivot(index='Likert Item', columns='Area Type', values='Disagree (2)').fillna(0)
     
-    customdata = np.stack([pivot_sd.values, pivot_d.values], axis=-1)
+    customdata_heat = np.stack([pivot_sd.values, pivot_d.values], axis=-1)
 
     fig_heat = go.Figure(data=go.Heatmap(
         z=pivot_z.values, x=pivot_z.columns, y=pivot_z.index,
         colorscale='YlGnBu', text=pivot_z.values, texttemplate="%{text}",
-        customdata=customdata,
+        customdata=customdata_heat,
         hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total: %{z}<br>SD (1): %{customdata[0]}<br>D (2): %{customdata[1]}<extra></extra>'
     ))
-    fig_heat.update_layout(height=700, margin=dict(t=30, b=30))
+    fig_heat.update_layout(height=700, margin=dict(t=30, b=30), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig_heat, use_container_width=True)
 
     st.divider()
@@ -292,43 +296,62 @@ with st.expander("Heatmap, Horizontal Bar Chart", expanded=False):
     col1, col2 = st.columns([1.2, 1])
     
     with col1:
-        st.subheader("2. Overall Rankings")
-        # Filter for the bar chart
-        bar_data = heatmap_df.groupby('Likert Item').agg({'Total': 'sum'}).reset_index()
-        bar_data = bar_data[bar_data['Likert Item'] != 'Students Not Sharing Vehicles']
-        bar_data = bar_data.sort_values('Total', ascending=True)
+        st.markdown('<div class="matrix-title">Overall Disagreement Trends</div>', unsafe_allow_html=True)
+        
+        # Prepare bar data with area breakdown for the hover info
+        bar_data = filtered_heatmap_df.pivot_table(
+            index='Likert Item', 
+            columns='Area Type', 
+            values='Total Disagreement', 
+            aggfunc='sum'
+        ).fillna(0).reset_index()
+        
+        # Add a Total column for sorting and the X-axis
+        area_cols = ['Rural', 'Suburban', 'Urban']
+        # Check which columns exist to prevent errors
+        existing_areas = [c for c in area_cols if c in bar_data.columns]
+        bar_data['Grand Total'] = bar_data[existing_areas].sum(axis=1)
+        bar_data = bar_data.sort_values('Grand Total', ascending=True)
 
-        fig_bar = px.bar(bar_data, x='Total', y='Likert Item', orientation='h',
-                         color='Total', color_continuous_scale='Viridis', height=600)
-        fig_bar.update_layout(showlegend=False, margin=dict(l=200))
+        # Create interactive bar chart
+        fig_bar = px.bar(
+            bar_data, x='Grand Total', y='Likert Item', orientation='h',
+            color='Grand Total', color_continuous_scale='Viridis',
+            hover_data={
+                'Grand Total': True,
+                'Rural': ':,',
+                'Suburban': ':,',
+                'Urban': ':,',
+                'Likert Item': True
+            },
+            height=600
+        )
+        fig_bar.update_layout(showlegend=False, margin=dict(l=200), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         st.plotly_chart(fig_bar, use_container_width=True)
 
     with col2:
-        st.subheader("3. Key Insights Table")
-        # Generate summary logic
-        summary_rows = []
-        # Add Special Item
-        summary_rows.append(heatmap_df[heatmap_df['Category'] == 'Special'].groupby('Likert Item').sum(numeric_only=True).reset_index())
+        st.markdown('<div class="matrix-title">Key Insights Table</div>', unsafe_allow_html=True)
         
-        # Add Top/Bottom per Category
-        for cat in ['Factor', 'Effect', 'Step']:
-            cat_data = heatmap_df[heatmap_df['Category'] == cat].groupby('Likert Item').sum(numeric_only=True).reset_index()
-            if not cat_data.empty:
-                cat_sorted = cat_data.sort_values('Total', ascending=False)
-                summary_rows.append(cat_sorted.iloc[[0]])  # Most Disagreed
-                if len(cat_sorted) > 1:
-                    summary_rows.append(cat_sorted.iloc[[-1]]) # Least Disagreed
+        # Prepare the pivot for the table (Likert Item vs Area Type)
+        # Filtered_heatmap_df already excludes 'Students Not Sharing Vehicle'
+        table_pivot = filtered_heatmap_df.pivot_table(
+            index='Likert Item', 
+            columns='Area Type', 
+            values='Total Disagreement', 
+            aggfunc='sum'
+        ).fillna(0).reset_index()
         
-        final_table = pd.concat(summary_rows).rename(columns={
-            'Total': 'Count', 'SD': 'Total SD', 'D': 'Total D'
-        })
+        # Reorder columns for better flow
+        cols_to_show = ['Likert Item'] + existing_areas
         
-        st.write("Summary of Most and Least Disagreed Items:")
-        st.dataframe(final_table[['Likert Item', 'Count', 'Total SD', 'Total D']], 
-                     use_container_width=True, hide_index=True)
+        st.write("Distribution of total disagreement counts across regions:")
+        st.dataframe(
+            table_pivot[cols_to_show], 
+            use_container_width=True, 
+            hide_index=True
+        )
 
-st.info("The heatmap shows area-specific counts, while the bar chart highlights overall trends excluding outliers.")
-
+st.info("Visualizations now exclude 'Students Not Sharing Vehicle'. Hover over the bar chart to see regional breakdowns (Rural/Suburban/Urban).")
 # ---------------------------------------------------------
 # 5. CATEGORY ANALYSIS (Stacked Chart & Category Table)
 # ---------------------------------------------------------

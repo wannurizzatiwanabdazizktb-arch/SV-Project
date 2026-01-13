@@ -16,6 +16,26 @@ st.set_page_config(
 # ---------------------------------------------------------
 # 2. DATA LOADING & PROCESSING FUNCTIONS
 # ---------------------------------------------------------
+factor_cols = [
+    'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
+    'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
+    'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 
+    'Late Drop-off/Pick-up Factor', 'Construction/Roadworks Factor', 'Narrow Road Factor'
+]
+
+effect_cols = [
+    'Unintended Road Accidents Effect', 'Time Wastage Effect', 'Pressure on Road Users Effect', 
+    'Students Late to School Effect', 'Environmental Pollution Effect', 'Fuel Wastage Effect'
+]
+
+step_cols = [
+    'Widening Road Step', 'Vehicle Sharing Step', 'Two Gates Step', 'Arrive Early Step',
+    'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step'
+]
+
+# Combine all lists into one for the loop
+all_likert_cols = factor_cols + effect_cols + step_cols
+
 @st.cache_data
 def load_and_process_data():
     try:
@@ -264,10 +284,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 4. SINGLE COMBINED EXPANDER
+# HEATMAP & HORIZONTAL BAR CHART WITH TABLE
 # ---------------------------------------------------------
-# --- 0. DEFINE COLUMN GROUPS (Update these with your actual column names) ---
-# Replace these placeholder names with the exact names of your Likert columns
 factor_cols = [
     'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
     'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
@@ -288,10 +306,7 @@ step_cols = [
 # Combine all lists into one for the loop
 all_likert_cols = factor_cols + effect_cols + step_cols
 
-# --- 1. DATA PREPARATION (Internal Logic) ---
-# Assuming all_likert_cols, factor_cols, effect_cols, step_cols, and merged_df are defined previously
-
-with st.expander("Heatmap, Horizontal Bar Chart & Insights", expanded=True):
+with st.expander("Heatmap, Horizontal Bar Chart & Insights", expanded=False):
     
     # --- PART A: HEATMAP DATA PROCESSING ---
     heatmap_data_detailed = []

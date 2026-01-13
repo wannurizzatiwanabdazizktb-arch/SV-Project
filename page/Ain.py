@@ -94,13 +94,13 @@ st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 # ---------------------------------------------------------
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------
+with st.expander("🔍 View Key Disagreement Insights", expanded=True):
 st.subheader("Disagreement Count Matrix")
 st.dataframe(disagree_area_type_original, use_container_width=True)
 
 # ---------------------------------------------------------
 # 6. KPI METRICS & INSIGHTS
 # ---------------------------------------------------------
-with st.expander("🔍 View Key Disagreement Insights", expanded=True):
     st.write("### Analysis Summary")
     st.info("Analysis of how respondents across all area types selected 'Strongly Disagree' and 'Disagree'.")
 

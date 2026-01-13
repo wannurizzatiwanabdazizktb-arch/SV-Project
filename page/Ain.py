@@ -682,43 +682,41 @@ st.info("""
 It allows us to see how 'Factor', 'Effect', and 'Step' intensity differs across the two Likert levels (1 vs 2) in a single view.
 """)
 
-# 1. Strongly Disagree Section (Blue Background)
+# 1. Strongly Disagree Section (Soft Blue Background)
 st.markdown("""
 <div style="background-color:#EBF5FB; padding:20px; border-radius:10px; border-left: 5px solid #2E86C1; margin-bottom: 20px;">
     <h4 style="color:#2E86C1; margin-top:0;">💠 Analysis of Strongly Disagree (1)</h4>
     <p>It is clear from the data visualization that Strongly Disagree (1) responses are more visible, expressing sharp rejection of alleged congestion factors.</p>
     <ul style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 10px;"><strong>What</strong> : Lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5).</li>
+        <li style="margin-bottom: 5px;"><strong>What</strong> : Lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5).</li>
         <li style="margin-bottom: 10px;"><strong>Why</strong> : Meaning rural residents do not believe school-related activities significantly contribute to congestion.</li>
-        <hr style="border: 0.5px solid #AED6F1;">
-        <li style="margin-bottom: 10px;"><strong>What</strong> : Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>.</li>
+        <hr style="border: 0.5px solid #AED6F1; margin: 15px 0;">
+        <li style="margin-bottom: 5px;"><strong>What</strong> : Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>.</li>
         <li><strong>Why</strong> : Rural respondents are likely unconvinced of a strong link between traffic and pollution because vehicular flow in their areas is much smoother than in urban settings.</li>
     </ul>
 </div>
 """, unsafe_allow_html=True)
 
-# 2. Disagree Section (Green Background)
+# 2. Disagree Section (Soft Green Background)
 st.markdown("""
 <div style="background-color:#EAFAF1; padding:20px; border-radius:10px; border-left: 5px solid #27AE60;">
     <h4 style="color:#27AE60; margin-top:0;">💹 Analysis of Disagree (2)</h4>
     <p>Responses under "Disagree (2)" are less common but reveal slight skepticism.</p>
     <ul style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 10px;"><strong>What</strong> : The <strong>“Increasing Population Factor” (2)</strong> received the maximum number of disagreements in this category.</li>
+        <li style="margin-bottom: 5px;"><strong>What</strong> : The <strong>“Increasing Population Factor” (2)</strong> received the maximum number of disagreements in this category.</li>
         <li style="margin-bottom: 10px;"><strong>Why</strong> : While rural residents acknowledge population growth, they do not rate it as a serious cause of traffic problems.</li>
-        <hr style="border: 0.5px solid #ABEBC6;">
-        <li style="margin-bottom: 10px;"><strong>What</strong> : Similarly, the rejection of <strong>“Students Late to School Effect” (1)</strong> confirms that rural life is not closely related to urban traffic pressures.</li>
+        <hr style="border: 0.5px solid #ABEBC6; margin: 15px 0;">
+        <li style="margin-bottom: 5px;"><strong>What</strong> : Similarly, the rejection of <strong>“Students Late to School Effect” (1)</strong> confirms that rural life is not closely related to urban traffic pressures.</li>
         <li><strong>Why</strong> : Rural areas typically have less centralized congestion, meaning travel times for students are more predictable than in cities.</li>
     </ul>
 </div>
 """, unsafe_allow_html=True)
 
-        # Conclusion for Rural Section
-        st.success("""
-        **Summary of Rural Perspective:** Rural respondents tend to lean further toward **Strongly Disagree (1)** than to "Disagree (2)," especially regarding behavioral variables. Ambiguity exists where responses for both levels are equal, likely due to varying local road scenarios, but the overall trend shows a firm rejection of urban-centric traffic assumptions.
-        """)
+# 3. Conclusion for Rural Section
 
-    else:
-        st.write("No disagreement data found for Rural areas.")
+st.success("""
+**Summary of Rural Perspective:** Rural respondents tend to lean further toward **Strongly Disagree (1)** than to "Disagree (2)," especially regarding behavioral variables. Ambiguity exists where responses for both levels are equal, likely due to varying local road scenarios, but the overall trend shows a firm rejection of urban-centric traffic assumptions.
+""")
 # --------------------------------------------        
 # GROUP HORIZONTAL BAR CHART [URBAN SD VS D]
 # --------------------------------------------

@@ -8,6 +8,7 @@ sns.set(style="whitegrid")
 
 @st.cache_data
 def load_data():
+    # This must match the file name in your repo
     df = pd.read_csv("traffic_survey.csv")
     if "Unnamed: 0" in df.columns:
         df = df.drop(columns=["Unnamed: 0"])

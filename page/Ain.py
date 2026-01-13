@@ -104,42 +104,53 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 # --------------------
 # 5. DATA DISPLAY 
 # --------------------
-with st.expander("📊 Disagreement across Area Type", expanded=True):
-    # Professional styling
-    styled_df = disagree_area_type_original.style \
-        .background_gradient(cmap='YlGnBu', axis=0) \
-        .highlight_max(axis=0, color='#FFD700') \
-        .format("{:,}")
+with st.expander("Disagreement Count Across Area Type", expanded=True):
+    # We remove the .style logic for a "simple" table, 
+    # but keep basic formatting if you wish.
+    st.table(disagree_area_type_original)
+    
+    st.caption("This table shows the raw distribution of disagreement across different area type without handling outlier.")
 
-    # FIXED: Reduced height and set container width
-    # 150-180 height is perfect for a 3-row table
-    st.dataframe(
-        styled_df, 
-        use_container_width=True, 
-        height=170 
-    )
-
-    st.caption("💡 *Darker blue cells indicate higher levels of disagreement. Yellow highlights show the highest item per area.*")
-
-
-
+# --------------------
+# 6. Summary Box
+# --------------------
+# --- 1. HEADER & METRICS ---
+st.title("Survey Analysis Dashboard")
 st.markdown("### 📊 Survey Overview")
 
+# Metrics provide an immediate summary of the data
 col1, col2, col3, col4 = st.columns(4)
 
-col1.metric("Total Disagreement", "191",  help="Number of respondents who participated in the survey. Shows the sample size for all visualizations.", 
-    border=True)
-col2.metric("Total Strongly Disagreement (1)", "82", help="Rural Areas : 29
-Suburban Areas: 7
-Urban Areas : 57", 
-    border=True)
-col3.metric("Total Disagreement (2)", "109", help="Rural Areas : 26
-Suburban Areas: 13
-Urban Areas : 83", 
-    border=True)
-col4.metric("Most Disagreemeny Item", "22", help="Late Drop-off/Pick-up Factor
-Rural Areas : 6
-Suburban Areas: 4
-Urban Areas : 12", 
-    border=True)
-    
+with col1:
+    st.metric(
+        label="Total Disagreement", 
+        value="191", 
+        help="Total sample size across all categories.",
+        border=True
+    )
+
+with col2:
+    st.metric(
+        label="Strongly Disagree (1)", 
+        value="82", 
+        help="Rural: 29 | Suburban: 7 | Urban: 57", 
+        border=True
+    )
+
+with col3:
+    st.metric(
+        label="Disagree (2)", 
+        value="109", 
+        help="Rural: 26 | Suburban: 13 | Urban: 83", 
+        border=True
+    )
+
+with col4:
+    st.metric(
+        label="Top Item Count", 
+        value="22", 
+        help="Late Drop-off/Pick-up Factor. Rural: 6 | Suburban: 4 | Urban: 12", 
+        border=True
+    )
+
+st.divider() # Visual separator

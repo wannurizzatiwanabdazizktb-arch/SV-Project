@@ -482,3 +482,79 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         st.dataframe(table_df, use_container_width=True, hide_index=True)
     else:
         st.warning("No disagreement data found for Urban areas.")
+
+# ---------------------------------------------------------
+# 8. SUBURBAN RESPONDENTS ANALYSIS (Radar Chart & Table)
+# ---------------------------------------------------------
+
+with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expanded=False):
+    
+    # Filter for Suburban respondents
+    suburban_df = merged_df[merged_df['Area Type'] == 'Suburban areas']
+
+    # Prepare disagreement data
+    sub_dis_data = []
+    for col in likert_cols:
+        # Skip 'Students Not Sharing Vehicles' per your logic
+        if col == 'Students Not Sharing Vehicles':
+            continue
+            
+        if col in suburban_df.columns:
+            count_sd = (suburban_df[col] == 1).sum()
+            count_d  = (suburban_df[col] == 2).sum()
+            
+            if count_sd > 0 or count_d > 0:
+                sub_dis_data.append({
+                    'Likert Item': col,
+                    'Category': classify_item(col),
+                    'Strongly Disagree (1)': count_sd,
+                    'Disagree (2)': count_d
+                })
+
+    df_suburban = pd.DataFrame(sub_dis_data)
+
+    if not df_suburban.empty:
+        # --- PART A: RADAR CHART ---
+        st.subheader("1. Suburban Disagreement Radar Profile")
+        st.write("_Excluding 'Students Not Sharing Vehicles'_")
+        
+        # Melt data for radar chart compatibility
+        sub_melted = df_suburban.melt(
+            id_vars=['Likert Item','Category'],
+            value_vars=['Strongly Disagree (1)','Disagree (2)'],
+            var_name='Disagreement Type',
+            value_name='Count'
+        )
+
+        # Create radar chart
+        fig_radar = px.line_polar(
+            sub_melted,
+            r='Count',
+            theta='Likert Item',
+            color='Disagreement Type',
+            line_close=True,
+            markers=True,
+            color_discrete_map={'Strongly Disagree (1)':'#1f77b4','Disagree (2)':'#28a745'},
+            template='plotly_white'
+        )
+
+        fig_radar.update_layout(
+            polar=dict(
+                radialaxis=dict(title='Responses', visible=True, tickfont_size=10),
+                angularaxis=dict(tickfont_size=9)
+            ),
+            height=800,
+            margin=dict(t=50, b=50)
+        )
+
+        st.plotly_chart(fig_radar, use_container_width=True)
+
+        st.divider()
+
+        # --- PART B: SUMMARY TABLE ---
+        st.subheader("2. Suburban Disagreement Summary Table")
+        
+        sub_summary = df_suburban[['Likert Item', 'Category', 'Strongly Disagree (1)', 'Disagree (2)']]
+        st.dataframe(sub_summary, use_container_width=True, hide_index=True)
+    else:
+        st.info("No disagreement data found for Suburban areas (excluding outliers).")

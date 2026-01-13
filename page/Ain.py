@@ -890,7 +890,11 @@ st.caption("Streamlit Dashboard created for Traffic Congestion Survey Analysis �
 # ---------------------------------------------------------
 # 8. SUBURBAN RESPONDENTS ANALYSIS (Radar Chart & Table)
 # ---------------------------------------------------------
+import streamlit as st
+import pandas as pd
+import plotly.express as px
 
+# --- SUBURBAN EXPANDER ---
 with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expanded=False):
     
     # Filter for Suburban respondents
@@ -898,8 +902,8 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
 
     # Prepare disagreement data
     sub_dis_data = []
-    for col in likert_cols:
-        # Skip 'Students Not Sharing Vehicles' per your logic
+    for col in all_likert_cols:
+        # Maintaining your logic to skip specific outliers if necessary
         if col == 'Students Not Sharing Vehicles':
             continue
             
@@ -918,9 +922,16 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
     df_suburban = pd.DataFrame(sub_dis_data)
 
     if not df_suburban.empty:
-        # --- PART A: RADAR CHART ---
-        st.subheader("1. Suburban Disagreement Radar Profile")
-        st.write("_Excluding 'Students Not Sharing Vehicles'_")
+        # --- OBJECTIVE SECTION ---
+        st.markdown("### **Objective**")
+        st.write("""
+        Analyze how the majority of suburban respondents clearly reject specific survey propositions. 
+        This section focuses on the rate of rejection by comparing **Strongly Disagree (1)** and **Disagree (2)** to identify the unique pain points and skepticism inherent in suburban commuting.
+        """)
+        st.divider()
+
+        # --- PART A: RADAR CHART (Dark Theme) ---
+        st.subheader("1. Disagreement Responses (1 vs 2) among Suburban Respondents")
         
         # Melt data for radar chart compatibility
         sub_melted = df_suburban.melt(
@@ -930,7 +941,6 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
             value_name='Count'
         )
 
-        # Create radar chart
         fig_radar = px.line_polar(
             sub_melted,
             r='Count',
@@ -938,7 +948,8 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
             color='Disagreement Type',
             line_close=True,
             markers=True,
-            color_discrete_map={'Strongly Disagree (1)':'#1f77b4','Disagree (2)':'#28a745'},
+            # Consistent Dark Theme: Dark Blue for SD, Dark Green for D
+            color_discrete_map={'Strongly Disagree (1)':'#1B4F72','Disagree (2)':'#145A32'},
             template='plotly_white'
         )
 
@@ -947,8 +958,8 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
                 radialaxis=dict(title='Responses', visible=True, tickfont_size=10),
                 angularaxis=dict(tickfont_size=9)
             ),
-            height=800,
-            margin=dict(t=50, b=50)
+            height=600,
+            margin=dict(t=80, b=50)
         )
 
         st.plotly_chart(fig_radar, use_container_width=True)
@@ -957,8 +968,47 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
 
         # --- PART B: SUMMARY TABLE ---
         st.subheader("2. Suburban Disagreement Summary Table")
+        st.dataframe(df_suburban[['Likert Item', 'Category', 'Strongly Disagree (1)', 'Disagree (2)']], 
+                     use_container_width=True, hide_index=True)
+
+        st.divider()
+
+        # --- PART C: LONG ACADEMIC INTERPRETATION ---
+        st.subheader("📝 Deep-Dive Interpretation")
+
+        st.write("""
+        **Why Use a Radar Chart?** A radar chart (or spider chart) is selected for the suburban analysis to visualize the 
+        "Disagreement Profile" or "Shape of Rejection." It allows us to see which specific survey dimensions are pulling 
+        the most weight, identifying whether the disagreement is balanced or skewed toward specific items.
+        """)
+
+        # Analysis of Strongly Disagree (1)
+        st.markdown("""
+        #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**Analysis of Strongly Disagree (1) Rejection**</span>
+        """, unsafe_allow_html=True)
+        st.write("""
+        Within the **"Strongly Disagree (1)"** category, the item **"Vehicle Sharing Step" (2)** stands out with the greatest number of strong rejections. This data clearly demonstrates that suburban respondents strongly dislike car-sharing as a proposed solution to alleviate traffic problems. 
         
-        sub_summary = df_suburban[['Likert Item', 'Category', 'Strongly Disagree (1)', 'Disagree (2)']]
-        st.dataframe(sub_summary, use_container_width=True, hide_index=True)
+        This resistance likely stems from the unique nature of suburban life, where personal vehicle autonomy is highly valued. Concerns regarding personal comfort, flexibility, and the time constraints of shared transit make car-pooling steps culturally and practically unappealing to this demographic.
+        """)
+
+        # Analysis of Disagree (2)
+        st.markdown("""
+        #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2) Skepticism**</span>
+        """, unsafe_allow_html=True)
+        st.write("""
+        The **“Disagree (2)”** responses, such as for the **“Late Drop-off/Pick-up Factor” (3)**, represent the highest volume of disagreement in this area. This pattern suggests that while suburban participants may not feel the need to "outright deny" these factors, they do not consider them to be major or relevant causes of traffic congestion in their specific neighborhoods.
+        
+        The Disagree (2) category generally shows higher frequencies than Strongly Disagree (1). This indicates a **weaker rather than strong rejection**, suggesting that suburbanites are skeptical of the survey's logic but are less aggressive in their dismissal compared to their urban counterparts.
+        """)
+
+        # --- BEAUTIFUL SUMMARY BLOCK ---
+        st.divider()
+        st.markdown("### **📌 Summary of Suburban Sentiment**")
+        
+        st.info("""
+        **The Suburban Verdict:** Suburbanites reject **solutions (steps)** more than they reject **causes (factors)**. Their primary concern is maintaining the convenience of private travel. They do not view behavioral factors like school drop-offs as the primary issue, leaning toward a "mild disagreement" (Disagree 2) that suggests the survey's assumptions simply don't match their daily commuting patterns.
+        """)
+
     else:
         st.info("No disagreement data found for Suburban areas (excluding outliers).")

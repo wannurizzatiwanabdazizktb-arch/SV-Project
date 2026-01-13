@@ -956,9 +956,10 @@ with st.expander("Radar Chart", expanded=False):
         st.markdown("""
         #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2)**</span>
         """, unsafe_allow_html=True)
+        
         st.write("""
-        **What** :  The “Late Drop-off/Pick-up Factor” (3), represent the highest volume of disagreement in this area. 
-        **Why** : This pattern suggests that while suburban participants may not feel the need to "outright deny" these factors, they do not consider them to be major or relevant causes of traffic congestion in their specific neighborhoods.
+        * **What** :  The “Late Drop-off/Pick-up Factor” (3), represent the highest volume of disagreement in this area. 
+        * **Why** : This pattern suggests that while suburban participants may not feel the need to "outright deny" these factors, they do not consider them to be major or relevant causes of traffic congestion in their specific neighborhoods.
         """)
 
         st.divider()

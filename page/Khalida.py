@@ -108,8 +108,7 @@ fig1 = px.bar(
 fig1.update_layout(height=350)
 st.plotly_chart(fig1, use_container_width=True)
 
-st.markdown("""
-**Interpretation:**  
+st.markdown("""  
 The ranking of congestion effects is based on the mean Likert score (1–5) for each effect.
 Effects with higher mean scores indicate stronger agreement among respondents that the issue
 is a significant consequence of traffic congestion around school areas.
@@ -151,8 +150,7 @@ with c2:
     else:
         st.info("Only one status available.")
 
-st.markdown("""
-**Interpretation:**  
+st.markdown("""  
 The box plots illustrate the distribution of responses for the selected effect across
 different genders and respondent statuses. Differences in median values indicate variation
 in perception between groups.
@@ -185,8 +183,7 @@ fig4 = px.bar(
 
 st.plotly_chart(fig4, use_container_width=True)
 
-st.markdown("""
-**Interpretation:**  
+st.markdown("""  
 This grouped bar chart compares mean scores of key congestion effects across different
 respondent statuses. Higher mean scores for a particular status group indicate that the
 group perceives the effect more strongly.
@@ -212,8 +209,7 @@ fig5 = px.imshow(
 fig5.update_layout(height=400)
 st.plotly_chart(fig5, use_container_width=True)
 
-st.markdown("""
-**Interpretation:**  
+st.markdown("""  
 The heatmap displays the correlation between congestion causes and their perceived effects.
 Darker shades indicate stronger positive relationships.
 
@@ -247,8 +243,7 @@ if sub["Gender"].nunique() > 1:
 else:
     st.info("Only one gender available.")
 
-st.markdown("""
-**Interpretation:**  
+st.markdown("""  
 The stacked bar chart shows the proportion of responses across the Likert scale for each
 gender. A higher proportion of responses in the 'Agree' and 'Strongly Agree' categories
 indicates stronger consensus regarding the selected effect.
@@ -271,8 +266,7 @@ fig7 = px.violin(
 
 st.plotly_chart(fig7, use_container_width=True)
 
-st.markdown("""
-**Interpretation:**  
+st.markdown("""  
 The violin plot illustrates the distribution of responses for the selected effect across
 different area types. Wider sections indicate higher concentrations of responses at certain
 Likert scores.

@@ -266,11 +266,27 @@ st.markdown("""
 # ---------------------------------------------------------
 # 4. SINGLE COMBINED EXPANDER
 # ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
-import numpy as np
+# --- 0. DEFINE COLUMN GROUPS (Update these with your actual column names) ---
+# Replace these placeholder names with the exact names of your Likert columns
+factor_cols = [
+    'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
+    'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
+    'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 
+    'Late Drop-off/Pick-up Factor', 'Construction/Roadworks Factor', 'Narrow Road Factor'
+]
+
+effect_cols = [
+    'Unintended Road Accidents Effect', 'Time Wastage Effect', 'Pressure on Road Users Effect', 
+    'Students Late to School Effect', 'Environmental Pollution Effect', 'Fuel Wastage Effect'
+]
+
+step_cols = [
+    'Widening Road Step', 'Vehicle Sharing Step', 'Two Gates Step', 'Arrive Early Step',
+    'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step'
+]
+
+# Combine all lists into one for the loop
+all_likert_cols = factor_cols + effect_cols + step_cols
 
 # --- 1. DATA PREPARATION (Internal Logic) ---
 # Assuming all_likert_cols, factor_cols, effect_cols, step_cols, and merged_df are defined previously

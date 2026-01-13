@@ -597,6 +597,37 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
 # -----------------------------------------
 # 6. BUBLE CHART [RURAL RESPONDEN SD VS D]
 # --------------------------------------------
+factor_cols = [
+    'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
+    'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
+    'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 
+    'Late Drop-off/Pick-up Factor', 'Construction/Roadworks Factor', 'Narrow Road Factor'
+]
+
+effect_cols = [
+    'Unintended Road Accidents Effect', 'Time Wastage Effect', 'Pressure on Road Users Effect', 
+    'Students Late to School Effect', 'Environmental Pollution Effect', 'Fuel Wastage Effect'
+]
+
+step_cols = [
+    'Widening Road Step', 'Vehicle Sharing Step', 'Two Gates Step', 'Arrive Early Step',
+    'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step'
+]
+
+all_likert_cols = factor_cols + effect_cols + step_cols
+
+# --- 2. DEFINE THE CLASSIFICATION FUNCTION ---
+def classify_item(col):
+    """Categorizes survey items based on the provided lists."""
+    if col in factor_cols:
+        return 'Factor'
+    elif col in effect_cols:
+        return 'Effect'
+    elif col in step_cols:
+        return 'Step'
+    else:
+        return 'Other'
+
 with st.expander("Bubble Chart", expanded=False):
     
     # --- 1. PREPARE RURAL DATA ---

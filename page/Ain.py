@@ -686,11 +686,11 @@ with st.expander("Bubble Chart", expanded=False):
         It is clear from the data visualization that Strongly Disagree (1) responses are more visible, expressing sharp rejection of alleged congestion factors. 
         * **What** : Lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5), 
         * **Why** : Meaning rural residents do not believe school-related activities significantly contribute to congestion.
-        <br><br>
+        </div>
         <strong>Effect & Step Rejection:</strong><br>
         * **What** : Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>. 
         * **Why** : Rural respondents are likely unconvinced of a strong link between traffic and pollution because vehicular flow in their areas is much smoother than in urban settings.
-        <br><br>
+        </div>
         
         <strong>Disagree (2) Analysis:</strong><br>
         Responses under "Disagree (2)" are less common but reveal slight skepticism. 

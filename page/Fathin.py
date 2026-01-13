@@ -93,7 +93,7 @@ try:
 
         fig2 = px.bar(
             comparison_data, x='Score', y='Factor', color='Area Type',
-            barmode='group', orientation='h', title='<b>2. Comparison: Urban vs. Rural Areas</b>',
+            barmode='group', orientation='h', title='<b>2. Comparison of Factors by Area Type</b>',
             text_auto='.2f'
         )
         fig2.update_layout(height=700)

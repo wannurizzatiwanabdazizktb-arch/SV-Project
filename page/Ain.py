@@ -725,14 +725,47 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-# --- 1. URBAN EXPANDER ---
+# --- 1. DEFINE YOUR COLUMN LISTS ---
+factor_cols = [
+    'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
+    'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
+    'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 
+    'Late Drop-off/Pick-up Factor', 'Construction/Roadworks Factor', 'Narrow Road Factor'
+]
+
+effect_cols = [
+    'Unintended Road Accidents Effect', 'Time Wastage Effect', 'Pressure on Road Users Effect', 
+    'Students Late to School Effect', 'Environmental Pollution Effect', 'Fuel Wastage Effect'
+]
+
+step_cols = [
+    'Widening Road Step', 'Vehicle Sharing Step', 'Two Gates Step', 'Arrive Early Step',
+    'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step'
+]
+
+all_likert_cols = factor_cols + effect_cols + step_cols
+
+# --- 2. DEFINE THE CLASSIFICATION FUNCTION ---
+def classify_item(col):
+    """Categorizes survey items based on the provided lists."""
+    if col in factor_cols:
+        return 'Factor'
+    elif col in effect_cols:
+        return 'Effect'
+    elif col in step_cols:
+        return 'Step'
+    else:
+        return 'Other'
+
+# --- 3. URBAN EXPANDER ---
 with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
     
     # Filter for Urban respondents
+    # (Assuming merged_df is already defined in your environment)
     urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
     
     disagreement_data = []
-    for col in likert_cols:
+    for col in all_likert_cols:
         if col in urban_df.columns:
             count_sd = (urban_df[col] == 1).sum()
             count_d  = (urban_df[col] == 2).sum()
@@ -761,25 +794,27 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         # --- PART A: GROUPED BAR CHART ---
         st.subheader("1. Disagreement Responses (1 vs 2) among Urban Respondents")
         
-        # Dark Theme Professional Colors
-        # Dark Blue for SD, Dark Green for D
+        
+
         fig = go.Figure()
 
+        # Strongly Disagree Trace (Dark Blue)
         fig.add_trace(go.Bar(
             y=disagreement_df['Likert Scale Item'],
             x=disagreement_df['Strongly Disagree (1)'],
             orientation='h',
             name='Strongly Disagree (1)',
-            marker=dict(color='#1B4F72'), # Dark Blue
+            marker=dict(color='#1B4F72'),
             hovertemplate='<b>Item:</b> %{y}<br><b>Count:</b> %{x}<extra></extra>'
         ))
 
+        # Disagree Trace (Dark Green)
         fig.add_trace(go.Bar(
             y=disagreement_df['Likert Scale Item'],
             x=disagreement_df['Disagree (2)'],
             orientation='h',
             name='Disagree (2)',
-            marker=dict(color='#145A32'), # Dark Green
+            marker=dict(color='#145A32'),
             hovertemplate='<b>Item:</b> %{y}<br><b>Count:</b> %{x}<extra></extra>'
         ))
 
@@ -807,14 +842,13 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         # --- PART C: LONG ACADEMIC INTERPRETATION ---
         st.subheader("📝 Deep-Dive Interpretation")
 
-        # Justification
         st.write("""
-        **Why Use a Grouped Horizontal Bar Chart?** This chart is chosen to provide a side-by-side comparison of the intensity of rejection. 
-        Horizontal orientation is utilized to ensure that long survey item labels remain readable, 
-        while grouping allows us to see at a glance whether respondents are 'Strongly' rejecting a point or simply 'Disagreeing'.
+        **Why Use a Grouped Horizontal Bar Chart?** This chart provides a side-by-side comparison of the intensity of rejection. 
+        Horizontal orientation is utilized to ensure that long survey item labels remain readable, while grouping allows us 
+        to see at a glance whether respondents are 'Strongly' rejecting a point or simply 'Disagreeing'.
         """)
 
-        # Highlighted Long Explanation - Strongly Disagree
+        # Analysis of Strongly Disagree (1)
         st.markdown("""
         #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**Analysis of Strongly Disagree (1) Intensity**</span>
         """, unsafe_allow_html=True)
@@ -827,13 +861,13 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         This implies that the urban public prefers to refute the various survey root factors of congestion, viewing them as disconnected from their daily reality.
         """)
 
-        # Highlighted Long Explanation - Disagree
+        # Analysis of Disagree (2)
         st.markdown("""
         #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2) Ambivalence**</span>
         """, unsafe_allow_html=True)
         st.write("""
         The **‘Disagree (2)’** responses tend to be relatively high on most of the questions, reflecting a considerable but widespread level of disapproval. 
-        For example, **"Students Not Sharing Vehicles" (10)** shows a high Disagree (2) count, reflecting respondent ambivalence; they do not regard individual vehicle usage by students as a primary contributor to city-wide traffic congestion.
+        For example, items like **"Vehicle Sharing Step"** reflecting their ambivalence to the fact that they do not regard these factors as primary contributors to traffic congestion in cities.
         
         The overall pattern indicates that **‘Disagree (2)’** has been more common than ‘Strongly Disagree (1)’. This specifies that urban respondents are inclined to **query and question** rather than outright deny most reasons, impacts, and measures associated with congestion. It suggests a more nuanced skepticism compared to the firm rejection seen in rural areas.
         """)
@@ -842,16 +876,17 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         st.divider()
         st.markdown("### **📌 Summary of Urban Sentiment**")
         st.success("""
-        **The Urban Verdict:** Urban respondents are the most active "skeptics" of the survey. 
-        While they strongly reject the idea of structural factors (like Single Gates), their general 
-        trend leans toward **Disagree (2)**. This indicates that for urbanites, traffic is an 
-        **ambiguous and multifaceted issue** where they feel the survey's predefined root causes 
-        and solutions are too narrow to be considered "Strongly" accurate or "Strongly" false.
+        **The Urban Verdict:** Urban respondents act as the most active "skeptics" of the survey. 
+        While they strongly reject structural assumptions (like Single Gates), their general trend leans toward **Disagree (2)**. 
+        This indicates that for urbanites, traffic is an **ambiguous and multifaceted issue** where predefined causes and solutions 
+        are often viewed as insufficient or out of touch with the systemic nature of city congestion.
         """)
 
     else:
         st.warning("No disagreement data found for Urban areas.")
 
+st.markdown("---")
+st.caption("Streamlit Dashboard created for Traffic Congestion Survey Analysis © 2026")
 # ---------------------------------------------------------
 # 8. SUBURBAN RESPONDENTS ANALYSIS (Radar Chart & Table)
 # ---------------------------------------------------------

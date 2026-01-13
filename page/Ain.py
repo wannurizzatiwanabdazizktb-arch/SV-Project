@@ -474,10 +474,6 @@ with st.expander("📊 Heatmap, Trends & Strategic Insights", expanded=True):
 # ---------------------------------------------------------
 # 5. Stacked Bar Chart with Table & Insight
 # ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
 with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
     
     # --- OBJECTIVE SECTION ---
@@ -494,7 +490,6 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
         'Factor': '#1f77b4',  # Blue
         'Effect': '#ff7f0e',  # Orange
         'Step': '#2ca02c',    # Green
-        'Special': '#d62728'  # Red
     }
 
     fig_stacked = px.bar(

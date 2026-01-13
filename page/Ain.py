@@ -58,7 +58,7 @@ if merged_df is None:
     st.stop()
 
 # ---------------------------------------------------------
-# 3. CUSTOM STYLES (MODERN MONOCHROME)
+# 3. CUSTOM STYLES 
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -94,9 +94,10 @@ st.markdown("""
 # ---------------------------------------------------------
 # 4. HEADER SECTION
 # ---------------------------------------------------------
-st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses</div>', unsafe_allow_html=True)
+st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses Across Area Type</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
 # ---------------------------------------------------------
 # DATA PROCESSING: Disagreement Counts by Area Type
 # ---------------------------------------------------------
@@ -117,7 +118,7 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 # 5. DATA DISPLAY 
 # --------------------
 # Setting expanded=False ensures the table is hidden until the user clicks it
-with st.expander("📊 Disagreement Count Across Area Type", expanded=False):
+with st.expander("Disagreement Count Across Area Type", expanded=False):
     
     result_original = {}
 
@@ -139,48 +140,96 @@ with st.expander("📊 Disagreement Count Across Area Type", expanded=False):
         height=220 
     )
     
-    st.caption("按 Row/Column headers to sort. Use the horizontal scrollbar to view all survey items.")
+    st.caption("Disagreement total each Likert Item Across Area Type Without Handling Outlier.")
 
 # --------------------
 # 6. Summary Box
 # --------------------
 # --- 1. HEADER & METRICS ---
-st.title("Survey Analysis Dashboard")
-st.markdown("### 📊 Survey Overview")
+st.markdown("""
+<style>
+    /* Container for the metric cards */
+    .metric-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    /* Individual Card Style */
+    .metric-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0; /* Light gray border */
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        flex: 1;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .metric-label {
+        color: #64748b; /* Slate gray text */
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+    .metric-value {
+        color: #0f172a; /* Near black text */
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+    /* Clean Divider */
+    .clean-divider {
+        height: 1px;
+        background-color: #e2e8f0;
+        margin: 20px 0 40px 0;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-# Metrics provide an immediate summary of the data
+# ---------------------------------------------------------
+# 2. SUMMARY OVERVIEW SECTION
+# ---------------------------------------------------------
+st.markdown("### 📊 Summary Overview")
+
+# Creating the cards using HTML for a more "Executive" look
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.metric(
-        label="Total Disagreement", 
-        value="191", 
-        help="Total sample size across all categories.",
-        border=True
-    )
+    st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">Total Disagreement</div>
+            <div class="metric-value">191</div>
+        </div>
+    """, unsafe_allow_html=True)
+    # Using small text for the 'help' info since HTML cards don't have tooltips
+    st.caption("Effect: 30 | Factor: 130 | Step: 31")
 
 with col2:
-    st.metric(
-        label="Strongly Disagree (1)", 
-        value="82", 
-        help="Rural: 29 | Suburban: 7 | Urban: 57", 
-        border=True
-    )
+    st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">Strongly Disagree</div>
+            <div class="metric-value">82</div>
+        </div>
+    """, unsafe_allow_html=True)
+    st.caption("Rural: 30 | Sub: 7 | Urban: 45")
 
 with col3:
-    st.metric(
-        label="Disagree (2)", 
-        value="109", 
-        help="Rural: 26 | Suburban: 13 | Urban: 83", 
-        border=True
-    )
+    st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">Disagree (2)</div>
+            <div class="metric-value">109</div>
+        </div>
+    """, unsafe_allow_html=True)
+    st.caption("Rural: 31 | Sub: 13 | Urban: 65")
 
 with col4:
-    st.metric(
-        label="Top Item Count", 
-        value="22", 
-        help="Late Drop-off/Pick-up Factor. Rural: 6 | Suburban: 4 | Urban: 12", 
-        border=True
-    )
+    st.markdown(f"""
+        <div class="metric-card">
+            <div class="metric-label">Top Item Count</div>
+            <div class="metric-value">22</div>
+        </div>
+    """, unsafe_allow_html=True)
+    st.caption("Late Drop-off/Pick-up Factor")
 
-st.divider() # Visual separator
+st.markdown('<div class="clean-divider"></div>', unsafe_allow_html=True)

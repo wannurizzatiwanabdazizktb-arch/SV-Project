@@ -529,50 +529,60 @@ with st.expander("Stacked Bar Chart", expanded=False):
 
 # --- PART C: INSIGHT ANALYSIS BY CATEGORY ---
     st.divider()
+    # --- WHY USE A STACKED BAR CHART? ---
+    st.markdown("""
+    #### **🌈 Why Use a Stacked Bar Chart?**
+    * **Visualizing the 'Rejector':** It allows us to see not just the total disagreement, but which specific area (Urban, Rural, or Suburban) is driving that rejection.
+    * **Part-to-Whole Comparison:** It effectively shows that the **'Factor'** category accounts for the vast majority of total disagreements across the entire survey.
+    * **Trend Separation:** It makes the "Urban" dominance in disagreement immediately visible through color stacking.
+    """)
     st.subheader("📝 Insight Analysis by Category")
 
-    # Factor Analysis
-    with st.container():
-        st.markdown("#### **1. Factor: The 'Conceptual Gap'**")
-        st.write("""
-        The **'Factor'** category received the highest level of disagreement (130), with Urban areas (85) being the most vocal.
-        
-        * **The Gap:** This suggests the survey likely proposed "textbook" causes for traffic. Urbanites, who live in the congestion daily, clearly feel these factors are incorrect or oversimplified.
-        * **Reasoning:** To an urban resident, congestion is likely seen as a systemic or structural failure (bad light timing, poor transit integration) rather than the simple factors suggested by the survey designer.
-        """)
-
-    # Step Analysis
-    with st.container():
-        st.markdown("#### **2. Step: The 'Practicality Gap'**")
-        st.write("""
-        **'Step'** shows a significant level of disagreement, especially in Urban (17) and Rural (11) areas.
-        
-        * **The Gap:** When respondents disagree with a "Step," they are rejecting a solution.
-        * **Reasoning:** In Urban areas, proposed steps might be seen as impractical (e.g., "use a bike" in a city with no bike lanes). In Rural areas, the steps might be seen as irrelevant. This inconsistency shows the survey's solutions aren't "one size fits all."
-        """)
-
-    # Effect Analysis
-    with st.container():
-        st.markdown("#### **3. Effect: The 'Common Ground'**")
-        st.write("""
-        This category has the lowest disagreement (30).
-        
-        * **The Gap:** There is very little gap here. Almost everyone—regardless of where they live—agrees on what the results of traffic are (e.g., lost time, stress, pollution).
-        * **Reasoning:** While people disagree on *why* traffic happens (Factor) or *how* to fix it (Step), they are united in the shared experience of the pain it causes.
-        """)
-
-    # --- SUMMARY OF FINDINGS & FINAL CONCLUSION ---
+# --- 4. WHY RESPONDENTS CHOSE LIKERT 1 & 2 (INSIGHTS) ---
     st.divider()
-    st.subheader("📌 Summary of Findings")
-    st.write("""
-    The survey reveals a **'Top-Down' vs. 'Bottom-Up'** disconnect:
-    1.  **Factor (Highest Rejection):** The survey's understanding of why traffic happens is the furthest from reality for the respondents.
-    2.  **Step (Moderate Rejection):** The survey's solutions are viewed as insufficient or out of touch with local needs.
-    3.  **Effect (Lowest Rejection):** The survey accurately identifies the consequences of traffic.
-    """)
+    st.subheader("🔍 Why Respondents Rejected These Suggestions")
 
-    st.success("""
-    **Conclusion:** To improve the survey's relevance, authors should focus on re-evaluating the **Factors**, as this is where the largest intellectual gap exists between the researchers and the people living in the urban environment.
+    # FACTOR ANALYSIS
+    with st.container():
+        st.markdown("### **🏆 Factor: The Highest Rejection**")
+        st.write("""
+        **Data:** Highest disagreement counts overall, led by **Urban areas (85)**.
+        
+        **Why they choose Likert 1 & 2:** Respondents in urban areas likely feel the survey's "Factors" are too simplistic. 
+        For urbanites, traffic congestion is **complex and systemic** (poor infrastructure, timing issues) rather than the basic 
+        criteria suggested by the survey. They chose 1 and 2 to signal that the survey perception is disconnected from 
+        the reality of urban congestion.
+        """)
+
+    # STEP ANALYSIS
+    with st.container():
+        st.markdown("### **⚠️ Step: High Inconsistency**")
+        st.write("""
+        **Data:** Large inconsistency across areas, diverging most in **Urban (35)**, then Rural (20).
+        
+        **Why they choose Likert 1 & 2:** When respondents reject a "Step," they are labeling the proposed solution as 
+        **impractical or insufficient**. Because urban traffic is dynamic and ever-changing, a "one-size-fits-all" 
+        suggestion is seen as ineffective for their specific daily needs.
+        """)
+
+    # EFFECT ANALYSIS
+    with st.container():
+        st.markdown("### **✅ Effect: The Common Ground**")
+        st.write("""
+        **Data:** Lowest levels of disagreement (Urban: 21, Suburban: 3, Rural: 6).
+        
+        **Why they chose Likert 1 & 2 less often:** Most respondents agree on what traffic *does* to them. 
+        Regardless of where they live, people share the same "pain" of traffic, meaning the survey's "Effect" 
+        suggestions were actually accurate to their experiences.
+        """)
+
+    # --- 5. FINAL CONCLUSION ---
+    st.divider()
+    st.markdown("### **📌 Final Conclusion**")
+    st.error("""
+    **The most popular choice for disagreement is the "Factor" category.** This reveals a major gap: respondents—especially those in urban areas—firmly reject the survey’s assumptions 
+    about what causes traffic. The survey authors should re-evaluate these factors, as they are deemed 
+    too simple for the complex, systemic nature of real-world traffic congestion.
     """)
 # ---------------------------------------------------------
 # 6. RURAL RESPONDENTS ANALYSIS (Bubble Chart & Table)

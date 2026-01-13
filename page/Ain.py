@@ -247,14 +247,4 @@ col4.metric(
 
 st.divider()
 
-# --------------------
-# 3. DATA TABLE
-# --------------------
-# Expander is closed by default for a clean look
-with st.expander("📊 Disagreement Count Across Area Type", expanded=False):
-    # Standard clean dataframe (no color styling)
-    st.dataframe(
-        disagree_area_type_original, 
-        use_container_width=True, 
-        height=200
-    )
+)

@@ -6,6 +6,15 @@ import numpy as np
 
 sns.set(style="whitegrid")
 
+@st.cache_data
+def load_data():
+    df = pd.read_csv("traffic_survey.csv")  # make sure filename matches your CSV
+    if "Unnamed: 0" in df.columns:
+        df = df.drop(columns=["Unnamed: 0"])
+    return df
+
+df = load_data()
+
 effect_cols = [
     "Unintended Road Accidents Effect",
     "Time Wastage Effect",
@@ -23,7 +32,7 @@ cause_cols = [
 ]
 
 # ----- Goal 2 tab / page -----
-st.header("Goal 2: Effects of School-area Congestion")
+st.header("Effects of School-area Congestion")
 
 st.markdown("""
 Investigate how strongly respondents agree that congestion around schools causes accidents, time

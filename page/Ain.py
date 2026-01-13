@@ -163,14 +163,90 @@ def main():
 
         st.divider()
         
-        # ---------------------------------------------------------
-        # 7. VISUALIZATION SECTION (Ready for Charting)
-        # ---------------------------------------------------------
-        # You can now add your Plotly charts below here...
+# =========================================================
+# 7. HEATMAP: PATTERN REVELATION
+# =========================================================
+st.subheader("📍 Disagreement Patterns Across Area Types")
+st.markdown("""
+**Objective:** To analyze how respondents from different area types prioritize disagreements across 
+factors, effects, and steps, revealing the specific patterns of each Likert scale item.
+""")
 
-    else:
-        st.error("Application stopped due to data loading error.")
-        st.stop()
+# ... (Data preparation code for heatmap_pivot_z and customdata_array goes here) ...
 
-if __name__ == "__main__":
-    main()
+fig_heatmap = go.Figure(data=go.Heatmap(
+    z=heatmap_pivot_z.values,
+    x=heatmap_pivot_z.columns,
+    y=heatmap_pivot_z.index,
+    colorscale='YlGnBu',
+    text=heatmap_pivot_z.values,
+    texttemplate="%{text}",
+    hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total Disagreement: %{z}<br>Strongly Disagree (1): %{customdata[0]}<br>Disagree (2): %{customdata[1]}<extra></extra>',
+    customdata=customdata_array
+))
+
+fig_heatmap.update_layout(
+    height=800,
+    template='plotly_white',
+    margin=dict(l=200),
+    xaxis_title="Area Type",
+    yaxis_title="Likert Scale Item"
+)
+
+# Display Heatmap
+st.plotly_chart(fig_heatmap, use_container_width=True)
+
+
+
+# =========================================================
+# 8. BAR CHART: COMPARATIVE IMPACT
+# =========================================================
+st.markdown("---")
+st.subheader("📊 Comparative Total Disagreement")
+
+# Filtered data (Excluding 'Students Not Sharing Vehicles')
+filtered_df = disagreement_summary_df[
+    disagreement_summary_df['Likert Item'] != 'Students Not Sharing Vehicles'
+].copy()
+
+fig_bar = px.bar(
+    filtered_df.sort_values('Total Disagreement Count', ascending=True),
+    x='Total Disagreement Count',
+    y='Likert Item',
+    orientation='h',
+    color='Total Disagreement Count',
+    color_continuous_scale='Viridis',
+    hover_data=['Rural areas', 'Suburban areas', 'Urban areas'],
+    height=700
+)
+
+fig_bar.update_layout(template='plotly_white', margin=dict(l=200))
+
+# Display Bar Chart
+st.plotly_chart(fig_bar, use_container_width=True)
+
+# =========================================================
+# 9. RESULT SUMMARY & INSIGHTS
+# =========================================================
+st.markdown("### 📝 Analysis Results")
+
+# Key findings displayed in a clean box
+st.info("""
+**Key Findings:**
+1. **Urban Dominance:** Urban areas consistently show higher disagreement counts across almost all items.
+2. **Top Factor:** *Late Drop-off/Pick-up Factor* (22) is the most significant point of disagreement among the defined factors.
+3. **Primary Step:** *Vehicle Sharing* (14) emerged as a major point of disagreement within the 'Step' category.
+""")
+
+# EXPANDER for the final table result
+with st.expander("📊 View Detailed Most/Least Disagreement Table"):
+    st.write("This table highlights the extremes (Most and Least) within each Likert category.")
+    
+    # Display the final summary table
+    st.dataframe(
+        final_filtered_result, 
+        use_container_width=True,
+        hide_index=True
+    )
+    
+    st.caption("Categorized by Factor, Effect, and Step to highlight critical disagreement trends.")

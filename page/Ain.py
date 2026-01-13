@@ -105,11 +105,17 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 # 5. DATA DISPLAY 
 # --------------------
 with st.expander("Disagreement Count Across Area Type", expanded=True):
-    # We remove the .style logic for a "simple" table, 
-    # but keep basic formatting if you wish.
-    st.table(disagree_area_type_original)
-    
-    st.caption("This table shows the raw distribution of disagreement across different area type without handling outlier.")
+result_original = {}
+
+for col in likert_cols:
+    result_original[col] = (
+        merged_df[merged_df[col].isin([1, 2])]
+        .groupby('Area Type')[col]
+        .count()
+    )
+
+# Create the final DataFrame
+disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int)
 
 # --------------------
 # 6. Summary Box

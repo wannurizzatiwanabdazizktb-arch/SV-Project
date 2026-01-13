@@ -77,12 +77,20 @@ try:
         fig2 = px.bar(comparison_data, x='Score', y='Factor', color='Area Type', barmode='group', orientation='h')
         st.plotly_chart(fig2, use_container_width=True)
 
+    st.write("This graph shows that rural areas experience the most significant impact of almost all of the disruption factors studied, especially infrastructure issues such as lack of parking and narrow roads, while student car sharing practices are the factor with the lowest impact across all area categories.")
+
+    st.markdown("---")
+
     # --- SECTION 3: HEATMAP ---
     st.subheader("🌡️ Heatmap Analysis")
     if 'Status' in data.columns:
         heatmap_df = data.groupby('Status')[factor_cols].mean()
         fig3 = px.imshow(heatmap_df, text_auto=".2f", aspect="auto")
         st.plotly_chart(fig3, use_container_width=True)
+
+    st.write("This heatmap graph shows that university students are the group that gives the highest scores on most factors, with the issue of lack of parking being the most critical problem for them and their parents.")
+
+    st.markdown("---")
 
     # --- SECTION 4: RELATIONSHIP ---
     st.subheader("🔗 Relationship Analysis")
@@ -94,6 +102,31 @@ try:
     
     fig5 = px.scatter(data, x=f_select, y=k_select, trendline="ols")
     st.plotly_chart(fig5, use_container_width=True)
+    st.write("This Regression Graph shows the relationship between factors and effects and for example there is a positive relationship between rainy weather and the impact of accidents, which shows that an increase in adverse weather factors contributes directly to an increase in the risk of accidents.")
+
+    st.markdown("---")
+    
+# --- SECTION 5: SUMMARY CHARTS ---
+    st.subheader("💡 Summary: Main Causes vs. Solution Steps")
+    col_a, col_b = st.columns(2)
+    
+    with col_a:
+        f_plot = data[factor_cols].mean().sort_values(ascending=True).reset_index()
+        f_plot.columns = ['Factor', 'Score']
+        f_plot['Factor'] = f_plot['Factor'].str.replace(' Factor', '', case=False)
+        fig6 = px.bar(f_plot, x='Score', y='Factor', orientation='h', 
+                      title='<b>Main Causes (Factors)</b>', 
+                      color_discrete_sequence=['#e74c3c'], text_auto='.2f')
+        st.plotly_chart(fig6, use_container_width=True)
+
+    with col_b:
+        m_plot = data[measure_cols].mean().sort_values(ascending=True).reset_index()
+        m_plot.columns = ['Measure', 'Score']
+        m_plot['Measure'] = m_plot['Measure'].str.replace(' Measure', '', case=False)
+        fig7 = px.bar(m_plot, x='Score', y='Measure', orientation='h', 
+                      title='<b>Main Solutions (Measures)</b>', 
+                      color_discrete_sequence=['#2ecc71'], text_auto='.2f')
+        st.plotly_chart(fig7, use_container_width=True)
 
 except Exception as e:
     st.error(f"An unexpected error occurred: {e}")

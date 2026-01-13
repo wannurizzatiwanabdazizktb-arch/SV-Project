@@ -492,12 +492,11 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
     # Remove 'Special' category from the source dataframe for this analysis
     filtered_heatmap_df = heatmap_df[heatmap_df['Category'] != 'Special'].copy()
 
-    # --- PART A: STACKED BAR CHART ---
-    # Soft, professional color palette
-    cat_color_map = {
-        'Factor': '#A9CCE3',  # Soft Pastel Blue
-        'Effect': '#FAD7A0',  # Soft Pastel Orange
-        'Step': '#ABEBC6',    # Soft Pastel Green
+    # --- PART A: STACKED BAR CHART (Dark Professional Colors) ---
+    dark_cat_color_map = {
+        'Factor': '#1B4F72',  # Dark Blue
+        'Effect': '#A04000',  # Dark Orange
+        'Step': '#145A32',    # Dark Green
     }
 
     fig_stacked = px.bar(
@@ -507,7 +506,7 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
         color='Category',
         title='Disagreement Counts (1 & 2) by Category and Area Type',
         labels={'Total': 'Number of Disagreements', 'Area Type': 'Area Type'},
-        color_discrete_map=cat_color_map,
+        color_discrete_map=dark_cat_color_map,
         hover_data={'Likert Item': True, 'Category': True, 'Total': True}
     )
 
@@ -556,58 +555,52 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
     A stacked bar chart titled “Disagreement Counts (1 & 2) by Category and Area Type” is selected because it allows simultaneous comparison across two dimensions: 
     (1) category type (Factor, Effect, Step) and (2) area type (rural, suburban, urban), while also visually combining Strongly Disagree (1) and Disagree (2) into a single disagreement structure.
 
-    This visualization is particularly effective for revealing which category accumulates the greatest rejection and where that rejection is most concentrated geographically. Unlike separate bar charts, the stacked format highlights both magnitude and distribution, making patterns of disagreement clearer and more interpretable for survey-based Likert data.
+    This visualization is particularly effective for revealing which category accumulates the greatest rejection and where that rejection is most concentrated geographically.
     """)
 
     st.divider()
     st.subheader("📝 Interpretation by Category")
 
-    # --- 1. FACTOR ANALYSIS (Soft Blue Highlight) ---
-    st.markdown(f"""
-    ### <span style='background-color:#D4E6F1; color:#1B4F72; padding:5px 15px; border-radius:5px;'>**1. Factor Category (Highest Disagreement)**</span>
+    # --- 1. FACTOR ANALYSIS (Soft Blue Highlight / Small Bold Subtitle) ---
+    st.markdown("""
+    #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**1. Factor Category (Highest Disagreement)**</span>
     """, unsafe_allow_html=True)
     
-    st.write(f"""
+    st.write("""
     The **Factor category** records the highest total disagreement count (112) among core categories, indicating that respondents most strongly reject the proposed causes of traffic congestion presented in the survey.
 
     This rejection is most pronounced in **urban areas (73)**, compared to rural (27) and suburban (12) areas, demonstrating a clear and distinct urban-driven trend. Urban respondents appear to disagree substantially with simplified or predefined congestion factors, suggesting that real-life traffic issues in cities are perceived as multifaceted, systemic, and context-dependent.
-
-    In real-world terms, urban commuters likely experience congestion as a result of interacting variables (infrastructure limits, public transport gaps, population density, peak-hour dynamics), making the survey’s factor assumptions feel incomplete or oversimplified.
     """)
 
-    # --- 2. EFFECT ANALYSIS (Soft Orange Highlight) ---
-    st.markdown(f"""
-    ### <span style='background-color:#FAE5D3; color:#6E2C00; padding:5px 15px; border-radius:5px;'>**2. Effect Category (Lowest Disagreement)**</span>
+    # --- 2. EFFECT ANALYSIS (Soft Orange Highlight / Small Bold Subtitle) ---
+    st.markdown("""
+    ##### <span style='background-color:#FEF5E7; color:#D68910; padding:3px 10px; border-radius:4px;'>**2. Effect Category (Lowest Disagreement)**</span>
     """, unsafe_allow_html=True)
     
-    st.write(f"""
+    st.write("""
     The **Effect category** shows the lowest level of disagreement (22) across core categories, with relatively low disagreement in urban (15), rural (5), and suburban (2) areas.
 
-    This consistency indicates that respondents largely agree on the consequences of traffic congestion, regardless of where they live. The shared acceptance suggests that the impacts of congestion—such as time loss, stress, and reduced productivity—are universally experienced, making the effects more observable and less debatable in everyday life.
-
-    In real-life contexts, this reflects a common lived experience, where congestion effects are tangible and widely acknowledged, even if the causes or solutions are contested.
+    This consistency indicates that respondents largely agree on the consequences of traffic congestion, regardless of where they live. The shared acceptance suggests that the impacts of congestion—such as time loss, stress, and reduced productivity—are universally experienced.
     """)
 
-    # --- 3. STEP ANALYSIS (Soft Green Highlight) ---
-    st.markdown(f"""
-    ### <span style='background-color:#D5F5E3; color:#0E6253; padding:5px 15px; border-radius:5px;'>**3. Step Category (Moderate but Inconsistent Disagreement)**</span>
+    # --- 3. STEP ANALYSIS (Soft Green Highlight / Small Bold Subtitle) ---
+    st.markdown("""
+    ###### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**3. Step Category (Moderate but Inconsistent Disagreement)**</span>
     """, unsafe_allow_html=True)
     
-    st.write(f"""
+    st.write("""
     The **Step category** records a moderate total disagreement (26) but displays notable variation across areas, with the highest disagreement in urban areas (14), followed by rural (9) and suburban (3).
 
-    This pattern suggests uncertainty or skepticism toward the proposed solutions, particularly among urban respondents. In dense and highly dynamic traffic environments, suggested steps may be viewed as impractical, insufficient, or disconnected from real operational challenges.
-
-    From a real-life perspective, urban respondents may perceive that one-size-fits-all solutions do not adequately address complex traffic flows, enforcement issues, or behavioral diversity, leading to hesitation or rejection of the proposed actions.
+    This pattern suggests uncertainty or skepticism toward the proposed solutions, particularly among urban respondents. In dense environments, suggested steps may be viewed as impractical or disconnected from real operational challenges.
     """)
 
     # --- FINAL CONCLUSION BLOCK ---
     st.divider()
     st.markdown("### 📌 **Overall Conclusion**")
     st.info("""
-    In conclusion, the **Factor category is the most rejected**, followed by **Step**, while **Effect** receives the least disagreement. This hierarchy indicates that respondents agree on what traffic congestion causes in their daily lives (effects) but disagree with how the problem is defined (factors) and how it should be solved (steps)—especially in urban settings.
+    In conclusion, the **Factor category is the most rejected**, followed by **Step**, while **Effect** receives the least disagreement. This hierarchy indicates that respondents agree on what traffic congestion causes (effects) but disagree with how the problem is defined (factors) and how it should be solved (steps).
 
-    The findings highlight that real-life traffic experiences, particularly in urban areas, are more complex than the survey’s proposed assumptions and interventions. As a result, urban respondents are more likely to reject simplified explanations and prescribed solutions, emphasizing the need for context-sensitive, adaptive, and realistic traffic management strategies.
+    The findings highlight that real-life traffic experiences, particularly in urban areas, are more complex than the survey’s proposed assumptions.
     """)
 # ---------------------------------------------------------
 # 6. RURAL RESPONDENTS ANALYSIS (Bubble Chart & Table)

@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
 import numpy as np
 
-sns.set(style="whitegrid")
+st.set_page_config(layout="wide")
 
+# ================= DATA LOADING =================
 @st.cache_data
 def load_data():
     df = pd.read_csv("traffic_survey.csv")
@@ -31,152 +32,115 @@ cause_cols = [
     "Lack of Parking Space Factor",
 ]
 
-# ============ SIDEBAR CONTROLS ============
-with st.sidebar:
-    st.header("Goal 2 Controls")
-    gender_filter = st.selectbox(
-        "Gender filter",
-        ["All"] + sorted(df["Gender"].dropna().unique().tolist())
-    )
-    status_filter = st.selectbox(
-        "Status filter",
-        ["All"] + sorted(df["Status"].dropna().unique().tolist())
-    )
-    area_filter = st.selectbox(
-        "Area Type filter",
-        ["All"] + sorted(df["Area Type"].dropna().unique().tolist())
-    )
-    chosen_effect = st.selectbox("Focus on effect", effect_cols)
-    show_heatmap = st.checkbox("Show cause–effect heatmap", value=True)
-    min_mean = st.slider("Minimum mean score to show in ranking",
-                         min_value=1.0, max_value=5.0, value=1.0, step=0.5)
-    bar_orientation = st.radio("Ranking bar orientation", ["Horizontal", "Vertical"])
+# ================= TITLE =================
+st.title("🚦 Interactive Analysis of Traffic Congestion Around Schools")
 
-# ============ PAGE TITLE ============
-st.title("Exploring Congestion Effects in School Areas")
+st.markdown("""
+This interactive dashboard explores how traffic congestion around schools affects safety,
+time efficiency, stress, punctuality, environment, and fuel usage.
+Use the filters to explore different perspectives.
+""")
 
-st.markdown(
-    "This dashboard explores how strongly respondents agree that congestion around schools "
-    "causes accidents, time wastage, stress, lateness, environmental pollution, and fuel wastage, "
-    "and how these perceptions differ by gender, status, and area type."
-)
-
-# ============ SUMMARY CARDS ============
-total_resp = len(df)
-area_counts = df["Area Type"].value_counts()
-dominant_area = area_counts.idxmax() if len(area_counts) > 0 else "N/A"
-likert_scale = "1–5"
-gender_counts = df["Gender"].value_counts()
-f_count = gender_counts.get("Female", gender_counts.get("Perempuan", 0))
-m_count = gender_counts.get("Male", gender_counts.get("Lelaki", 0))
-
+# ================= SUMMARY METRICS =================
 c1, c2, c3, c4 = st.columns(4)
+
 with c1:
-    st.metric("Total Respondents", total_resp)
+    st.metric("Total Respondents", len(df))
+
 with c2:
-    st.metric("Most Common Area Type", dominant_area)
+    st.metric("Most Common Area Type", df["Area Type"].mode()[0])
+
 with c3:
-    st.metric("Measurement Scale", f"Likert {likert_scale}")
+    st.metric("Likert Scale", "1 – 5")
+
 with c4:
-    st.metric("Gender Distribution", f"F: {f_count} | M: {m_count}")
+    gender_counts = df["Gender"].value_counts()
+    st.metric("Gender Split", f"F: {gender_counts.get('Female',0)} | M: {gender_counts.get('Male',0)}")
 
-st.markdown("---")
+st.divider()
 
-# ============ APPLY FILTERS ============
+# ================= FILTERS =================
+st.subheader("🔍 Filters")
+
+f1, f2, f3 = st.columns(3)
+
+with f1:
+    gender = st.selectbox("Gender", ["All"] + sorted(df["Gender"].dropna().unique()))
+
+with f2:
+    status = st.selectbox("Status", ["All"] + sorted(df["Status"].dropna().unique()))
+
+with f3:
+    area = st.selectbox("Area Type", ["All"] + sorted(df["Area Type"].dropna().unique()))
+
+chosen_effect = st.selectbox("Focus Effect", effect_cols)
+
+# Apply filters
 sub = df.copy()
-if gender_filter != "All":
-    sub = sub[sub["Gender"] == gender_filter]
-if status_filter != "All":
-    sub = sub[sub["Status"] == status_filter]
-if area_filter != "All":
-    sub = sub[sub["Area Type"] == area_filter]
+if gender != "All":
+    sub = sub[sub["Gender"] == gender]
+if status != "All":
+    sub = sub[sub["Status"] == status]
+if area != "All":
+    sub = sub[sub["Area Type"] == area]
 
-st.info(f"Number of responses after filters: {len(sub)}")
-if len(sub) == 0:
-    st.warning("No data for this filter combination. Please change the filters.")
+st.info(f"Responses after filtering: {len(sub)}")
+
+if sub.empty:
+    st.warning("No data available for selected filters.")
     st.stop()
 
-# ============ 1. RANKING BAR CHART ============
-st.subheader("1. Ranking of Congestion Effects")
+# ================= 1. EFFECT RANKING =================
+st.subheader("1️⃣ Ranking of Congestion Effects")
 
-mean_effects = sub[effect_cols].mean()
-mean_effects = mean_effects[mean_effects >= min_mean].sort_values(ascending=True)
+mean_effects = sub[effect_cols].mean().sort_values()
 
-if mean_effects.empty:
-    st.warning("No effects meet the minimum mean threshold. Lower the slider to see results.")
-else:
-    if bar_orientation == "Horizontal":
-        fig, ax = plt.subplots(figsize=(7, 4))
-        sns.barplot(
-            x=mean_effects.values,
-            y=mean_effects.index,
-            palette="magma",
-            ax=ax
-        )
-        ax.set_xlabel("Mean Likert score (1–5)")
-        ax.set_ylabel("")
-    else:
-        fig, ax = plt.subplots(figsize=(7, 4))
-        sns.barplot(
-            x=mean_effects.index,
-            y=mean_effects.values,
-            palette="magma",
-            ax=ax
-        )
-        ax.set_ylabel("Mean Likert score (1–5)")
-        ax.set_xlabel("")
-        ax.tick_params(axis="x", rotation=25)
-
-    ax.set_ylim(1, 5) if bar_orientation == "Vertical" else ax.set_xlim(1, 5)
-    ax.set_title("Ranking of Congestion Effects (filtered)", fontsize=10)
-    st.pyplot(fig, clear_figure=True)
-
-st.markdown(
-    "Use the sidebar slider to include only effects above a certain mean score, "
-    "and switch the bar orientation for a different view."
+fig1 = px.bar(
+    mean_effects,
+    x=mean_effects.values,
+    y=mean_effects.index,
+    orientation="h",
+    labels={"x": "Mean Likert Score", "y": ""},
+    color=mean_effects.values,
+    color_continuous_scale="Magma",
 )
 
-# ============ 2. BOX PLOTS (SELECTED EFFECT) ============
-st.subheader(f"2. Distribution of **{chosen_effect}** by Gender and Status")
+fig1.update_layout(height=350)
+st.plotly_chart(fig1, use_container_width=True)
 
-col_b1, col_b2 = st.columns(2)
+# ================= 2. BOX PLOTS =================
+st.subheader(f"2️⃣ Distribution of {chosen_effect}")
 
-with col_b1:
+c1, c2 = st.columns(2)
+
+with c1:
     if sub["Gender"].nunique() > 1:
-        fig, ax = plt.subplots(figsize=(4, 3))
-        sns.boxplot(
-            data=sub,
+        fig2 = px.box(
+            sub,
             x="Gender",
             y=chosen_effect,
-            palette=["#4c72b0", "#9ecae1"],
-            ax=ax
+            points="all",
+            title="By Gender"
         )
-        ax.set_xlabel("Gender")
-        ax.set_ylabel("Score (1–5)")
-        ax.set_title("By Gender", fontsize=10)
-        st.pyplot(fig, clear_figure=True)
+        st.plotly_chart(fig2, use_container_width=True)
     else:
-        st.info("Only one gender present after filtering.")
+        st.info("Only one gender available.")
 
-with col_b2:
+with c2:
     if sub["Status"].nunique() > 1:
-        fig, ax = plt.subplots(figsize=(4, 3))
-        sns.boxplot(
-            data=sub,
+        fig3 = px.box(
+            sub,
             x="Status",
             y=chosen_effect,
-            ax=ax
+            points="all",
+            title="By Status"
         )
-        ax.set_xlabel("Status")
-        ax.set_ylabel("Score (1–5)")
-        ax.set_title("By Status", fontsize=10)
-        ax.tick_params(axis="x", rotation=30)
-        st.pyplot(fig, clear_figure=True)
+        st.plotly_chart(fig3, use_container_width=True)
     else:
-        st.info("Only one status present after filtering.")
+        st.info("Only one status available.")
 
-# ============ 3. KEY EFFECTS BY STATUS ============
-st.subheader("3. Mean scores for key effects by Status")
+# ================= 3. GROUPED BAR =================
+st.subheader("3️⃣ Key Effects by Status")
 
 key_effects = [
     "Time Wastage Effect",
@@ -184,7 +148,68 @@ key_effects = [
     "Unintended Road Accidents Effect",
 ]
 
-if sub["Status"].nunique() > 0:
-    status_means = sub.groupby("Status")[key_effects].mean()
+status_means = sub.groupby("Status")[key_effects].mean().reset_index()
+
+fig4 = px.bar(
+    status_means,
+    x="Status",
+    y=key_effects,
+    barmode="group",
+    labels={"value": "Mean Score", "variable": "Effect"},
+)
+
+st.plotly_chart(fig4, use_container_width=True)
+
+# ================= 4. HEATMAP =================
+st.subheader("4️⃣ Cause–Effect Correlation Heatmap")
+
+corr = sub[cause_cols + effect_cols].corr().loc[cause_cols, effect_cols]
+
+fig5 = px.imshow(
+    corr,
+    text_auto=".2f",
+    color_continuous_scale="Blues",
+    aspect="auto"
+)
+
+fig5.update_layout(height=400)
+st.plotly_chart(fig5, use_container_width=True)
+
+# ================= 5. STACKED BAR =================
+st.subheader(f"5️⃣ Likert Distribution of {chosen_effect} by Gender")
+
+if sub["Gender"].nunique() > 1:
+    dist = (
+        sub.groupby("Gender")[chosen_effect]
+        .value_counts(normalize=True)
+        .rename("proportion")
+        .reset_index()
+    )
+
+    fig6 = px.bar(
+        dist,
+        x="Gender",
+        y="proportion",
+        color=chosen_effect,
+        barmode="stack",
+        labels={"proportion": "Proportion"},
+    )
+
+    st.plotly_chart(fig6, use_container_width=True)
+else:
+    st.info("Only one gender available.")
+
+# ================= 6. VIOLIN PLOT =================
+st.subheader(f"6️⃣ Distribution of {chosen_effect} by Area Type")
+
+fig7 = px.violin(
+    sub,
+    x="Area Type",
+    y=chosen_effect,
+    box=True,
+    points="all"
+)
+
+st.plotly_chart(fig7, use_container_width=True)
 
    

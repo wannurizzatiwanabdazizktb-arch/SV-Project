@@ -87,12 +87,7 @@ st.markdown("""
         width: 60%; 
         border-radius: 10px;
     }
-
-    /* Optional: Subtle card effect for the header area */
-    .header-container {
-        padding: 20px;
-        background-color: #ffffff;
-    }
+    
 </style>
 """, unsafe_allow_html=True)
 

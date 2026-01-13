@@ -143,7 +143,7 @@ try:
     st.markdown("---")
 
     # --- SECTION 5: SUMMARY CHARTS ---
-    st.subheader("💡 Summary: Main Causes vs. Effects")
+    st.subheader("💡 Summary: Main Causes vs. solution steps")
 
     col_a, col_b = st.columns(2)
     
@@ -155,10 +155,10 @@ try:
         st.plotly_chart(fig6, use_container_width=True)
 
     with col_b:
-        e_plot = data[kesan_cols].mean().sort_values(ascending=True).reset_index()
-        e_plot.columns = ['Effect', 'Score']
-        e_plot['Effect'] = e_plot['Effect'].str.replace(' Impact', '', case=False).str.replace(' impact', '', case=False)
-        fig7 = px.bar(e_plot, x='Score', y='Effect', orientation='h', title='<b>Main Impacts (Effects)</b>', color_discrete_sequence=['#f39c12'], text_auto='.2f')
+        e_plot = data[Measure_cols].mean().sort_values(ascending=True).reset_index()
+        e_plot.columns = ['Measure', 'Score']
+        e_plot['Measure'] = e_plot['Measure'].str.replace(' Measure', '', case=False).str.replace(' Measure', '', case=False)
+        fig7 = px.bar(e_plot, x='Score', y='Measure', orientation='h', title='<b>Main Solution </b>', color_discrete_sequence=['#f39c12'], text_auto='.2f')
         st.plotly_chart(fig7, use_container_width=True)
 
 except Exception as e:

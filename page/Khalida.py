@@ -156,7 +156,7 @@ with c2:
 st.markdown("""  
 with st.expander("📌 Interpretation"):
     st.markdown("""
-    **Interpretation:**  
+**Interpretation:**  
 The box plots illustrate how perceptions of the selected congestion effect vary across
 gender and respondent status. Differences in median values reflect variation in perceived
 severity between groups.
@@ -191,7 +191,7 @@ st.plotly_chart(fig4, use_container_width=True)
 st.markdown("""  
 with st.expander("📌 Interpretation"):
     st.markdown("""
-    **Interpretation:**  
+**Interpretation:**  
 This grouped bar chart compares mean scores of key congestion effects across respondent
 status groups. Variations in mean scores indicate differences in how each group experiences
 or perceives traffic congestion.
@@ -219,7 +219,7 @@ st.plotly_chart(fig5, use_container_width=True)
 st.markdown("""  
 with st.expander("📌 Interpretation"):
     st.markdown("""
-    **Interpretation:**  
+**Interpretation:**  
 The heatmap presents the correlation between identified causes and effects of traffic
 congestion. Stronger correlations indicate that respondents who agree with a particular
 cause also tend to agree with its associated effects.

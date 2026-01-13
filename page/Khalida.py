@@ -31,34 +31,58 @@ cause_cols = [
     "Lack of Parking Space Factor",
 ]
 
-# ---------- PAGE HEADER ----------
-st.header("Effects of School-area Congestion")
+# ================= PAGE TITLE =================
+st.title("Exploring Congestion Effects in School Areas")
 
-st.markdown("""
-Use the filters below to explore how respondents rate different effects of congestion
-around schools, and how perceptions differ by gender, status, and area type.
-""")
+st.markdown(
+    "This dashboard explores how strongly respondents agree that congestion around schools "
+    "causes accidents, time wastage, stress, lateness, environmental pollution, and fuel wastage, "
+    "and how these perceptions differ by gender, status, and area type."
+)
 
-# ---------- GLOBAL FILTERS ----------
-with st.sidebar:
-    st.subheader("Global filters (Goal 2)")
+# ================= SUMMARY CARDS =================
+total_resp = len(df)
+area_counts = df["Area Type"].value_counts()
+dominant_area = area_counts.idxmax() if len(area_counts) > 0 else "N/A"
+likert_scale = "1–5"
+gender_counts = df["Gender"].value_counts()
+f_count = gender_counts.get("Female", gender_counts.get("Perempuan", 0))
+m_count = gender_counts.get("Male", gender_counts.get("Lelaki", 0))
+
+c1, c2, c3, c4 = st.columns(4)
+
+with c1:
+    st.metric("Total Respondents", total_resp)
+with c2:
+    st.metric("Most Common Area Type", dominant_area)
+with c3:
+    st.metric("Measurement Scale", f"Likert {likert_scale}")
+with c4:
+    st.metric("Gender Distribution", f"F: {f_count} | M: {m_count}")
+
+st.markdown("---")
+
+# ================= GLOBAL FILTERS =================
+st.subheader("Filters")
+
+col_f1, col_f2, col_f3 = st.columns(3)
+with col_f1:
     gender_filter = st.selectbox(
         "Gender",
         ["All"] + sorted(df["Gender"].dropna().unique().tolist())
     )
+with col_f2:
     status_filter = st.selectbox(
         "Status",
         ["All"] + sorted(df["Status"].dropna().unique().tolist())
     )
+with col_f3:
     area_filter = st.selectbox(
         "Area Type",
         ["All"] + sorted(df["Area Type"].dropna().unique().tolist())
     )
-    chosen_effect = st.selectbox(
-        "Focus on effect",
-        effect_cols
-    )
-    show_corr = st.checkbox("Show cause–effect heatmap", value=True)
+
+chosen_effect = st.selectbox("Focus on effect", effect_cols)
 
 sub = df.copy()
 if gender_filter != "All":
@@ -68,51 +92,39 @@ if status_filter != "All":
 if area_filter != "All":
     sub = sub[sub["Area Type"] == area_filter]
 
-st.write(f"Number of responses after filters: **{len(sub)}**")
-
+st.info(f"Number of responses after filters: {len(sub)}")
 if len(sub) == 0:
     st.warning("No data for this filter combination. Please change the filters.")
     st.stop()
 
-# ---------- 1) SUMMARY + BAR ----------
-st.subheader("1. Summary of effect scores")
+# ================= 1. RANKING BAR CHART (EFFECTS) =================
+st.subheader("1. Ranking of Congestion Effects (based on mean score)")
 
-mean_effects = sub[effect_cols].mean()
-std_effects = sub[effect_cols].std()
-
-summary_df = pd.DataFrame({
-    "Mean": mean_effects.round(2),
-    "Std": std_effects.round(2)
-}).sort_values("Mean", ascending=False)
-
-col_table, col_bar = st.columns([1, 1.2])
-
-with col_table:
-    st.dataframe(summary_df, use_container_width=True)
-
-with col_bar:
-    fig, ax = plt.subplots(figsize=(5, 3))
-    sns.barplot(
-        x=summary_df["Mean"].values,
-        y=summary_df.index,
-        palette="Blues_r",
-        ax=ax
-    )
-    ax.set_xlabel("Mean score (1–5)")
-    ax.set_ylabel("")
-    ax.set_title("Mean effect scores", fontsize=10)
-    st.pyplot(fig, clear_figure=True)
+mean_effects = sub[effect_cols].mean().sort_values(ascending=True)
+fig, ax = plt.subplots(figsize=(7, 4))
+sns.barplot(
+    x=mean_effects.values,
+    y=mean_effects.index,
+    palette="magma",
+    ax=ax
+)
+ax.set_xlabel("Mean Likert score (1–5)")
+ax.set_ylabel("")
+ax.set_xlim(1, 5)
+ax.set_title("Ranking of Congestion Effects")
+st.pyplot(fig, clear_figure=True)
 
 st.markdown(
-    "Higher bars indicate stronger agreement that the effect occurs under the current filters."
+    "This bar chart ranks the perceived effects of congestion from lowest to highest mean score "
+    "under the current filters."
 )
 
-# ---------- 2) BOX PLOT OF SELECTED EFFECT ----------
+# ================= 2. BOX PLOTS (SELECTED EFFECT) =================
 st.subheader(f"2. Distribution of **{chosen_effect}** by Gender and Status")
 
-col_left, col_right = st.columns(2)
+col_b1, col_b2 = st.columns(2)
 
-with col_left:
+with col_b1:
     if sub["Gender"].nunique() > 1:
         fig, ax = plt.subplots(figsize=(4, 3))
         sns.boxplot(
@@ -129,7 +141,7 @@ with col_left:
     else:
         st.info("Only one gender present after filtering.")
 
-with col_right:
+with col_b2:
     if sub["Status"].nunique() > 1:
         fig, ax = plt.subplots(figsize=(4, 3))
         sns.boxplot(
@@ -146,11 +158,7 @@ with col_right:
     else:
         st.info("Only one status present after filtering.")
 
-st.markdown(
-    "These boxplots show how the selected effect varies between groups under the chosen filters."
-)
-
-# ---------- 3) GROUPED BAR BY STATUS (KEY EFFECTS) ----------
+# ================= 3. KEY EFFECTS BY STATUS =================
 st.subheader("3. Mean scores for key effects by Status")
 
 key_effects = [
@@ -177,30 +185,29 @@ if sub["Status"].nunique() > 0:
 else:
     st.info("No status variation after filtering; grouped bar not shown.")
 
-# ---------- 4) HEATMAP (OPTIONAL) ----------
-if show_corr:
-    st.subheader("4. Correlation between causes and effects")
+# ================= 4. HEATMAP =================
+st.subheader("4. Correlation between causes and effects")
 
-    corr_cols = cause_cols + effect_cols
-    corr = sub[corr_cols].corr()
+corr_cols = cause_cols + effect_cols
+corr = sub[corr_cols].corr()
 
-    fig, ax = plt.subplots(figsize=(7, 4))
-    sns.heatmap(
-        corr.loc[cause_cols, effect_cols],
-        annot=True,
-        fmt=".2f",
-        cmap="Blues",
-        vmin=0,
-        vmax=1,
-        ax=ax
-    )
-    ax.set_title("Cause–effect correlations", fontsize=10)
-    ax.set_xlabel("Effect variables")
-    ax.set_ylabel("Cause variables")
-    plt.xticks(rotation=30, ha="right")
-    st.pyplot(fig, clear_figure=True)
+fig, ax = plt.subplots(figsize=(7, 4))
+sns.heatmap(
+    corr.loc[cause_cols, effect_cols],
+    annot=True,
+    fmt=".2f",
+    cmap="Blues",
+    vmin=0,
+    vmax=1,
+    ax=ax
+)
+ax.set_title("Cause–effect correlations", fontsize=10)
+ax.set_xlabel("Effect variables")
+ax.set_ylabel("Cause variables")
+plt.xticks(rotation=30, ha="right")
+st.pyplot(fig, clear_figure=True)
 
-# ---------- 5) STACKED BAR FOR SELECTED EFFECT ----------
+# ================= 5. STACKED BAR (SELECTED EFFECT) =================
 st.subheader(f"5. Likert distribution of **{chosen_effect}** by Gender")
 
 if sub["Gender"].nunique() > 1:
@@ -227,7 +234,7 @@ if sub["Gender"].nunique() > 1:
             dist_pivot.index,
             values,
             bottom=bottom,
-            label=f"{score}",
+            label=str(score),
             color=colors[i]
         )
         bottom += values
@@ -241,7 +248,7 @@ if sub["Gender"].nunique() > 1:
 else:
     st.info("Only one gender present after filtering; stacked bar not shown.")
 
-# ---------- 6) VIOLIN PLOT BY AREA TYPE ----------
+# ================= 6. VIOLIN PLOT BY AREA TYPE =================
 st.subheader(f"6. Distribution of **{chosen_effect}** by Area Type")
 
 if sub["Area Type"].nunique() > 0:

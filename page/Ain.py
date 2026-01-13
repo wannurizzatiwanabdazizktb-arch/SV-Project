@@ -392,24 +392,37 @@ st.markdown("---")
 st.caption("Streamlit Dashboard created for Traffic Congestion Survey Analysis © 2026")
 
 
-# ---------------------------------------------------------
-# 7. URBAN RESPONDENTS ANALYSIS (Grouped Bar Chart & Table)
-# ---------------------------------------------------------
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
 
-with st.expander("🏙️ Urban Area Deep-Dive (Grouped Bar Chart & Summary)", expanded=False):
+# --- 1. DEFINE FUNCTIONS AT THE TOP ---
+def classify_item(col):
+    """Categorizes survey items based on keywords."""
+    if 'Factor' in col:
+        return 'Factor'
+    elif 'Effect' in col:
+        return 'Effect'
+    elif 'Step' in col:
+        return 'Step'
+    else:
+        return 'Other'
+
+# --- 2. URBAN EXPANDER ---
+with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
     
-    # 1. Filter Urban Data
+    # Filter for Urban respondents
     urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
     
-    # 2. Prepare Data for Plotting
-    urban_plot_list = []
+    disagreement_data = []
+    # Ensure likert_cols is available from your previous data processing step
     for col in likert_cols:
         if col in urban_df.columns:
             count_sd = (urban_df[col] == 1).sum()
             count_d  = (urban_df[col] == 2).sum()
 
             if count_sd > 0 or count_d > 0:
-                urban_plot_list.append({
+                disagreement_data.append({
                     'Likert Scale Item': col,
                     'Item Category': classify_item(col),
                     'Strongly Disagree (1)': count_sd,
@@ -417,57 +430,55 @@ with st.expander("🏙️ Urban Area Deep-Dive (Grouped Bar Chart & Summary)", e
                     'Total': count_sd + count_d
                 })
 
-    df_urban_viz = pd.DataFrame(urban_plot_list).sort_values('Total')
+    if disagreement_data:
+        disagreement_df = pd.DataFrame(disagreement_data).sort_values('Total')
 
-    if not df_urban_viz.empty:
-        # --- PART A: GROUPED HORIZONTAL BAR CHART ---
-        st.subheader("1. Urban Disagreement Distribution (1 vs 2)")
+        # --- PART A: PLOTLY FIGURE ---
+        st.subheader("Urban Disagreement: Strongly Disagree vs Disagree")
         
-        fig_urban = go.Figure()
+        fig = go.Figure()
 
         # Strongly Disagree Trace
-        fig_urban.add_trace(go.Bar(
-            y=df_urban_viz['Likert Scale Item'],
-            x=df_urban_viz['Strongly Disagree (1)'],
-            name='Strongly Disagree (1)',
+        fig.add_trace(go.Bar(
+            x=disagreement_df['Strongly Disagree (1)'],
+            y=disagreement_df['Likert Scale Item'],
             orientation='h',
+            name='Strongly Disagree (1)',
             marker=dict(color='#1f77b4'),
-            customdata=df_urban_viz['Item Category'],
-            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata}<br><b>Count:</b> %{x}<extra></extra>'
+            customdata=disagreement_df[['Item Category', 'Strongly Disagree (1)']],
+            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata[0]}<br><b>Count:</b> %{customdata[1]}<extra></extra>'
         ))
 
         # Disagree Trace
-        fig_urban.add_trace(go.Bar(
-            y=df_urban_viz['Likert Scale Item'],
-            x=df_urban_viz['Disagree (2)'],
-            name='Disagree (2)',
+        fig.add_trace(go.Bar(
+            x=disagreement_df['Disagree (2)'],
+            y=disagreement_df['Likert Scale Item'],
             orientation='h',
+            name='Disagree (2)',
             marker=dict(color='#2ca02c'),
-            customdata=df_urban_viz['Item Category'],
-            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata}<br><b>Count:</b> %{x}<extra></extra>'
+            customdata=disagreement_df[['Item Category', 'Disagree (2)']],
+            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata[0]}<br><b>Count:</b> %{customdata[1]}<extra></extra>'
         ))
 
-        fig_urban.update_layout(
+        fig.update_layout(
             barmode='group',
+            xaxis_title='Number of Responses',
+            yaxis_title='Likert Scale Item',
+            legend_title_text='Disagreement Level',
             template='plotly_white',
             height=800,
-            xaxis_title="Number of Responses",
-            yaxis_title="Likert Scale Item",
-            legend_title_text="Disagreement Level",
             margin=dict(l=200)
         )
 
-        st.plotly_chart(fig_urban, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
         st.divider()
 
-        # --- PART B: URBAN SUMMARY TABLE ---
-        st.subheader("2. Urban Disagreement Summary Table")
+        # --- PART B: SUMMARY TABLE ---
+        st.subheader("Summary Table: Urban Disagreement Counts")
         
-        urban_summary_display = df_urban_viz[[
-            'Likert Scale Item', 'Item Category', 'Strongly Disagree (1)', 'Disagree (2)'
-        ]].rename(columns={'Likert Scale Item': 'Likert Item'})
-        
-        st.dataframe(urban_summary_display, use_container_width=True, hide_index=True)
+        # Display as a clean Streamlit dataframe
+        table_df = disagreement_df[['Likert Scale Item', 'Item Category', 'Strongly Disagree (1)', 'Disagree (2)']]
+        st.dataframe(table_df, use_container_width=True, hide_index=True)
     else:
-        st.write("No disagreement data found for Urban areas.")
+        st.warning("No disagreement data found for Urban areas.")

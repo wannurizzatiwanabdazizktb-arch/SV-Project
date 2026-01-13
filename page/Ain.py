@@ -606,9 +606,13 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
 # 6. RURAL RESPONDENTS ANALYSIS (Bubble Chart & Table)
 # ---------------------------------------------------------
 
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
 with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=False):
     
-    # 1. Prepare Rural Data
+    # --- 1. PREPARE RURAL DATA ---
     rural_df = merged_df[merged_df['Area Type'] == 'Rural areas']
     rural_disagreement_data = []
 
@@ -617,7 +621,6 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
             count_sd = (rural_df[col] == 1).sum()
             count_d  = (rural_df[col] == 2).sum()
             
-            # Identify category
             if 'Factor' in col: cat = 'Factor'
             elif 'Effect' in col: cat = 'Effect'
             elif 'Step' in col: cat = 'Step'
@@ -637,10 +640,23 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
     df_bubble_rural = pd.DataFrame(rural_disagreement_data)
 
     if not df_bubble_rural.empty:
-        # --- PART A: BUBBLE CHART ---
-        st.subheader("1. Rural Disagreement Intensity (1 vs 2)")
+        # --- 2. OBJECTIVE SECTION ---
+        st.markdown("""
+        ### **Objective**
+        To analyze how the majority of rural respondents clearly reject specific survey items. This section compares the intensity of **Strongly Disagree (1)** versus **Disagree (2)** to understand the specific mindset of road users in low-traffic environments.
+        """)
+        st.divider()
+
+        # --- 3. BUBBLE CHART ---
+        st.subheader("1. Disagreement Responses (1 vs 2) among Rural Respondents")
         
-        # Sort Y-axis for better readability
+        # Why use this graph?
+        st.info("""
+        **Why Use a Bubble Chart?**
+        * **Intensity Visualization:** The size of the bubble represents the volume of disagreement, making the most rejected items immediately stand out.
+        * **Categorical Comparison:** It allows us to see how 'Factor', 'Effect', and 'Step' intensity differs across the two Likert levels (1 vs 2) in a single view.
+        """)
+
         df_bubble_rural = df_bubble_rural.sort_values(['Category', 'Count'])
 
         fig_bubble = px.scatter(
@@ -649,10 +665,10 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
             y='Likert Item',
             size='Count',
             color='Level',
-            color_discrete_map={'Strongly Disagree (1)':'#1f77b4','Disagree (2)':'#28a745'},
+            color_discrete_map={'Strongly Disagree (1)':'#1B4F72','Disagree (2)':'#27AE60'}, # Matching dark theme colors
             hover_data=['Category', 'Count'],
             size_max=30,
-            height=800,
+            height=600,
             template='plotly_white'
         )
         
@@ -664,12 +680,10 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
         
         st.plotly_chart(fig_bubble, use_container_width=True)
 
+        # --- 4. RURAL SUMMARY TABLE ---
         st.divider()
-
-        # --- PART B: RURAL SUMMARY TABLE ---
         st.subheader("2. Rural Disagreement Summary Table")
         
-        # Create a pivoted table for the rural data
         rural_table = df_bubble_rural.pivot_table(
             index=['Category', 'Likert Item'], 
             columns='Level', 
@@ -678,10 +692,33 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
         ).fillna(0).reset_index()
 
         st.dataframe(rural_table, use_container_width=True, hide_index=True)
+
+        # --- 5. INTERPRETATION ---
+        st.divider()
+        st.subheader("📝 Interpretation of Rural Disagreement")
+
+        # Interpretation based on provided text
+        st.markdown(f"""
+        <div style="background-color:#EBF5FB; padding:15px; border-radius:10px; border-left: 5px solid #2E86C1;">
+        <strong>Strongly Disagree (1) Analysis:</strong><br>
+        It is clear from the data visualization that <strong>Strongly Disagree (1)</strong> responses are more visible, expressing sharp rejection of alleged congestion factors. Because of the lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5), meaning rural residents do not believe school-related activities significantly contribute to congestion.
+        <br><br>
+        <strong>Effect & Step Rejection:</strong><br>
+        Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>. Rural respondents are likely unconvinced of a strong link between traffic and pollution because vehicular flow in their areas is much smoother than in urban settings.
+        <br><br>
+        <strong>Disagree (2) Analysis:</strong><br>
+        Responses under "Disagree (2)" are less common but reveal slight skepticism. The <strong>“Increasing Population Factor” (2)</strong> received the maximum number of disagreements in this category. While rural residents acknowledge population growth, they do not rate it as a serious cause of traffic problems. Similarly, the rejection of <strong>“Students Late to School Effect” (1)</strong> confirms that rural life is not closely related to urban traffic pressures.
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Conclusion for Rural Section
+        st.success("""
+        **Summary of Rural Perspective:** Rural respondents tend to lean further toward **Strongly Disagree (1)** than to "Disagree (2)," especially regarding behavioral variables. Ambiguity exists where responses for both levels are equal, likely due to varying local road scenarios, but the overall trend shows a firm rejection of urban-centric traffic assumptions.
+        """)
+
     else:
         st.write("No disagreement data found for Rural areas.")
-
-# ---------------------------------------------------------
+# ---------------------------------------------------------        
 # FINAL FOOTER
 # ---------------------------------------------------------
 st.markdown("---")

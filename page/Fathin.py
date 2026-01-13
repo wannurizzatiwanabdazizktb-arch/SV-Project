@@ -79,6 +79,10 @@ try:
         color='Average Score', color_continuous_scale='Viridis', text_auto='.2f'
     )
     st.plotly_chart(fig1, use_container_width=True)
+    st.write(
+        """
+        This graph shows that infrastructure issues are the main cause of the problem compared to behavioral factors.
+        """
 
     st.markdown("---")
 

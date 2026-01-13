@@ -108,11 +108,10 @@ fig1 = px.bar(
 fig1.update_layout(height=350)
 st.plotly_chart(fig1, use_container_width=True)
 
-st.markdown("""  
-with st.expander("📌 Interpretation"):
+with st.expander("📌 Interpretation (Ranking of Effects)"):
     st.markdown("""
 **Interpretation:**  
-This visualization ranks the perceived effects of traffic congestion around school areas    
+This visualization ranks the perceived effects of traffic congestion around school areas
 based on their mean Likert scores. Effects with higher mean values indicate stronger
 agreement among respondents that these issues are significant consequences of congestion.
 
@@ -153,8 +152,7 @@ with c2:
     else:
         st.info("Only one status available.")
 
-st.markdown("""  
-with st.expander("📌 Interpretation"):
+with st.expander("📌 Interpretation (Box Plots)"):
     st.markdown("""
 **Interpretation:**  
 The box plots illustrate how perceptions of the selected congestion effect vary across
@@ -188,8 +186,7 @@ fig4 = px.bar(
 
 st.plotly_chart(fig4, use_container_width=True)
 
-st.markdown("""  
-with st.expander("📌 Interpretation"):
+with st.expander("📌 Interpretation (Key Effects by Status)"):
     st.markdown("""
 **Interpretation:**  
 This grouped bar chart compares mean scores of key congestion effects across respondent
@@ -216,8 +213,7 @@ fig5 = px.imshow(
 fig5.update_layout(height=400)
 st.plotly_chart(fig5, use_container_width=True)
 
-st.markdown("""  
-with st.expander("📌 Interpretation"):
+with st.expander("📌 Interpretation (Heatmap)"):
     st.markdown("""
 **Interpretation:**  
 The heatmap presents the correlation between identified causes and effects of traffic
@@ -254,12 +250,11 @@ if sub["Gender"].nunique() > 1:
 else:
     st.info("Only one gender available.")
 
-st.markdown("""  
-with st.expander("📌 Interpretation"):
+with st.expander("📌 Interpretation (Stacked Bar)"):
     st.markdown("""
 **Interpretation:**  
 This stacked bar chart illustrates the distribution of Likert-scale responses by gender.
-A higher proportion of responses in the ‘Agree’ and ‘Strongly Agree’ categories indicates
+A higher proportion of responses in the 'Agree' and 'Strongly Agree' categories indicates
 strong consensus regarding the selected congestion effect.
 
 Differences in response distribution between genders suggest variation in perception or
@@ -280,8 +275,7 @@ fig7 = px.violin(
 
 st.plotly_chart(fig7, use_container_width=True)
 
-st.markdown("""  
-with st.expander("📌 Interpretation"):
+with st.expander("📌 Interpretation (Violin Plot)"):
     st.markdown("""
 **Interpretation:**  
 The violin plot shows the distribution of responses across different area types.
@@ -292,5 +286,3 @@ Differences between area types suggest that geographic context influences conges
 experiences. Areas with denser traffic conditions tend to report stronger agreement on
 negative congestion effects.
 """)
-
-   

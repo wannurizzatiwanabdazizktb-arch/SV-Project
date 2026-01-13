@@ -743,7 +743,7 @@ def classify_item(col):
         return 'Other'
 
 # --- 3. URBAN EXPANDER ---
-with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=False):
+with st.expander("Group Horizontal Bar Chart", expanded=False):
     # Filter for Urban respondents
     urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
     
@@ -782,7 +782,7 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=False):
             x=disagreement_df['Strongly Disagree (1)'],
             orientation='h',
             name='Strongly Disagree (1)',
-            marker=dict(color='#1B4F72'),
+            marker=dict(color='#85C1E9'),
             customdata=disagreement_df[['Item Category', 'Strongly Disagree (1)']],
             hovertemplate=(
                 '<b>Likert Scale Item:</b> %{y}<br>' +

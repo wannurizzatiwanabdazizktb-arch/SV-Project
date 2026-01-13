@@ -603,15 +603,12 @@ with st.expander("Bubble Chart", expanded=False):
     rural_df = merged_df[merged_df['Area Type'] == 'Rural areas']
     rural_disagreement_data = []
 
-    for col in likert_cols:
+    for col in all_likert_cols: # Use the combined list we defined earlier
         if col in rural_df.columns:
             count_sd = (rural_df[col] == 1).sum()
             count_d  = (rural_df[col] == 2).sum()
             
-            if 'Factor' in col: cat = 'Factor'
-            elif 'Effect' in col: cat = 'Effect'
-            elif 'Step' in col: cat = 'Step'
-            else: cat = 'Other'
+            cat = classify_item(col) # Using the function we defined earlier
 
             if count_sd > 0:
                 rural_disagreement_data.append({
@@ -628,11 +625,8 @@ with st.expander("Bubble Chart", expanded=False):
 
     if not df_bubble_rural.empty:
         # --- 2. OBJECTIVE SECTION ---
-        st.markdown("""
-        ### **Objective**
-        To analyze how the majority most clearly reject the rural respondent 
-        rate with comparison on strongly disagree (1) and disagree (2).
-        """)
+        st.markdown("### **Objective**")
+        st.write("To analyze how the majority most clearly reject the rural respondent rate with comparison on strongly disagree (1) and disagree (2).")
         st.divider()
 
         # --- 3. BUBBLE CHART ---
@@ -644,11 +638,14 @@ with st.expander("Bubble Chart", expanded=False):
             y='Likert Item',
             size='Count',
             color='Level',
-            color_discrete_map={'Strongly Disagree (1)':'#1B4F72','Disagree (2)':'#27AE60'}, # Matching dark theme colors
-            hover_data=['Category', 'Count'],
+            # UPDATED TO SOFT BLUE AND SOFT GREEN
+            color_discrete_map={'Strongly Disagree (1)':'#85C1E9','Disagree (2)':'#82E0AA'}, 
+            hover_name='Likert Item',
+            hover_data={'Level':True, 'Count':True, 'Category':True},
             size_max=30,
             height=600,
-            template='plotly_white'
+            template='plotly_white',
+            title='<b>Disagreement Intensity (Rural Respondents)</b>'
         )
         
         fig_bubble.update_layout(
@@ -672,51 +669,49 @@ with st.expander("Bubble Chart", expanded=False):
 
         st.dataframe(rural_table, use_container_width=True, hide_index=True)
 
-        # --- 5. INTERPRETATION ---
+        # --- 5. INTERPRETATION (NOW PROPERLY INDENTED) ---
         st.divider()
-        # Interpretation based on provided text
-       # --- RURAL DEEP-DIVE INTERPRETATION ---
+        st.info("""
+        **Why Use a Bubble Chart?** : The size of the bubble represents the volume of disagreement, making the most rejected items immediately stand out. 
+        It allows us to see how 'Factor', 'Effect', and 'Step' intensity differs across the two Likert levels (1 vs 2) in a single view.
+        """)
 
-st.info("""
-**Why Use a Bubble Chart?** : The size of the bubble represents the volume of disagreement, making the most rejected items immediately stand out. 
-It allows us to see how 'Factor', 'Effect', and 'Step' intensity differs across the two Likert levels (1 vs 2) in a single view.
-""")
+        # 1. Strongly Disagree Section
+        st.markdown("""
+        <div style="background-color:#EBF5FB; padding:20px; border-radius:10px; border-left: 5px solid #2E86C1; margin-bottom: 20px;">
+            <h4 style="color:#2E86C1; margin-top:0;">Analysis of Strongly Disagree (1)</h4>
+            <p>It is clear from the data visualization that Strongly Disagree (1) responses are more visible, expressing sharp rejection of alleged congestion factors.</p>
+            <ul style="list-style-type: none; padding-left: 0;">
+                <li style="margin-bottom: 5px;"><strong>What</strong> : Lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5).</li>
+                <li style="margin-bottom: 10px;"><strong>Why</strong> : Meaning rural residents do not believe school-related activities significantly contribute to congestion.</li>
+                <hr style="border: 0.5px solid #AED6F1; margin: 15px 0;">
+                <li style="margin-bottom: 5px;"><strong>What</strong> : Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>.</li>
+                <li><strong>Why</strong> : Rural respondents are likely unconvinced of a strong link between traffic and pollution because vehicular flow in their areas is much smoother than in urban settings.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-# 1. Strongly Disagree Section (Soft Blue Background)
-st.markdown("""
-<div style="background-color:#EBF5FB; padding:20px; border-radius:10px; border-left: 5px solid #2E86C1; margin-bottom: 20px;">
-    <h4 style="color:#2E86C1; margin-top:0;">💠 Analysis of Strongly Disagree (1)</h4>
-    <p>It is clear from the data visualization that Strongly Disagree (1) responses are more visible, expressing sharp rejection of alleged congestion factors.</p>
-    <ul style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 5px;"><strong>What</strong> : Lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5).</li>
-        <li style="margin-bottom: 10px;"><strong>Why</strong> : Meaning rural residents do not believe school-related activities significantly contribute to congestion.</li>
-        <hr style="border: 0.5px solid #AED6F1; margin: 15px 0;">
-        <li style="margin-bottom: 5px;"><strong>What</strong> : Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>.</li>
-        <li><strong>Why</strong> : Rural respondents are likely unconvinced of a strong link between traffic and pollution because vehicular flow in their areas is much smoother than in urban settings.</li>
-    </ul>
-</div>
-""", unsafe_allow_html=True)
+        # 2. Disagree Section
+        st.markdown("""
+        <div style="background-color:#EAFAF1; padding:20px; border-radius:10px; border-left: 5px solid #27AE60;">
+            <h4 style="color:#27AE60; margin-top:0;">Analysis of Disagree (2)</h4>
+            <p>Responses under "Disagree (2)" are less common but reveal slight skepticism.</p>
+            <ul style="list-style-type: none; padding-left: 0;">
+                <li style="margin-bottom: 5px;"><strong>What</strong> : The <strong>“Increasing Population Factor” (2)</strong> received the maximum number of disagreements in this category.</li>
+                <li style="margin-bottom: 10px;"><strong>Why</strong> : While rural residents acknowledge population growth, they do not rate it as a serious cause of traffic problems.</li>
+                <hr style="border: 0.5px solid #ABEBC6; margin: 15px 0;">
+                <li style="margin-bottom: 5px;"><strong>What</strong> : Similarly, the rejection of <strong>“Students Late to School Effect” (1)</strong> confirms that rural life is not closely related to urban traffic pressures.</li>
+                <li><strong>Why</strong> : Rural areas typically have less centralized congestion, meaning travel times for students are more predictable than in cities.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-# 2. Disagree Section (Soft Green Background)
-st.markdown("""
-<div style="background-color:#EAFAF1; padding:20px; border-radius:10px; border-left: 5px solid #27AE60;">
-    <h4 style="color:#27AE60; margin-top:0;">💹 Analysis of Disagree (2)</h4>
-    <p>Responses under "Disagree (2)" are less common but reveal slight skepticism.</p>
-    <ul style="list-style-type: none; padding-left: 0;">
-        <li style="margin-bottom: 5px;"><strong>What</strong> : The <strong>“Increasing Population Factor” (2)</strong> received the maximum number of disagreements in this category.</li>
-        <li style="margin-bottom: 10px;"><strong>Why</strong> : While rural residents acknowledge population growth, they do not rate it as a serious cause of traffic problems.</li>
-        <hr style="border: 0.5px solid #ABEBC6; margin: 15px 0;">
-        <li style="margin-bottom: 5px;"><strong>What</strong> : Similarly, the rejection of <strong>“Students Late to School Effect” (1)</strong> confirms that rural life is not closely related to urban traffic pressures.</li>
-        <li><strong>Why</strong> : Rural areas typically have less centralized congestion, meaning travel times for students are more predictable than in cities.</li>
-    </ul>
-</div>
-""", unsafe_allow_html=True)
-
-# 3. Conclusion for Rural Section
-
-st.success("""
-**Summary of Rural Perspective:** Rural respondents tend to lean further toward **Strongly Disagree (1)** than to "Disagree (2)," especially regarding behavioral variables. Ambiguity exists where responses for both levels are equal, likely due to varying local road scenarios, but the overall trend shows a firm rejection of urban-centric traffic assumptions.
-""")
+        # 3. Conclusion for Rural Section
+        st.success("""
+        **Summary of Rural Perspective:** Rural respondents tend to lean further toward **Strongly Disagree (1)** than to "Disagree (2)," especially regarding behavioral variables. Ambiguity exists where responses for both levels are equal, likely due to varying local road scenarios, but the overall trend shows a firm rejection of urban-centric traffic assumptions.
+        """)
+    else:
+        st.write("No disagreement data found for Rural areas.")
 # --------------------------------------------        
 # GROUP HORIZONTAL BAR CHART [URBAN SD VS D]
 # --------------------------------------------

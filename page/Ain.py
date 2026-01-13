@@ -300,9 +300,8 @@ with st.expander("Heatmap and Horizontal Bar Chart", expanded=True):
     # --- OBJECTIVE SECTION ---
     st.markdown("""
     ### **Objective**
-    Identify how respondents across **Rural, Suburban, and Urban** areas distribute their disagreements. 
-    By analyzing the highest and lowest disagreement counts for **Factors, Effects, and Steps**, 
-    we reveal the specific patterns and outliers within each Likert scale category.
+    Identify How respondents from all area types choose most and lowest disagreements items 
+    (factors, effects, and step), to reveal the pattern of each Likert scale item count.
     """)
     st.divider()
 
@@ -397,20 +396,66 @@ with st.expander("Heatmap and Horizontal Bar Chart", expanded=True):
                 use_container_width=True, hide_index=True
             )
 
-    # --- DYNAMIC INSIGHTS TEXT ---
-    st.info("### **Key Observations**")
-    
-    # Logic to find the absolute highest
-    top_item = bar_data.iloc[-1]
-    lowest_item = bar_data.iloc[0]
-    
-    col_ins1, col_ins2 = st.columns(2)
-    with col_ins1:
-        st.write(f"**Critical Outlier:** '{top_item['Likert Item']}' shows the highest overall disagreement ({top_item['Total Disagreement Count']} counts), suggesting this is a highly controversial or misunderstood factor across all regions.")
-    with col_ins2:
-        st.write(f"**Strongest Consensus:** '{lowest_item['Likert Item']}' has the fewest disagreements, indicating most respondents agree on its relevance/impact.")
+# --- FORMAL ANALYSIS & INSIGHTS SECTION ---
+    st.divider()
+    st.subheader("Analysis of Top & Bottom Disagreement")
 
-    st.write("**Area Pattern:** Urban areas typically show higher variance in disagreement compared to Rural areas, likely due to higher population density and complex infrastructure factors.")
+    # Objective and Methodology Note
+    st.caption("Note: This analysis utilizes the dataset prior to outlier handling to capture the full spectrum of respondent sentiment.")
+
+    # 1. Main Insight Container
+    with st.container():
+        st.markdown(f"""
+        #### **Summary of Disagreement Trends**
+        Using the **Heatmap** (“Disagreement Responses (1 & 2) Across Area Types”) and **Horizontal Bar Chart** (“Total Disagreement Counts (1 & 2) for Each Likert Item Across All Area Types”), we observe that items with 
+        higher disagreement counts indicate factors, effects, or steps perceived as **less viable or less important** by respondents.
+
+        * **Primary Factor Outlier:** The **'Late Drop-off/Pick-up Factor'** recorded the highest overall disagreement (22), 
+        distributed across Rural (6), Suburban (4), and significantly in Urban areas (12). This high count (11 Disagree, 11 Strongly Disagree) 
+        suggests that urban respondents do not view drop-off timing as a primary driver of congestion compared to other infrastructure issues.
+        * **Infrastructure Consensus:** Conversely, the **'Narrow Road Factor'** (5) received the least disagreement, 
+        signifying a broad recognition that physical road constraints are undeniable contributors to traffic.
+        """)
+
+    # 2. Category-Specific Top/Bottom Analysis
+    st.markdown("### **Categorical Breakdown (Top & Bottom Patterns)**")
+    
+    col_a, col_b = st.columns(2)
+    
+    with col_a:
+        st.info("**Factors: Behavioral vs. Structural**")
+        st.write("""
+        - **Highest Disagreement:** *Students Not Sharing Vehicles* (33).  
+          **Why:** This reveals a strong resistance to behavioral changes. Respondents likely view personal vehicle use as a necessity rather than a choice.
+        - **Lowest Disagreement:** *Narrow Road Factor* (5).  
+          **Why:** Infrastructure flaws are visible and objective, leading to high levels of agreement (low disagreement).
+        """)
+
+        st.info("**Effects: Cause & Effect Ambiguity**")
+        st.write("""
+        - **Highest Disagreement:** *Unintended Road Accidents Effect* (11).  
+          **Why:** Specifically in Urban areas (9 counts), this suggests an unclear understanding of the direct link between congestion and accidents. Respondents may feel congestion causes 'tension' rather than actual collisions.
+        - **Lowest Disagreement:** *Time Wastage Effect* (2).  
+          **Why:** There is nearly universal agreement that traffic wastes time; it is the most recognized consequence of congestion.
+        """)
+
+    with col_b:
+        st.info("**Steps: Policy Acceptance**")
+        st.write("""
+        - **Highest Disagreement:** *Vehicle Sharing Step* (14).  
+          **Why:** With 8 Disagree and 6 Strongly Disagree counts across all areas, this indicates a lack of public "buy-in" for proposals that require personal behavioral shifts or sharing private space.
+        - **Lowest Disagreement:** *Traffic Officers Step* (2).  
+          **Why:** Respondents prefer external management (police/officers) over personal changes (sharing rides), as it places the burden of solution on the authorities.
+        """)
+
+    # 3. Final Conclusion Block
+    st.success("""
+    ### **Conclusion**
+    The patterns reveal a significant trend: **Respondents are most likely to disagree with items that require personal behavioral changes.** The most popular choices of disagreement in each category—**'Students Not Sharing Vehicles'** (Factor), 
+    **'Unintended Road Accidents Effect'** (Effect), and **'Vehicle Sharing Step'** (Step)—demonstrate that while 
+    infrastructure issues are widely acknowledged, behavioral interventions face steep resistance across Rural, 
+    Suburban, and Urban landscapes.
+    """)
 # ---------------------------------------------------------
 # 5. CATEGORY ANALYSIS (Stacked Chart & Category Table)
 # ---------------------------------------------------------

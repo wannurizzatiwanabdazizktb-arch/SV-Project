@@ -108,9 +108,30 @@ st.markdown('</div>', unsafe_allow_html=True)
 # ---------------------------------------------------------
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------
-with st.expander("🔍 View Key Disagreement Insights", expanded=False):
-    st.subheader("Disagreement Count Matrix")
+
+# Set expanded=False to ensure the expander is closed when the page loads
+with st.expander("Data Disagreement Across Area Type Table", expanded=False):
+    
+    # Custom Styled Subheader using HTML and CSS
+    st.markdown("""
+        <style>
+            .matrix-title {
+                font-family: 'Inter', sans-serif;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #1e3c72; /* Matches your header theme */
+                margin-top: 10px;
+                margin-bottom: 15px;
+            }
+        </style>
+        <div class="matrix-title">Disagreement Count Matrix</div>
+    """, unsafe_allow_html=True)
+    
+    # Display the styled dataframe
     st.dataframe(disagree_area_type_original, use_container_width=True)
+
+# Divider for clean separation
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # 6. KPI METRICS & INSIGHTS

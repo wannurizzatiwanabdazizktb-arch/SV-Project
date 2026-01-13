@@ -1,3 +1,7 @@
+# ---------------------------------------------------------
+# Disagreement Analysis Across Area type
+# Nurul Ain Maisarah Binti Hamidin | S22A0064
+# ---------------------------------------------------------
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -69,9 +73,6 @@ if merged_df is None:
     st.error("CSV file not found or data format is incorrect. Please check 'cleaned_data.csv'.")
     st.stop()
 
-# ---------------------------------------------------------
-# 3. CUSTOM STYLES (Refined for Aesthetics)
-# ---------------------------------------------------------
 st.markdown("""
 <style>
     /* Main Title & Subtitle logic remains the same */
@@ -253,9 +254,6 @@ def load_and_process_data():
 
 heatmap_df = load_and_process_data()
 
-# ---------------------------------------------------------
-# 3. HEADER
-# ---------------------------------------------------------
 st.markdown("""
     <style>
         .matrix-title {
@@ -289,7 +287,7 @@ st.markdown("""
 # --- 1. CONFIGURATION & DATA ---
 # Ensure merged_df and column lists are defined before this block
 
-with st.expander("📊 Heatmap, Trends & Strategic Insights", expanded=True):
+with st.expander("Heatmap, and Stacked Bar", expanded=False):
     
     # --- OBJECTIVE SECTION ---
     st.markdown("""
@@ -395,7 +393,6 @@ with st.expander("📊 Heatmap, Trends & Strategic Insights", expanded=True):
     st.divider()
     
     # 1. METHODOLOGY JUSTIFICATION
-    st.subheader("📊 Why Use a Heatmap and Horizontal Bar Chart")
     col_v1, col_v2 = st.columns(2)
     with col_v1:
         st.markdown("""
@@ -412,7 +409,7 @@ with st.expander("📊 Heatmap, Trends & Strategic Insights", expanded=True):
     st.divider()
 
     # 2. CATEGORICAL BREAKDOWN
-    st.subheader("🔍 Categorical Analysis: Understanding Respondent Disagreement")
+    st.subheader("Categorical Analysis: Understanding Respondent Disagreement")
 
     # --- FACTOR ANALYSIS ---
     with st.container():
@@ -472,13 +469,10 @@ with st.expander("📊 Heatmap, Trends & Strategic Insights", expanded=True):
     The combined use of heatmaps and horizontal bar charts successfully uncovers both ranking and spatial patterns of disagreement, supporting a deeper understanding of how perceptions differ across area types. These insights are valuable for policymakers when prioritizing traffic congestion interventions that align with public acceptance.
     """)
 # ---------------------------------------------------------
-# 5. Stacked Bar Chart with Table & Insight
+# 5. Stacked Bar Chart 
 # ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import plotly.express as px
 
-with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
+with st.expander("Stacked Bar chart", expanded=False):
     
     # --- OBJECTIVE SECTION ---
     st.markdown("""

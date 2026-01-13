@@ -208,7 +208,7 @@ st.divider() # Visual separator
 ---------------------------------------------------------
 # 1. DATA PROCESSING (Must come BEFORE visualizations)
 # ---------------------------------------------------------
-
+import plotly.graph_objects as go
 # Define your columns if not already defined
 likert_cols = [
     'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',

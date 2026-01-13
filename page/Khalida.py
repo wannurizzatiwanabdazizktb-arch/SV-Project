@@ -111,16 +111,16 @@ st.plotly_chart(fig1, use_container_width=True)
 st.markdown("""  
 with st.expander("📌 Interpretation"):
     st.markdown("""
-    **Interpretation:**  
-    This visualization ranks the perceived effects of traffic congestion around school areas
-    based on their mean Likert scores. Effects with higher mean values indicate stronger
-    agreement among respondents that these issues are significant consequences of congestion.
+**Interpretation:**  
+This visualization ranks the perceived effects of traffic congestion around school areas    
+based on their mean Likert scores. Effects with higher mean values indicate stronger
+agreement among respondents that these issues are significant consequences of congestion.
 
-    The results indicate that *time wastage* and *students arriving late to school* are among
-    the most strongly perceived effects. This suggests that congestion primarily disrupts
-    daily routines and punctuality, which may indirectly affect academic performance.
-    Lower-ranked effects, while still relevant, are perceived as comparatively less severe.
-    """)
+The results indicate that *time wastage* and *students arriving late to school* are among
+the most strongly perceived effects. This suggests that congestion primarily disrupts
+daily routines and punctuality, which may indirectly affect academic performance.
+Lower-ranked effects, while still relevant, are perceived as comparatively less severe.
+""")
 
 # ================= 2. BOX PLOTS =================
 st.subheader(f"2️⃣ Distribution of {chosen_effect}")
@@ -157,15 +157,15 @@ st.markdown("""
 with st.expander("📌 Interpretation"):
     st.markdown("""
     **Interpretation:**  
-    The box plots illustrate how perceptions of the selected congestion effect vary across
-    gender and respondent status. Differences in median values reflect variation in perceived
-    severity between groups.
+The box plots illustrate how perceptions of the selected congestion effect vary across
+gender and respondent status. Differences in median values reflect variation in perceived
+severity between groups.
 
-    A higher median score indicates stronger agreement that the effect is caused by traffic
-    congestion. Wider interquartile ranges suggest greater diversity of opinions, whereas
-    narrower ranges indicate more consistent perceptions. These findings imply that personal
-    roles and demographic factors influence how congestion impacts individuals.
-    """)
+A higher median score indicates stronger agreement that the effect is caused by traffic
+congestion. Wider interquartile ranges suggest greater diversity of opinions, whereas
+narrower ranges indicate more consistent perceptions. These findings imply that personal
+roles and demographic factors influence how congestion impacts individuals.
+""")
 
 # ================= 3. GROUPED BAR =================
 st.subheader("3️⃣ Key Effects by Status")
@@ -192,14 +192,14 @@ st.markdown("""
 with st.expander("📌 Interpretation"):
     st.markdown("""
     **Interpretation:**  
-    This grouped bar chart compares mean scores of key congestion effects across respondent
-    status groups. Variations in mean scores indicate differences in how each group experiences
-    or perceives traffic congestion.
+This grouped bar chart compares mean scores of key congestion effects across respondent
+status groups. Variations in mean scores indicate differences in how each group experiences
+or perceives traffic congestion.
 
-    Respondent groups with higher mean scores are more strongly affected by congestion-related
-    issues. For example, higher scores among students or parents suggest that these groups are
-    more directly exposed to congestion during school commuting hours.
-    """)
+Respondent groups with higher mean scores are more strongly affected by congestion-related
+issues. For example, higher scores among students or parents suggest that these groups are
+more directly exposed to congestion during school commuting hours.
+""")
 
 # ================= 4. HEATMAP =================
 st.subheader("4️⃣ Cause–Effect Correlation Heatmap")
@@ -220,15 +220,15 @@ st.markdown("""
 with st.expander("📌 Interpretation"):
     st.markdown("""
     **Interpretation:**  
-    The heatmap presents the correlation between identified causes and effects of traffic
-    congestion. Stronger correlations indicate that respondents who agree with a particular
-    cause also tend to agree with its associated effects.
+The heatmap presents the correlation between identified causes and effects of traffic
+congestion. Stronger correlations indicate that respondents who agree with a particular
+cause also tend to agree with its associated effects.
 
-    Notably, factors such as *lack of parking space* and *narrow roads* show stronger
-    relationships with *time wastage* and *fuel wastage*. This suggests that infrastructural
-    limitations play a significant role in contributing to congestion-related problems around
-    school areas.
-    """)
+Factors such as *lack of parking space* and *narrow roads* show stronger
+relationships with *time wastage* and *fuel wastage*. This suggests that infrastructural
+limitations play a significant role in contributing to congestion-related problems around
+school areas.
+""")
 
 # ================= 5. STACKED BAR =================
 st.subheader(f"5️⃣ Likert Distribution of {chosen_effect} by Gender")
@@ -257,15 +257,15 @@ else:
 st.markdown("""  
 with st.expander("📌 Interpretation"):
     st.markdown("""
-    **Interpretation:**  
-    This stacked bar chart illustrates the distribution of Likert-scale responses by gender.
-    A higher proportion of responses in the ‘Agree’ and ‘Strongly Agree’ categories indicates
-    strong consensus regarding the selected congestion effect.
+**Interpretation:**  
+This stacked bar chart illustrates the distribution of Likert-scale responses by gender.
+A higher proportion of responses in the ‘Agree’ and ‘Strongly Agree’ categories indicates
+strong consensus regarding the selected congestion effect.
 
-    Differences in response distribution between genders suggest variation in perception or
-    experience of congestion. This visualization complements mean-based analysis by revealing
-    the overall response pattern.
-    """)
+Differences in response distribution between genders suggest variation in perception or
+experience of congestion. This visualization complements mean-based analysis by revealing
+the overall response pattern.
+""")
 
 # ================= 6. VIOLIN PLOT =================
 st.subheader(f"6️⃣ Distribution of {chosen_effect} by Area Type")
@@ -283,14 +283,14 @@ st.plotly_chart(fig7, use_container_width=True)
 st.markdown("""  
 with st.expander("📌 Interpretation"):
     st.markdown("""
-    **Interpretation:**  
-    The violin plot shows the distribution of responses across different area types.
-    Concentration of responses at higher Likert scores indicates greater perceived severity
-    of congestion effects in certain areas.
+**Interpretation:**  
+The violin plot shows the distribution of responses across different area types.
+Concentration of responses at higher Likert scores indicates greater perceived severity
+of congestion effects in certain areas.
 
-    Differences between area types suggest that geographic context influences congestion
-    experiences. Areas with denser traffic conditions tend to report stronger agreement on
-    negative congestion effects.
-    """)
+Differences between area types suggest that geographic context influences congestion
+experiences. Areas with denser traffic conditions tend to report stronger agreement on
+negative congestion effects.
+""")
 
    

@@ -266,7 +266,7 @@ st.markdown("""
 # ---------------------------------------------------------
 # 4. SINGLE COMBINED EXPANDER
 # ---------------------------------------------------------
-with st.expander("🔍 Detailed Disagreement Analysis (Heatmap, Bar Chart & Table)", expanded=True):
+with st.expander("Heatmap, Horizontal Bar Chart", expanded=False):
     
     # --- PART A: HEATMAP ---
     st.subheader("1. Disagreement Distribution Heatmap")

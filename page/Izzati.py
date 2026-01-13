@@ -141,6 +141,16 @@ fig.update_layout(legend=dict(orientation="h", y=-0.1))
 # --- Show figure in Streamlit ---
 st.plotly_chart(fig, use_container_width=True)
 
+# ---  Interpretation ---
+st.markdown(
+    """
+    <div style="text-align: justify;">
+    The distribution of congestion effects in rural areas reveals that the impact is spread quite equally across multiple areas with minor differences that highlight priorities. Time wastage emerges as the most significant effect which highlights how traffic reduces daily efficiency and production. Closely aligned are pressure on road users and students arriving late to school, which point to both psychological stress and educational disruption as critical social effects. Fuel waste has led to economic effects, and unintentional traffic accidents draw attention to safety concerns that worsen the issue. Although environmental pollution ranks lowest, its presence signals long-term sustainability concerns that cannot be ignored. The visualization suggests that congestion in rural areas is not dominated by a single effect but rather creates a multi-layered impact. Effective treatments must be comprehensive that address both current road user suffering and ongoing root causes according to this balanced distribution.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 #------------------------------------------------
 # Rectangular Correlation Matrix: Factors Vs Effects
 #------------------------------------------------

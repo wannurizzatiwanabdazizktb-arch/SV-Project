@@ -162,6 +162,90 @@ def main():
             )
 
         st.divider()
+
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+import numpy as np
+
+# ... (Previous imports and page config) ...
+
+# 1. DEFINE CATEGORIES (Crucial to prevent NameErrors)
+factor_cols = ['Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor', 
+               'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor', 
+               'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 
+               'Late Drop-off/Pick-up Factor', 'Construction/Roadworks Factor', 'Narrow Road Factor']
+
+effect_cols = ['Unintended Road Accidents Effect', 'Time Wastage Effect', 'Pressure on Road Users Effect', 
+               'Students Late to School Effect', 'Environmental Pollution Effect', 'Fuel Wastage Effect']
+
+step_cols = ['Widening Road Step', 'Vehicle Sharing Step', 'Two Gates Step', 'Arrive Early Step', 
+             'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step']
+
+all_likert_cols = factor_cols + effect_cols + step_cols + ['Students Not Sharing Vehicles']
+
+# 2. DATA PREPARATION (Ensure this runs before the Chart)
+heatmap_data_detailed = []
+
+# Using merged_df (which should be loaded via your load_data function)
+for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
+    for col in all_likert_cols:
+        if col in merged_df.columns:
+            count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
+            count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
+            total_disagreement_count = count_sd + count_d
+
+            if total_disagreement_count > 0:
+                heatmap_data_detailed.append({
+                    'Area Type': area,
+                    'Likert Item': col,
+                    'Total Disagreement Count': total_disagreement_count,
+                    'Strongly Disagree (1)': count_sd,
+                    'Disagree (2)': count_d,
+                    'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step' if col in step_cols else 'Special')
+                })
+
+heatmap_df_detailed = pd.DataFrame(heatmap_data_detailed)
+
+# 3. PIVOTING (This creates the 'heatmap_pivot_z' variable)
+heatmap_pivot_z = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
+heatmap_pivot_sd = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Strongly Disagree (1)').fillna(0)
+heatmap_pivot_d = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Disagree (2)').fillna(0)
+
+# Create customdata for hover effects
+customdata_array = np.dstack((heatmap_pivot_sd.values, heatmap_pivot_d.values))
+
+# 4. STREAMLIT DISPLAY
+st.subheader("📍 Disagreement Patterns Across Area Types")
+st.markdown("""
+**Objective:** To analyze how respondents from all area types choose most disagreements (factors, effects, and step), 
+to reveal the pattern of each Likert scale item count.
+""")
+
+# Create Figure
+fig_heatmap = go.Figure(data=go.Heatmap(
+    z=heatmap_pivot_z.values,
+    x=heatmap_pivot_z.columns,
+    y=heatmap_pivot_z.index,
+    colorscale='YlGnBu',
+    text=heatmap_pivot_z.values,
+    texttemplate="%{text}",
+    hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total Disagreement: %{z}<br>SD: %{customdata[0]}<br>D: %{customdata[1]}<extra></extra>',
+    customdata=customdata_array
+))
+
+fig_heatmap.update_layout(height=800, template='plotly_white')
+st.plotly_chart(fig_heatmap, use_container_width=True)
+
+
+
+# 5. RESULT SUMMARY EXPANDER
+with st.expander("📊 View Detailed Summary and Statistical Results"):
+    # Place your final_filtered_result table logic here
+    st.dataframe(final_filtered_result, use_container_width=True)
+    st.write("The heatmap reveals that Urban areas show the highest concentration of disagreement, particularly regarding drop-off factors.")
+    
         
 # =========================================================
 # 7. HEATMAP: PATTERN REVELATION

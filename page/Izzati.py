@@ -93,6 +93,15 @@ st.write(
     """
 )
 
+st.markdown(
+    """
+    <div style="text-align: justify;">
+    Rural traffic congestion infornt of school is perceived to be driven mainly by infrastructure challenges, with narrow roads and construction works identified as the most critical causes nearly 90% agreement, followed closely by damaged roads and population growth. Secondary concerns such as limited parking, rainy weather, and undisciplined drivers also contribute significantly. While practical issues like single gate access and late commuting habits are seen as moderately impactful. At the lowest level, fewer than half of respondents view students not sharing vehicles as a factor that contribute to trafic congestion infront of school. Overall, the visualization underscores that physical road conditions and infrastructure limitations are the dominant drivers of congestion in rural areas school, while behavioral and scheduling factors play supporting roles.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 #--------------------------------------------------------------------------
 # Pie Chart: Percentage Distribution of Effect From The Traffic Congestion.
 #--------------------------------------------------------------------------

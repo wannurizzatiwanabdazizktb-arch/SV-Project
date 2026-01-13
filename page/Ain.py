@@ -120,15 +120,6 @@ with st.expander("Data Disagreement Across Area Type Table", expanded=False):
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 6. KPI METRICS & INSIGHTS
-# ---------------------------------------------------------
-To create a "bolder box" look for your metrics on a white background, we can wrap the columns in a custom-styled div. This will give each metric its own card-like appearance with a subtle shadow and border, which looks very modern in Streamlit.
-
-Here is the updated code:
-
-Python
-
-# ---------------------------------------------------------
 # 5. SUMMARY METRICS BOX
 # ---------------------------------------------------------
 st.markdown("""

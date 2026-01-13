@@ -59,7 +59,6 @@ try:
         col_m3.metric("Major Impact", top_impact_name)
 
         st.info(f"""
-        **Quick Insight:**
         Analysis of the collected data identifies **{top_factor_name}** as the leading contributor to traffic congestion in the studied areas. 
         This congestion significantly leads to **{top_impact_name}** among road users. 
         The following charts provide a detailed breakdown of these factors by demographic and location.

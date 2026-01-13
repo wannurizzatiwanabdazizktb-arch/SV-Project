@@ -145,74 +145,32 @@ with st.expander("Disagreement Count Across Area Type", expanded=False):
 # --------------------
 # 6. Summary Box
 # --------------------
-# --- 1. HEADER & METRICS ---
-st.markdown("""
-<style>
-    /* Container for the metric cards */
-    .metric-container {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    /* Individual Card Style */
-    .metric-card {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0; /* Light gray border */
-        padding: 20px;
-        border-radius: 8px;
-        text-align: center;
-        flex: 1;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .metric-label {
-        color: #64748b; /* Slate gray text */
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 8px;
-    }
-    .metric-value {
-        color: #0f172a; /* Near black text */
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
-    /* Clean Divider */
-    .clean-divider {
-        height: 1px;
-        background-color: #e2e8f0;
-        margin: 20px 0 40px 0;
-    }
-</style>
-""", unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# 2. SUMMARY OVERVIEW SECTION
-# ---------------------------------------------------------
+# --- 1. PROFESSIONAL MONOCHROME STYLES ---
 st.markdown("""
 <style>
-    /* Professional Slate Metric Styling */
+    /* Professional Slate Metric Styling for native st.metric */
     [data-testid="stMetric"] {
         background-color: #ffffff;
-        border: 1px solid #e2e8f0; /* Soft border */
+        border: 1px solid #e2e8f0; /* Soft gray border */
         padding: 15px;
-        border-radius: 5px;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
-    /* Set metric value to deep black */
+    /* Set metric value to deep black for high contrast */
     [data-testid="stMetricValue"] {
         color: #000000 !important;
+        font-weight: 700;
     }
-    /* Set metric label to dark gray */
+    /* Set metric label to professional dark gray */
     [data-testid="stMetricLabel"] {
         color: #475569 !important;
+        font-size: 0.9rem;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------
-# 2. SUMMARY OVERVIEW
-# --------------------
+# --- 2. SUMMARY OVERVIEW SECTION ---
 st.markdown("### 📊 Summary Overview")
 
 col1, col2, col3, col4 = st.columns(4)
@@ -245,6 +203,4 @@ col4.metric(
     border=True
 )
 
-st.divider()
-
-)
+st.divider() # Visual separator

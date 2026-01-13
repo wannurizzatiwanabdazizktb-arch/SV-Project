@@ -29,7 +29,7 @@ try:
 
     # --- HEADER SECTION ---
     st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
-    st.write("This visual analyzes factors causing traffic congestion and its impact on road users.")
+    st.write("This visual analyzes the relationship between the factor causing traffic congestion and impact on road users as weel as evaluate the effectiveness of the proposed intervention measure by taking into the influence of the demographic profile of the respondent and differences in area categories at the study location.")
 
     st.markdown("---")
 

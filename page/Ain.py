@@ -122,3 +122,115 @@ with m_col4:
     )
 
 st.markdown("---")
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
+
+# ---------------------------------------------------------
+# 1. PAGE CONFIGURATION
+# ---------------------------------------------------------
+st.set_page_config(page_title="Traffic Survey Analysis", page_icon="📊", layout="wide")
+
+# ---------------------------------------------------------
+# 2. DATA LOADING (Updated to support Heatmap logic)
+# ---------------------------------------------------------
+@st.cache_data
+def load_and_process_data():
+    try:
+        df = pd.read_csv("cleaned_data.csv")
+        likert_cols = df.columns[3:28].tolist()
+        
+        # Categorize columns
+        factor_cols = [col for col in likert_cols if 'Factor' in col]
+        effect_cols = [col for col in likert_cols if 'Effect' in col]
+        step_cols   = [col for col in likert_cols if 'Step' in col]
+        
+        # Prepare Heatmap Data
+        heatmap_data = []
+        for area in df['Area Type'].unique():
+            for col in likert_cols:
+                count_sd = df[(df['Area Type'] == area) & (df[col] == 1)].shape[0]
+                count_d  = df[(df['Area Type'] == area) & (df[col] == 2)].shape[0]
+                total = count_sd + count_d
+                
+                category = 'Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step'
+                if col == 'Students Not Sharing Vehicles': category = 'Special'
+                
+                heatmap_data.append({
+                    'Area Type': area, 'Likert Item': col, 'Total': total,
+                    'SD': count_sd, 'D': count_d, 'Category': category
+                })
+        
+        return df, pd.DataFrame(heatmap_data), likert_cols, factor_cols, effect_cols, step_cols
+    except Exception as e:
+        st.error(f"Error: {e}")
+        return None, None, None, None, None, None
+
+merged_df, heatmap_df, likert_cols, factor_cols, effect_cols, step_cols = load_and_process_data()
+
+# ---------------------------------------------------------
+# 3. VISUALIZATION FUNCTIONS
+# ---------------------------------------------------------
+
+def draw_heatmap(df_heat):
+    pivot_z = df_heat.pivot(index='Likert Item', columns='Area Type', values='Total').fillna(0)
+    pivot_sd = df_heat.pivot(index='Likert Item', columns='Area Type', values='SD').fillna(0)
+    pivot_d = df_heat.pivot(index='Likert Item', columns='Area Type', values='D').fillna(0)
+
+    # Create customdata for SD and D counts
+    customdata = np.stack([pivot_sd.values, pivot_d.values], axis=-1)
+
+    fig = go.Figure(data=go.Heatmap(
+        z=pivot_z.values, x=pivot_z.columns, y=pivot_z.index,
+        colorscale='YlGnBu', text=pivot_z.values, texttemplate="%{text}",
+        customdata=customdata,
+        hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total: %{z}<br>SD (1): %{customdata[0]}<br>D (2): %{customdata[1]}<extra></extra>'
+    ))
+    fig.update_layout(height=800, title="Disagreement Heatmap (SD & D Breakdown)")
+    return fig
+
+def draw_bar_chart(df_heat):
+    # Filter out the 'Special' category/item
+    filtered = df_heat.groupby('Likert Item').agg({'Total': 'sum'}).reset_index()
+    filtered = filtered[filtered['Likert Item'] != 'Students Not Sharing Vehicles']
+    filtered = filtered.sort_values('Total', ascending=True)
+
+    fig = px.bar(filtered, x='Total', y='Likert Item', orientation='h',
+                 color='Total', color_continuous_scale='Viridis', height=700)
+    fig.update_layout(template='plotly_white', title="Overall Disagreement (Excl. Outliers)")
+    return fig
+
+# ---------------------------------------------------------
+# 4. STREAMLIT LAYOUT
+# ---------------------------------------------------------
+st.title("Traffic Congestion Survey: Analysis of Disagreement")
+
+# SECTION 1: HEATMAP
+with st.expander("🌡️ Disagreement Heatmap (Detailed Breakdown)", expanded=True):
+    st.plotly_chart(draw_heatmap(heatmap_df), use_container_width=True)
+
+# SECTION 2: BAR CHART
+with st.expander("📊 Total Disagreement Rankings", expanded=False):
+    st.plotly_chart(draw_bar_chart(heatmap_df), use_container_width=True)
+
+# SECTION 3: SUMMARY TABLE
+with st.expander("📋 Most & Least Disagreed Items (Summary Table)", expanded=False):
+    # Logic to find extremes per category
+    summary_rows = []
+    # 1. Special case
+    summary_rows.append(heatmap_df[heatmap_df['Likert Item'] == 'Students Not Sharing Vehicles'].groupby('Likert Item').sum(numeric_only=True).reset_index())
+    
+    # 2. Category extremes
+    for cat in ['Factor', 'Effect', 'Step']:
+        cat_data = heatmap_df[heatmap_df['Category'] == cat].groupby('Likert Item').sum(numeric_only=True).reset_index()
+        if not cat_data.empty:
+            cat_sorted = cat_data.sort_values('Total', ascending=False)
+            summary_rows.append(cat_sorted.iloc[[0]])  # Most
+            if len(cat_sorted) > 1:
+                summary_rows.append(cat_sorted.iloc[[-1]]) # Least
+    
+    final_table = pd.concat(summary_rows).rename(columns={'Total': 'Total Count', 'SD': 'Total SD (1)', 'D': 'Total D (2)'})
+    st.table(final_table[['Likert Item', 'Total Count', 'Total SD (1)', 'Total D (2)']])

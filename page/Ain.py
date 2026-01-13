@@ -58,22 +58,35 @@ if merged_df is None:
     st.stop()
 
 # ---------------------------------------------------------
-# 3. CUSTOM STYLES (CSS)
+# 3. CUSTOM STYLES (MODERN MONOCHROME)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
     .center-title {
-        text-align: center; font-size: 2.2rem; font-weight: 800;
-        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        text-align: center; 
+        font-size: 2.2rem; 
+        font-weight: 800;
+        color: #1E293B; /* Deep Slate Gray */
         margin-bottom: 0.2rem;
     }
     .subtitle {
-        text-align: center; font-size: 1rem; color: #666; margin-bottom: 1rem;
+        text-align: center; 
+        font-size: 1rem; 
+        color: #64748b; 
+        margin-bottom: 1rem;
     }
     .divider {
-        height: 3px; background: linear-gradient(90deg, transparent, #4facfe, #764ba2, transparent);
-        margin: 10px auto 30px auto; width: 80%;
+        height: 2px; 
+        background: #e2e8f0; /* Soft gray line */
+        margin: 10px auto 30px auto; 
+        width: 90%;
+    }
+    /* Optional: Makes the metric cards look more professional on white */
+    div[data-testid="stMetric"] {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        padding: 15px;
+        border-radius: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -84,7 +97,6 @@ st.markdown("""
 st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
 # ---------------------------------------------------------
 # DATA PROCESSING: Disagreement Counts by Area Type
 # ---------------------------------------------------------

@@ -352,7 +352,6 @@ with st.expander("Heatmap, Horizontal Bar Chart & Insights", expanded=False):
     customdata_array = np.array(customdata_array)
 
     # --- PART A: DISPLAY HEATMAP ---
-    st.subheader("1. Area-wise Disagreement Heatmap")
     fig_heat = go.Figure(data=go.Heatmap(
         z=heatmap_pivot_z.values, x=heatmap_pivot_z.columns, y=heatmap_pivot_z.index,
         colorscale='YlGnBu', text=heatmap_pivot_z.values, texttemplate="%{text}",
@@ -368,7 +367,6 @@ with st.expander("Heatmap, Horizontal Bar Chart & Insights", expanded=False):
     col_left, col_right = st.columns([1.2, 1])
 
     with col_left:
-        st.subheader("2. Total Disagreement Trends")
         # Reuse heatmap_df_detailed for the bar chart
         bar_data = heatmap_df_detailed.groupby('Likert Item')['Total Disagreement Count'].sum().reset_index()
         bar_data = bar_data[bar_data['Likert Item'] != 'Students Not Sharing Vehicles']
@@ -380,8 +378,6 @@ with st.expander("Heatmap, Horizontal Bar Chart & Insights", expanded=False):
         st.plotly_chart(fig_bar, use_container_width=True)
 
     with col_right:
-        st.subheader("3. Key Insights Table")
-        
         # Aggregate logic for table
         overall_summary = heatmap_df_detailed.groupby(['Likert Item', 'Category']).agg({
             'Strongly Disagree (1)': 'sum',
@@ -410,14 +406,11 @@ with st.expander("Heatmap, Horizontal Bar Chart & Insights", expanded=False):
             final_table = pd.concat(result_rows, ignore_index=True)
             # Clean column names for display
             display_table = final_table[[
-                'Likert Item', 'Total Disagreement Count', 'Strongly Disagree (1)', 
-                'Disagree (2)', 'Rural areas', 'Suburban areas', 'Urban areas'
+                'Likert Item', 'Total Disagreement Count', 'Rural areas', 'Suburban areas', 'Urban areas'
             ]].rename(columns={'Total Disagreement Count': 'Total'})
             
             st.write("Top & Bottom items per category:")
             st.dataframe(display_table, use_container_width=True, hide_index=True)
-
-st.info("💡 **Tip:** Use the Heatmap to identify specific geographical issues and the Table for categorical extremes.")
 # ---------------------------------------------------------
 # 5. CATEGORY ANALYSIS (Stacked Chart & Category Table)
 # ---------------------------------------------------------

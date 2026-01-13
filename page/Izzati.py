@@ -179,7 +179,7 @@ st.plotly_chart(fig, use_container_width=True)
 #---------------------------------------------------------
 
 # --- Title Graph ---
-st.subheader("3. Radar Chart: Percentage Score of Effect From One Factor.")
+st.subheader("4. Radar Chart: Percentage Score of Effect From One Factor.")
 
 # --- Define values ---
 selected_factor = "Narrow Road Factor"
@@ -262,7 +262,7 @@ st.plotly_chart(fig, use_container_width=True)
 #----------------------------------------------------------------
 
 # --- Title Graph ---
-st.subheader("4. Stacked Bar Chart: Congestion Effect by Severity of a Key Traffic Factor.")
+st.subheader("5. Stacked Bar Chart: Congestion Effect by Severity of a Key Traffic Factor.")
 
 # --- Define Values ---
 key_factor = "Narrow Road Factor"

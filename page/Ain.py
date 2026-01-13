@@ -122,47 +122,75 @@ st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 # ---------------------------------------------------------
 # 6. KPI METRICS & INSIGHTS
 # ---------------------------------------------------------
-st.write("### Analysis Summary")
-st.info("Analysis of how respondents across all area types selected 'Strongly Disagree' and 'Disagree'.")
+To create a "bolder box" look for your metrics on a white background, we can wrap the columns in a custom-styled div. This will give each metric its own card-like appearance with a subtle shadow and border, which looks very modern in Streamlit.
 
+Here is the updated code:
+
+Python
+
+# ---------------------------------------------------------
+# 5. SUMMARY METRICS BOX
+# ---------------------------------------------------------
+st.markdown("""
+    <style>
+        .matrix-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        /* Custom Styling for the Metric "Box" */
+        [data-testid="stMetric"] {
+            background-color: #ffffff;
+            border: 2px solid #f0f2f6; /* Subtle border */
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Soft shadow */
+            transition: transform 0.2s ease-in-out;
+        }
+        [data-testid="stMetric"]:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+            border-color: #1e3c72; /* Border turns blue on hover */
+        }
+    </style>
+    <div class="matrix-title">Summary Statistics</div>
+""", unsafe_allow_html=True)
+
+# Create columns for metrics
 m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 
 with m_col1:
     st.metric(
-        label="Most Disagreement: Factor",
-        value="33",
-        help="Students Not Sharing Vehicles: Rural (9), Suburban (6), Urban (18)."
+        label="Total Disagreement",
+        value="191",
+        help="Rural Areas: 48 | Suburban Areas: 20 | Urban Areas: 123"
     )
 
 with m_col2:
     st.metric(
-        label="Most Disagreement: Effect",
-        value="11",
-        help="Unintended Road Accidents: Rural (1), Suburban (1), Urban (9)."
+        label="Strongly Disagree (1)",
+        value="82",
+        help="Rural Areas: 6 | Suburban Areas: 4 | Urban Areas: 72"
     )
 
 with m_col3:
     st.metric(
-        label="Most Disagreement: Step",
-        value="14",
-        help="Vehicle Sharing Step: Rural (6), Suburban (2), Urban (6)."
+        label="Disagree (2)",
+        value="109",
+        help="Rural Areas: 42 | Suburban Areas: 16 | Urban Areas: 51"
     )
 
 with m_col4:
     st.metric(
-        label="Lowest Disagreement",
-        value="2",
-        help="Pressure on Road User Effect: Rural (1), Suburban (0), Urban (1)."
+        label="Most Disagreement Item",
+        value="22",
+        help="Late Drop-off/Pick-up Factor | Rural Areas: 6 | Suburban Areas: 4 | Urban Areas: 12"
     )
 
+st.markdown("<br>", unsafe_allow_html=True) # Add some spacing
 st.markdown("---")
-
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-
 # ---------------------------------------------------------
 # 1. PAGE CONFIGURATION
 # ---------------------------------------------------------

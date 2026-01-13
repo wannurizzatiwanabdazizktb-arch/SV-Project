@@ -38,7 +38,6 @@ st.title("🚦 Interactive Analysis of Traffic Congestion Around Schools")
 st.markdown("""
 This interactive dashboard explores how traffic congestion around schools affects safety,
 time efficiency, stress, punctuality, environment, and fuel usage.
-Use the filters to explore different perspectives.
 """)
 
 # ================= SUMMARY METRICS =================

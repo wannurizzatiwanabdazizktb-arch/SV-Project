@@ -78,15 +78,6 @@ st.markdown("""
         letter-spacing: 0.5px; 
         margin-bottom: 0.5rem;
     }
-
-    /* Decorative Divider */
-    .divider {
-        height: 4px; 
-        background: linear-gradient(90deg, rgba(30,60,114,0) 0%, rgba(30,60,114,1) 50%, rgba(30,60,114,0) 100%);
-        margin: 15px auto 40px auto; 
-        width: 60%; 
-        border-radius: 10px;
-    }
     
 </style>
 """, unsafe_allow_html=True)

@@ -602,15 +602,10 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
 
     The findings highlight that real-life traffic experiences, particularly in urban areas, are more complex than the survey’s proposed assumptions.
     """)
-# ---------------------------------------------------------
-# 6. RURAL RESPONDENTS ANALYSIS (Bubble Chart & Table)
-# ---------------------------------------------------------
-
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=False):
+# -----------------------------------------
+# 6. BUBLE CHART [RURAL RESPONDEN SD VS D]
+# --------------------------------------------
+with st.expander("Bubble Chart", expanded=False):
     
     # --- 1. PREPARE RURAL DATA ---
     rural_df = merged_df[merged_df['Area Type'] == 'Rural areas']
@@ -643,20 +638,12 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
         # --- 2. OBJECTIVE SECTION ---
         st.markdown("""
         ### **Objective**
-        To analyze how the majority of rural respondents clearly reject specific survey items. This section compares the intensity of **Strongly Disagree (1)** versus **Disagree (2)** to understand the specific mindset of road users in low-traffic environments.
+        To analyze how the majority most clearly reject the rural respondent 
+        rate with comparison on strongly disagree (1) and disagree (2).
         """)
         st.divider()
 
         # --- 3. BUBBLE CHART ---
-        st.subheader("1. Disagreement Responses (1 vs 2) among Rural Respondents")
-        
-        # Why use this graph?
-        st.info("""
-        **Why Use a Bubble Chart?**
-        * **Intensity Visualization:** The size of the bubble represents the volume of disagreement, making the most rejected items immediately stand out.
-        * **Categorical Comparison:** It allows us to see how 'Factor', 'Effect', and 'Step' intensity differs across the two Likert levels (1 vs 2) in a single view.
-        """)
-
         df_bubble_rural = df_bubble_rural.sort_values(['Category', 'Count'])
 
         fig_bubble = px.scatter(
@@ -695,19 +682,28 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
 
         # --- 5. INTERPRETATION ---
         st.divider()
-        st.subheader("📝 Interpretation of Rural Disagreement")
-
         # Interpretation based on provided text
+         # Why use this graph?
+        st.info("""
+        **Why Use a Bubble Chart?** : The size of the bubble represents the volume of disagreement, making the most rejected items immediately stand out.
+        It allows us to see how 'Factor', 'Effect', and 'Step' intensity differs across the two Likert levels (1 vs 2) in a single view.
+        """)
         st.markdown(f"""
         <div style="background-color:#EBF5FB; padding:15px; border-radius:10px; border-left: 5px solid #2E86C1;">
         <strong>Strongly Disagree (1) Analysis:</strong><br>
-        It is clear from the data visualization that <strong>Strongly Disagree (1)</strong> responses are more visible, expressing sharp rejection of alleged congestion factors. Because of the lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5), meaning rural residents do not believe school-related activities significantly contribute to congestion.
+        It is clear from the data visualization that Strongly Disagree (1) responses are more visible, expressing sharp rejection of alleged congestion factors. 
+        **What** : Lower traffic volume in rural areas, <strong>"Late Drop-off/Pick-up Factor"</strong> displays the strongest number of disapproval responses (5), 
+        **Why** : Meaning rural residents do not believe school-related activities significantly contribute to congestion.
         <br><br>
         <strong>Effect & Step Rejection:</strong><br>
-        Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>. Rural respondents are likely unconvinced of a strong link between traffic and pollution because vehicular flow in their areas is much smoother than in urban settings.
+        Strong disagreement is also measured for the <strong>"Environmental Pollution Effect" (1)</strong> and <strong>"Special Drop-off Areas Step" (1)</strong>. 
+        **Why** : Rural respondents are likely unconvinced of a strong link between traffic and pollution because vehicular flow in their areas is much smoother than in urban settings.
         <br><br>
         <strong>Disagree (2) Analysis:</strong><br>
-        Responses under "Disagree (2)" are less common but reveal slight skepticism. The <strong>“Increasing Population Factor” (2)</strong> received the maximum number of disagreements in this category. While rural residents acknowledge population growth, they do not rate it as a serious cause of traffic problems. Similarly, the rejection of <strong>“Students Late to School Effect” (1)</strong> confirms that rural life is not closely related to urban traffic pressures.
+        Responses under "Disagree (2)" are less common but reveal slight skepticism. 
+        **What** : The <strong>“Increasing Population Factor” (2)</strong> received the maximum number of disagreements in this category. 
+        **Why** : While rural residents acknowledge population growth, they do not rate it as a serious cause of traffic problems. 
+        **What** : Similarly, the rejection of <strong>“Students Late to School Effect” (1)</strong> confirms that rural life is not closely related to urban traffic pressures.
         </div>
         """, unsafe_allow_html=True)
 
@@ -718,13 +714,9 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
 
     else:
         st.write("No disagreement data found for Rural areas.")
-# ---------------------------------------------------------        
-# FINAL FOOTER
-# ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
-
+# --------------------------------------------        
+# GROUP HORIZONTAL BAR CHART [URBAN SD VS D]
+# --------------------------------------------
 # --- 1. DEFINE YOUR COLUMN LISTS ---
 factor_cols = [
     'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
@@ -758,10 +750,7 @@ def classify_item(col):
         return 'Other'
 
 # --- 3. URBAN EXPANDER ---
-with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
-    
-    # Filter for Urban respondents
-    # (Assuming merged_df is already defined in your environment)
+with st.expander("Grouped Horizontal Bar Chart", expanded=False):
     urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
     
     disagreement_data = []
@@ -785,17 +774,12 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         # --- OBJECTIVE ---
         st.markdown("### **Objective**")
         st.write("""
-        This analysis investigates how the majority of urban respondents clearly reject the survey’s proposed perceptions. 
-        By comparing **Strongly Disagree (1)** and **Disagree (2)**, we identify whether urbanites outright deny or simply 
-        question the validity of specific traffic factors, effects, and steps.
+        This analysis how the majority most clearly reject urban respondent rate with 
+        comparison on strongly disagree (1) and disagree (2).
         """)
         st.divider()
 
         # --- PART A: GROUPED BAR CHART ---
-        st.subheader("1. Disagreement Responses (1 vs 2) among Urban Respondents")
-        
-        
-
         fig = go.Figure()
 
         # Strongly Disagree Trace (Dark Blue)
@@ -833,69 +817,54 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         st.divider()
 
         # --- PART B: SUMMARY TABLE ---
-        st.subheader("2. Summary Table: Urban Disagreement Counts")
         st.dataframe(disagreement_df[['Likert Scale Item', 'Item Category', 'Strongly Disagree (1)', 'Disagree (2)']], 
                      use_container_width=True, hide_index=True)
 
         st.divider()
 
-        # --- PART C: LONG ACADEMIC INTERPRETATION ---
-        st.subheader("📝 Deep-Dive Interpretation")
-
+        # --- PART C:INTERPRETATION ---
         st.write("""
         **Why Use a Grouped Horizontal Bar Chart?** This chart provides a side-by-side comparison of the intensity of rejection. 
-        Horizontal orientation is utilized to ensure that long survey item labels remain readable, while grouping allows us 
+        Horizontal orientation is utilized to ensure that long survey item labels remain readable, while grouping allows 
         to see at a glance whether respondents are 'Strongly' rejecting a point or simply 'Disagreeing'.
         """)
 
         # Analysis of Strongly Disagree (1)
         st.markdown("""
-        #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**Analysis of Strongly Disagree (1) Intensity**</span>
+        #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**Analysis of Strongly Disagree (1)**</span>
         """, unsafe_allow_html=True)
         st.write("""
         The visualization reveals that **‘Strongly Disagree (1)’** has a notable level of disagreement with various behavioral and structural theories of traffic congestion. 
-        Given the presence of various access routes as part of the sophisticated urban infrastructure, the **"Single Gate Factor"** records the highest level of strong disagreement (**9**) on the scale. 
-        This reveals that the urban public firmly disapproves of the single-entry point as a primary cause of congestion in a modern city layout.
-        
-        Furthermore, strongly disagree answers are significantly more prevalent in the **Factor section** than in the consequence (Effect) or action (Step) sections. 
-        This implies that the urban public prefers to refute the various survey root factors of congestion, viewing them as disconnected from their daily reality.
+        **What** :  The "Single Gate Factor" records the highest level of strong disagreement (9) on the scale. 
+        **Why** : Respondents do not believe a single gate significantly contributes to traffic congestion, as they see congestion as mainly caused by higher traffic volume and road conditions rather than access points.
         """)
 
         # Analysis of Disagree (2)
         st.markdown("""
-        #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2) Ambivalence**</span>
+        #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2)**</span>
         """, unsafe_allow_html=True)
         st.write("""
         The **‘Disagree (2)’** responses tend to be relatively high on most of the questions, reflecting a considerable but widespread level of disapproval. 
-        For example, items like **"Vehicle Sharing Step"** reflecting their ambivalence to the fact that they do not regard these factors as primary contributors to traffic congestion in cities.
-        
-        The overall pattern indicates that **‘Disagree (2)’** has been more common than ‘Strongly Disagree (1)’. This specifies that urban respondents are inclined to **query and question** rather than outright deny most reasons, impacts, and measures associated with congestion. It suggests a more nuanced skepticism compared to the firm rejection seen in rural areas.
+        **What** : Items like "Leaving Work Factor" and " Unintended Road Accidents Effect" are records the same highest level of disagreement (7)
+        **Why** : Reflecting their ambivalence to the fact that they do not regard these factors as primary contributors to traffic congestion in cities.
         """)
 
         # --- BEAUTIFUL SUMMARY BLOCK ---
         st.divider()
-        st.markdown("### **📌 Summary of Urban Sentiment**")
+        st.markdown("### **Summary of Urban Sentiment**)
         st.success("""
-        **The Urban Verdict:** Urban respondents act as the most active "skeptics" of the survey. 
-        While they strongly reject structural assumptions (like Single Gates), their general trend leans toward **Disagree (2)**. 
-        This indicates that for urbanites, traffic is an **ambiguous and multifaceted issue** where predefined causes and solutions 
+        Urban respondents act as the most active "skeptics" (Disagreement) of the survey. 
+        While they strongly reject structural assumptions (like Single Gates), their general trend leans toward Disagree (2). 
+        This indicates that for urbanites, traffic is an ambiguous and multifaceted issue where predefined causes and solutions 
         are often viewed as insufficient or out of touch with the systemic nature of city congestion.
         """)
 
     else:
         st.warning("No disagreement data found for Urban areas.")
-
-st.markdown("---")
-st.caption("Streamlit Dashboard created for Traffic Congestion Survey Analysis © 2026")
-# ---------------------------------------------------------
-# 8. SUBURBAN RESPONDENTS ANALYSIS (Radar Chart & Table)
-# ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-# --- SUBURBAN EXPANDER ---
-with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expanded=False):
+# -----------------------------------------
+# RADAR CHART  [ SUBURBAN ANALYSIS SD VS D
+# ------------------------------------------
+with st.expander("Radar Chart", expanded=False):
     
     # Filter for Suburban respondents
     suburban_df = merged_df[merged_df['Area Type'] == 'Suburban areas']
@@ -925,25 +894,22 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
         # --- OBJECTIVE SECTION ---
         st.markdown("### **Objective**")
         st.write("""
-        Analyze how the majority of suburban respondents clearly reject specific survey propositions. 
-        This section focuses on the rate of rejection by comparing **Strongly Disagree (1)** and **Disagree (2)** to identify the unique pain points and skepticism inherent in suburban commuting.
+        Analyze how the majority most clearly reject suburban respondent 
+        rate with comparison on strongly disagree (1) and disagree (2).
         """)
         st.divider()
-
-        # --- PART A: RADAR CHART (Dark Theme) ---
-        st.subheader("1. Disagreement Responses (1 vs 2) among Suburban Respondents")
         
         # Melt data for radar chart compatibility
         sub_melted = df_suburban.melt(
             id_vars=['Likert Item','Category'],
             value_vars=['Strongly Disagree (1)','Disagree (2)'],
             var_name='Disagreement Type',
-            value_name='Count'
+            value_name='Total Disagreement'
         )
 
         fig_radar = px.line_polar(
             sub_melted,
-            r='Count',
+            r='Total Disagreement',
             theta='Likert Item',
             color='Disagreement Type',
             line_close=True,
@@ -967,47 +933,39 @@ with st.expander("🏘️ Suburban Area Deep-Dive (Radar Chart & Summary)", expa
         st.divider()
 
         # --- PART B: SUMMARY TABLE ---
-        st.subheader("2. Suburban Disagreement Summary Table")
         st.dataframe(df_suburban[['Likert Item', 'Category', 'Strongly Disagree (1)', 'Disagree (2)']], 
                      use_container_width=True, hide_index=True)
 
         st.divider()
-
-        # --- PART C: LONG ACADEMIC INTERPRETATION ---
-        st.subheader("📝 Deep-Dive Interpretation")
-
         st.write("""
         **Why Use a Radar Chart?** A radar chart (or spider chart) is selected for the suburban analysis to visualize the 
-        "Disagreement Profile" or "Shape of Rejection." It allows us to see which specific survey dimensions are pulling 
+        disagreement type count with comparison. It allows to see which specific survey dimensions are pulling 
         the most weight, identifying whether the disagreement is balanced or skewed toward specific items.
         """)
 
         # Analysis of Strongly Disagree (1)
         st.markdown("""
-        #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**Analysis of Strongly Disagree (1) Rejection**</span>
+        #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**Analysis of Strongly Disagree (1)**</span>
         """, unsafe_allow_html=True)
         st.write("""
-        Within the **"Strongly Disagree (1)"** category, the item **"Vehicle Sharing Step" (2)** stands out with the greatest number of strong rejections. This data clearly demonstrates that suburban respondents strongly dislike car-sharing as a proposed solution to alleviate traffic problems. 
-        
-        This resistance likely stems from the unique nature of suburban life, where personal vehicle autonomy is highly valued. Concerns regarding personal comfort, flexibility, and the time constraints of shared transit make car-pooling steps culturally and practically unappealing to this demographic.
+        **What** : The item "Vehicle Sharing Step" (2) stands out with the greatest number of strong rejections. 
+        **Why** : This data clearly demonstrates that suburban respondents strongly dislike car-sharing as a proposed solution to alleviate traffic problems. 
         """)
 
         # Analysis of Disagree (2)
         st.markdown("""
-        #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2) Skepticism**</span>
+        #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2)**</span>
         """, unsafe_allow_html=True)
         st.write("""
-        The **“Disagree (2)”** responses, such as for the **“Late Drop-off/Pick-up Factor” (3)**, represent the highest volume of disagreement in this area. This pattern suggests that while suburban participants may not feel the need to "outright deny" these factors, they do not consider them to be major or relevant causes of traffic congestion in their specific neighborhoods.
-        
-        The Disagree (2) category generally shows higher frequencies than Strongly Disagree (1). This indicates a **weaker rather than strong rejection**, suggesting that suburbanites are skeptical of the survey's logic but are less aggressive in their dismissal compared to their urban counterparts.
+        **What** :  The “Late Drop-off/Pick-up Factor” (3), represent the highest volume of disagreement in this area. 
+        **Why** : This pattern suggests that while suburban participants may not feel the need to "outright deny" these factors, they do not consider them to be major or relevant causes of traffic congestion in their specific neighborhoods.
         """)
 
-        # --- BEAUTIFUL SUMMARY BLOCK ---
         st.divider()
-        st.markdown("### **📌 Summary of Suburban Sentiment**")
+        st.markdown("## **Summary of Suburban Sentiment**")
         
         st.info("""
-        **The Suburban Verdict:** Suburbanites reject **solutions (steps)** more than they reject **causes (factors)**. Their primary concern is maintaining the convenience of private travel. They do not view behavioral factors like school drop-offs as the primary issue, leaning toward a "mild disagreement" (Disagree 2) that suggests the survey's assumptions simply don't match their daily commuting patterns.
+        The Disagree (2) category shows higher frequencies than Strongly Disagree (1), indicating weaker rather than strong rejection.
         """)
 
     else:

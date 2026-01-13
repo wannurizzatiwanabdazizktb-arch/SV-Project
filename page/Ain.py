@@ -104,7 +104,9 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 # --------------------
 # 5. DATA DISPLAY 
 # --------------------
-with st.expander("📊 Disagreement Count Across Area Type", expanded=True):
+# Set expanded=False so the section is closed when the page loads
+with st.expander("📊 Disagreement Count Across Area Type", expanded=False):
+    
     result_original = {}
 
     for col in likert_cols:
@@ -117,8 +119,21 @@ with st.expander("📊 Disagreement Count Across Area Type", expanded=True):
     # Create the final DataFrame
     disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int)
 
-    # Simple Table Display
-    st.table(disagree_area_type_original)
+    # Professional Styling for the Dataframe
+    # We use a background gradient to make high values pop out immediately
+    styled_df = disagree_area_type_original.style \
+        .background_gradient(cmap='YlGnBu', axis=None) \
+        .highlight_max(axis=0, color='#FFD700') \
+        .format("{:,}")
+
+    # Display using st.dataframe for better horizontal handling of many columns
+    st.dataframe(
+        styled_df, 
+        use_container_width=True, 
+        height=250 # Adjusted height to fit the 3 rows + headers comfortably
+    )
+    
+    st.caption("💡 *Note: Use the horizontal scrollbar to view all factors. Yellow highlights indicate the highest disagreement per category.*")
 
 # --------------------
 # 6. Summary Box

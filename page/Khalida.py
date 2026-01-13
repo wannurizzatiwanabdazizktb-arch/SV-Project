@@ -266,3 +266,4 @@ if sub["Area Type"].nunique() > 0:
     st.pyplot(fig, clear_figure=True)
 else:
     st.info("No area type variation after filtering; violin plot not shown.")
+

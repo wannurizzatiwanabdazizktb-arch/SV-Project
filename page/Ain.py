@@ -288,182 +288,121 @@ st.markdown("""
 # ---------------------------------------------------------
 # --- 1. CONFIGURATION & DATA ---
 # Ensure merged_df and column lists are defined before this block
+import streamlit as st
+import pandas as pd
+import plotly.express as px
 
-with st.expander("Heatmap and Horizontal Bar Chart", expanded=False):
+with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
     
     # --- OBJECTIVE SECTION ---
     st.markdown("""
     ### **Objective**
-    Identify How respondents from all area types choose most and lowest disagreements items 
-    (factors, effects, and step), to reveal the pattern of each Likert scale item count.
+    Analyze how respondents from area type choose most disagreements (factors, effects, or step), 
+    revealing gaps between real-world experiences and the survey’s assumptions.
     """)
     st.divider()
 
-    # --- PART A: DATA PROCESSING ---
-    heatmap_data_detailed = []
-    for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
-        for col in all_likert_cols:
-            count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
-            count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
-            total_dis = count_sd + count_d
+    # --- PART A: STACKED BAR CHART ---
+    # Consistent color map for chart and background highlights
+    # Blue: Factor | Green: Step | Orange: Effect
+    cat_color_map = {
+        'Factor': '#1f77b4',  
+        'Effect': '#ff7f0e',  
+        'Step': '#2ca02c'
+    }
 
-            if total_dis >= 0: # Include 0s for complete pattern analysis
-                heatmap_data_detailed.append({
-                    'Area Type': area,
-                    'Likert Item': col,
-                    'Total Disagreement Count': total_dis,
-                    'Strongly Disagree (1)': count_sd,
-                    'Disagree (2)': count_d,
-                    'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step')
-                })
+    fig_stacked = px.bar(
+        heatmap_df, 
+        x='Area Type', 
+        y='Total', 
+        color='Category',
+        title='Disagreement Counts (1 & 2) by Category and Area Type',
+        labels={'Total': 'Number of Disagreements', 'Area Type': 'Area Type'},
+        color_discrete_map=cat_color_map,
+        hover_data={'Likert Item': True, 'Category': True, 'Total': True}
+    )
 
-    heatmap_df_detailed = pd.DataFrame(heatmap_data_detailed)
-
-    # --- PART B: HEATMAP ---
-    # Pivot and Reorder
-    heatmap_pivot_z = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
-    # Reorder index based on your categories
-    item_order = [i for i in (factor_cols + effect_cols + step_cols) if i in heatmap_pivot_z.index]
-    heatmap_pivot_z = heatmap_pivot_z.reindex(item_order)
-
-    fig_heat = go.Figure(data=go.Heatmap(
-        z=heatmap_pivot_z.values,
-        x=heatmap_pivot_z.columns,
-        y=heatmap_pivot_z.index,
-        colorscale='YlGnBu',
-        text=heatmap_pivot_z.values,
-        texttemplate="%{text}",
-        hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total Disagreement: %{z}<extra></extra>'
-    ))
-    fig_heat.update_layout(height=600, margin=dict(t=10, b=10), template='plotly_white')
-    st.plotly_chart(fig_heat, use_container_width=True)
-
+    fig_stacked.update_layout(
+        barmode='stack',
+        template='plotly_white',
+        height=500,
+        xaxis={'categoryorder':'total descending'}
+    )
+    
+    st.plotly_chart(fig_stacked, use_container_width=True)
+    
     st.divider()
 
-    # --- PART C: BAR & STRUCTURED TABLE ---
-    col_left, col_right = st.columns([1, 1.2])
+    # --- PART B: CATEGORY SUMMARY TABLE ---
+    # (Grouping and Merge logic remains the same)
+    category_summary = heatmap_df.groupby('Category').agg({
+        'Total': 'sum', 'SD': 'sum', 'D': 'sum'
+    }).reset_index()
 
-    with col_left:
-        bar_data = heatmap_df_detailed.groupby('Likert Item')['Total Disagreement Count'].sum().reset_index()
-        bar_data = bar_data.sort_values('Total Disagreement Count', ascending=True)
+    area_pivot = heatmap_df.pivot_table(
+        index='Category', columns='Area Type', values='Total', aggfunc='sum'
+    ).fillna(0).astype(int)
 
-        fig_bar = px.bar(bar_data, x='Total Disagreement Count', y='Likert Item', orientation='h',
-                         color='Total Disagreement Count', color_continuous_scale='Viridis')
-        fig_bar.update_layout(showlegend=False, height=500, margin=dict(l=150), template='plotly_white')
-        st.plotly_chart(fig_bar, use_container_width=True)
+    final_cat_table = category_summary.merge(area_pivot, on='Category')
+    
+    st.write("Consolidated disagreement counts across all survey categories:")
+    st.dataframe(final_cat_table, use_container_width=True, hide_index=True)
 
-    with col_right:
-        # Aggregate for insights
-        summary = heatmap_df_detailed.groupby(['Likert Item', 'Category']).agg({
-            'Total Disagreement Count': 'sum'
-        }).reset_index()
-        
-        area_pivot = heatmap_df_detailed.pivot_table(
-            index='Likert Item', columns='Area Type', values='Total Disagreement Count', fill_value=0
-        ).reset_index()
-        
-        final_summary_df = summary.merge(area_pivot, on='Likert Item')
-
-        # Create the specific "Top Factor, Bottom Factor..." structure
-        structured_rows = []
-        for cat in ['Factor', 'Effect', 'Step']:
-            cat_data = final_summary_df[final_summary_df['Category'] == cat].sort_values('Total Disagreement Count', ascending=False)
-            if not cat_data.empty:
-                # Add a Label column to help the user
-                top_row = cat_data.iloc[[0]].copy()
-                top_row.insert(0, 'Rank', f'Highest {cat}')
-                structured_rows.append(top_row)
-                
-                bottom_row = cat_data.iloc[[-1]].copy()
-                bottom_row.insert(0, 'Rank', f'Lowest {cat}')
-                structured_rows.append(bottom_row)
-
-        if structured_rows:
-            insight_table = pd.concat(structured_rows, ignore_index=True)
-            st.dataframe(
-                insight_table[['Rank', 'Likert Item', 'Total Disagreement Count', 'Rural areas', 'Suburban areas', 'Urban areas']],
-                use_container_width=True, hide_index=True
-            )
-
-# --- FORMAL ANALYSIS & STRATEGIC INSIGHTS SECTION ---
     st.divider()
     
-    # 1. METHODOLOGY JUSTIFICATION
-    st.subheader("Why Use a Heatmap and Horizontal Bar Chart")
-    col_v1, col_v2 = st.columns(2)
-    with col_v1:
-        st.markdown("""
-        **Heatmap:**
-        The heatmap effectively visualizes the intensity and distribution of disagreement across rural, suburban, and urban areas. It makes it easier to identify geographic concentration patterns, where darker shades immediately highlight items with stronger rejection in specific areas.
-        """)
-    with col_v2:
-        st.markdown("""
-        **Horizontal Bar Chart:**
-        This allows direct comparison of total disagreement counts. It clearly ranks items from highest to lowest, supporting quick identification of dominant and minimal rejection patterns across the entire dataset.
-        """)
-    st.caption("Together, these visualizations show both magnitude (bar chart) and spatial distribution (heatmap) of disagreement.")
+    # --- WHY USE A STACKED BAR CHART? ---
+    st.markdown("""
+    #### **🌈 Why Use a Stacked Bar Chart?**
+    * **Visualizing the 'Rejector':** Identifies which specific area drives the rejection.
+    * **Part-to-Whole Comparison:** Shows the **'Factor'** category accounts for the majority of total disagreements.
+    * **Trend Separation:** Makes "Urban" dominance immediately visible.
+    """)
 
     st.divider()
+    st.subheader("🔍 Why Respondents Rejected These Suggestions")
 
-    # 2. CATEGORICAL BREAKDOWN
-    st.subheader("Understanding Respondent Disagreement")
+    # --- HIGHLIGHTED SUBTITLES SECTION ---
 
-    # --- FACTOR ANALYSIS ---
-    with st.container():
-        st.markdown("### **1. Factor Analysis**")
-        f_col1, f_col2 = st.columns(2)
-        with f_col1:
-            st.error("**Highest Disagreement Factor** \n*Late Drop-off/Pick-up Factor* (Total = 22)")
-            st.write("""
-            **Why:** This factor shows strong disagreement particularly in urban areas (12), followed by rural (6) and suburban (4). This suggests that respondents, especially in urban settings, may not view late drop-offs or pick-ups as a major contributor to traffic congestion compared to structural issues like road capacity.
-            """)
-        with f_col2:
-            st.success("**Lowest Disagreement Factor** \n*Narrow Road Factor* (Total = 5)")
-            st.write("""
-            **Why:** The low disagreement implies general acceptance that narrow roads contribute to congestion. Notably, disagreement is only observed in urban areas (5), while rural and suburban respondents show no disagreement, indicating consensus across most regions.
-            """)
-
-    # --- EFFECT ANALYSIS ---
-    with st.container():
-        st.markdown("### **2. Effect Analysis**")
-        e_col1, e_col2 = st.columns(2)
-        with e_col1:
-            st.error("**Highest Disagreement Effect** \n*Unintended Road Accidents Effect* (Total = 11)")
-            st.write("""
-            **Why:** Most disagreement comes from urban respondents (9), suggesting that respondents may perceive accidents as sporadic events rather than consistent causes of congestion, especially in cities where congestion exists even without accidents.
-            """)
-        with e_col2:
-            st.success("**Lowest Disagreement Effect** \n*Pressure on Road Users Effect* (Total = 2)")
-            st.write("""
-            **Why:** Very low disagreement across all areas indicates that respondents largely acknowledge pressure on road users as a valid effect of traffic congestion, making it one of the most accepted consequences.
-            """)
-
-    # --- STEP (SOLUTION) ANALYSIS ---
-    with st.container():
-        st.markdown("### **3. Step Analysis**")
-        s_col1, s_col2 = st.columns(2)
-        with s_col1:
-            st.error("**Highest Disagreement Step** \n*Vehicle Sharing Step* (Total = 14)")
-            st.write("""
-            **Why:** Disagreement is evenly split between rural (6) and urban (6) areas. This suggests resistance to vehicle sharing due to concerns such as convenience, accessibility, limited public transport integration, or cultural preference for private vehicles.
-            """)
-        with s_col2:
-            st.success("**Lowest Disagreement Step** \n*Pedestrian Bridge Step* (Total = 2)")
-            st.write("""
-            **Why:** Minimal disagreement—only from urban respondents—indicates strong overall support. Respondents likely perceive pedestrian bridges as a practical and effective solution for reducing pedestrian-related traffic interruptions.
-            """)
-
-    st.divider()
-
-    # 3. OVERALL CONCLUSION
-    st.subheader("Conclusion")
-    st.info("""
-    Findings reveal that respondents selectively disagree with certain traffic-related factors, effects, and solutions rather than rejecting them uniformly:
-
-    * Resistance to Behavior: Factors related to daily routines (late drop-off/pick-up) and behavioral change solutions (vehicle sharing) face the strongest resistance.
-    * Acceptance of Infrastructure: Structural issues (narrow roads), human impact effects (pressure on road users), and physical infrastructure solutions (pedestrian bridges) show high acceptance.
+    # FACTOR ANALYSIS (Blue Highlight)
+    st.markdown(f"""
+    ### <span style='background-color:{cat_color_map['Factor']}; color:white; padding:2px 10px; border-radius:5px;'>🏆 Factor: The Highest Rejection</span>
+    """, unsafe_allow_html=True)
+    st.write("""
+    **Data:** Highest disagreement counts overall, led by **Urban areas (85)**.
     
-    The combined use of heatmaps and horizontal bar charts successfully uncovers both ranking and spatial patterns of disagreement, supporting a deeper understanding of how perceptions differ across area types. These insights are valuable for policymakers when prioritizing traffic congestion interventions that align with public acceptance.
+    **Why they choose Likert 1 & 2:** Urban respondents likely feel the survey's "Factors" are too simplistic. 
+    For urbanites, traffic congestion is **complex and systemic** rather than basic criteria. 
+    They chose 1 and 2 to signal that the survey perception is disconnected from urban reality.
+    """)
+
+    # STEP ANALYSIS (Green Highlight)
+    st.markdown(f"""
+    ### <span style='background-color:{cat_color_map['Step']}; color:white; padding:2px 10px; border-radius:5px;'>⚠️ Step: High Inconsistency</span>
+    """, unsafe_allow_html=True)
+    st.write("""
+    **Data:** Large inconsistency across areas, diverging most in **Urban (35)**, then Rural (20).
+    
+    **Why they choose Likert 1 & 2:** Respondents are labeling the proposed solution as **impractical or insufficient**. 
+    Because urban traffic is dynamic, "one-size-fits-all" suggestions are seen as ineffective for local needs.
+    """)
+
+    # EFFECT ANALYSIS (Orange Highlight)
+    st.markdown(f"""
+    ### <span style='background-color:{cat_color_map['Effect']}; color:white; padding:2px 10px; border-radius:5px;'>✅ Effect: The Common Ground</span>
+    """, unsafe_allow_html=True)
+    st.write("""
+    **Data:** Lowest levels of disagreement (Urban: 21, Suburban: 3, Rural: 6).
+    
+    **Why they chose Likert 1 & 2 less often:** Most respondents agree on what traffic *does* to them. 
+    Regardless of where they live, people share the same "pain," meaning the survey's "Effect" 
+    suggestions accurately reflect their experiences.
+    """)
+
+    # --- FINAL CONCLUSION ---
+    st.divider()
+    st.markdown("### **📌 Final Conclusion**")
+    st.error("""
+    **The most popular choice for disagreement is the "Factor" category.** This reveals a major gap: respondents firmly reject the survey’s assumptions about traffic causes. The intellectual gap is largest here, suggesting a need to re-evaluate the factors used in the study.
     """)
 # ---------------------------------------------------------
 # 5. Stacked Bar Chart with Table & Insight

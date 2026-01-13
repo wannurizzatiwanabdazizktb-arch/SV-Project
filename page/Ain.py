@@ -468,7 +468,11 @@ with st.expander("Heatmap and Horizontal Bar Chart", expanded=False):
 # ---------------------------------------------------------
 # 5. Stacked Bar Chart with Table & Insight
 # ---------------------------------------------------------
-with st.expander("Stacked Bar Chart", expanded=False):
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
     
     # --- OBJECTIVE SECTION ---
     st.markdown("""
@@ -479,15 +483,22 @@ with st.expander("Stacked Bar Chart", expanded=False):
     st.divider()
 
     # --- PART A: STACKED BAR CHART ---
-    # Ensure column names match your dataframe (assuming 'Total', 'SD', 'D' from your prompt)
+    # Defining a consistent color map for the chart and subtitles
+    cat_color_map = {
+        'Factor': '#1f77b4',  # Blue
+        'Effect': '#ff7f0e',  # Orange
+        'Step': '#2ca02c',    # Green
+        'Special': '#d62728'  # Red
+    }
+
     fig_stacked = px.bar(
         heatmap_df, 
         x='Area Type', 
         y='Total', 
         color='Category',
-        title='Stacked Disagreement Responses by Category',
+        title='Disagreement Counts (1 & 2) by Category and Area Type',
         labels={'Total': 'Number of Disagreements', 'Area Type': 'Area Type'},
-        color_discrete_map={'Factor':'#1f77b4','Effect':'#ff7f0e','Step':'#2ca02c', 'Special': '#d62728'},
+        color_discrete_map=cat_color_map,
         hover_data={'Likert Item': True, 'Category': True, 'Total': True}
     )
 
@@ -503,7 +514,6 @@ with st.expander("Stacked Bar Chart", expanded=False):
     st.divider()
 
     # --- PART B: CATEGORY SUMMARY TABLE ---
-    
     category_summary = heatmap_df.groupby('Category').agg({
         'Total': 'sum',
         'SD': 'sum',
@@ -527,62 +537,56 @@ with st.expander("Stacked Bar Chart", expanded=False):
     st.write("Consolidated disagreement counts across all survey categories:")
     st.dataframe(final_cat_table, use_container_width=True, hide_index=True)
 
-# --- PART C: INSIGHT ANALYSIS BY CATEGORY ---
     st.divider()
+    
     # --- WHY USE A STACKED BAR CHART? ---
     st.markdown("""
     #### **🌈 Why Use a Stacked Bar Chart?**
-    * **Visualizing the 'Rejector':** It allows us to see not just the total disagreement, but which specific area (Urban, Rural, or Suburban) is driving that rejection.
-    * **Part-to-Whole Comparison:** It effectively shows that the **'Factor'** category accounts for the vast majority of total disagreements across the entire survey.
-    * **Trend Separation:** It makes the "Urban" dominance in disagreement immediately visible through color stacking.
+    * **Visualizing the 'Rejector':** Identifies which specific area (Urban, Rural, or Suburban) drives the rejection.
+    * **Part-to-Whole Comparison:** Shows the **'Factor'** category accounts for the majority of total disagreements.
+    * **Trend Separation:** Makes "Urban" dominance immediately visible through color stacking.
     """)
-    st.subheader("📝 Insight Analysis by Category")
 
-# --- 4. WHY RESPONDENTS CHOSE LIKERT 1 & 2 (INSIGHTS) ---
     st.divider()
     st.subheader("🔍 Why Respondents Rejected These Suggestions")
 
-    # FACTOR ANALYSIS
-    with st.container():
-        st.markdown("### **🏆 Factor: The Highest Rejection**")
-        st.write("""
-        **Data:** Highest disagreement counts overall, led by **Urban areas (85)**.
-        
-        **Why they choose Likert 1 & 2:** Respondents in urban areas likely feel the survey's "Factors" are too simplistic. 
-        For urbanites, traffic congestion is **complex and systemic** (poor infrastructure, timing issues) rather than the basic 
-        criteria suggested by the survey. They chose 1 and 2 to signal that the survey perception is disconnected from 
-        the reality of urban congestion.
-        """)
+    # --- COLORED SUBTITLES SECTION ---
 
-    # STEP ANALYSIS
-    with st.container():
-        st.markdown("### **⚠️ Step: High Inconsistency**")
-        st.write("""
-        **Data:** Large inconsistency across areas, diverging most in **Urban (35)**, then Rural (20).
-        
-        **Why they choose Likert 1 & 2:** When respondents reject a "Step," they are labeling the proposed solution as 
-        **impractical or insufficient**. Because urban traffic is dynamic and ever-changing, a "one-size-fits-all" 
-        suggestion is seen as ineffective for their specific daily needs.
-        """)
+    # FACTOR ANALYSIS (Blue)
+    st.markdown(f"### <span style='color:{cat_color_map['Factor']}'>🏆 Factor: The Highest Rejection</span>", unsafe_allow_html=True)
+    st.write("""
+    **Data:** Highest disagreement counts overall, led by **Urban areas (85)**.
+    
+    **Why they choose Likert 1 & 2:** Urban respondents likely feel the survey's "Factors" are too simplistic. 
+    For urbanites, traffic congestion is **complex and systemic** rather than basic criteria. 
+    They chose 1 and 2 to signal that the survey perception is disconnected from urban reality.
+    """)
 
-    # EFFECT ANALYSIS
-    with st.container():
-        st.markdown("### **✅ Effect: The Common Ground**")
-        st.write("""
-        **Data:** Lowest levels of disagreement (Urban: 21, Suburban: 3, Rural: 6).
-        
-        **Why they chose Likert 1 & 2 less often:** Most respondents agree on what traffic *does* to them. 
-        Regardless of where they live, people share the same "pain" of traffic, meaning the survey's "Effect" 
-        suggestions were actually accurate to their experiences.
-        """)
+    # STEP ANALYSIS (Green)
+    st.markdown(f"### <span style='color:{cat_color_map['Step']}'>⚠️ Step: High Inconsistency</span>", unsafe_allow_html=True)
+    st.write("""
+    **Data:** Large inconsistency across areas, diverging most in **Urban (35)**, then Rural (20).
+    
+    **Why they choose Likert 1 & 2:** Respondents are labeling the proposed solution as **impractical or insufficient**. 
+    Because urban traffic is dynamic, "one-size-fits-all" suggestions are seen as ineffective for local needs.
+    """)
 
-    # --- 5. FINAL CONCLUSION ---
+    # EFFECT ANALYSIS (Orange)
+    st.markdown(f"### <span style='color:{cat_color_map['Effect']}'>✅ Effect: The Common Ground</span>", unsafe_allow_html=True)
+    st.write("""
+    **Data:** Lowest levels of disagreement (Urban: 21, Suburban: 3, Rural: 6).
+    
+    **Why they chose Likert 1 & 2 less often:** Most respondents agree on what traffic *does* to them. 
+    Regardless of where they live, people share the same "pain," meaning the survey's "Effect" 
+    suggestions accurately reflect their experiences.
+    """)
+
+    # --- FINAL CONCLUSION ---
     st.divider()
     st.markdown("### **📌 Final Conclusion**")
     st.error("""
-    **The most popular choice for disagreement is the "Factor" category.** This reveals a major gap: respondents—especially those in urban areas—firmly reject the survey’s assumptions 
-    about what causes traffic. The survey authors should re-evaluate these factors, as they are deemed 
-    too simple for the complex, systemic nature of real-world traffic congestion.
+    **The most popular choice for disagreement is the "Factor" category.** This reveals a major gap: respondents—especially those in urban areas—firmly reject the survey’s assumptions about what causes traffic. 
+    The survey authors should re-evaluate these factors, as they are deemed too simple for the complex, systemic nature of real-world traffic congestion.
     """)
 # ---------------------------------------------------------
 # 6. RURAL RESPONDENTS ANALYSIS (Bubble Chart & Table)

@@ -240,3 +240,68 @@ with st.expander("🔍 Detailed Disagreement Analysis (Heatmap, Bar Chart & Tabl
                      use_container_width=True, hide_index=True)
 
 st.info("The heatmap shows area-specific counts, while the bar chart highlights overall trends excluding outliers.")
+
+# ---------------------------------------------------------
+# 5. CATEGORY ANALYSIS (Stacked Chart & Category Table)
+# ---------------------------------------------------------
+
+with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
+    
+    # --- PART A: STACKED BAR CHART ---
+    st.subheader("1. Disagreement by Category and Area Type")
+    
+    # We use heatmap_df created earlier to ensure consistency
+    # (It already contains Category, Area Type, and Total Disagreement)
+    fig_stacked = px.bar(
+        heatmap_df, 
+        x='Area Type', 
+        y='Total', 
+        color='Category',
+        title='Stacked Disagreement Responses by Category (Detailed Hover)',
+        labels={'Total': 'Number of Disagreements', 'Area Type': 'Area Type'},
+        # Mapping colors to match your professional theme
+        color_discrete_map={'Factor':'#1f77b4','Effect':'#ff7f0e','Step':'#2ca02c', 'Special': '#d62728'},
+        hover_data={'Likert Item': True, 'Category': True, 'Total': True}
+    )
+
+    fig_stacked.update_layout(
+        barmode='stack',
+        template='plotly_white',
+        height=500,
+        xaxis={'categoryorder':'total descending'}
+    )
+    
+    st.plotly_chart(fig_stacked, use_container_width=True)
+    
+    st.divider()
+
+    # --- PART B: CATEGORY SUMMARY TABLE ---
+    st.subheader("2. Total Disagreement Counts by Category")
+    
+    # Grouping the data for the category summary
+    category_summary = heatmap_df.groupby('Category').agg({
+        'Total': 'sum',
+        'SD': 'sum',
+        'D': 'sum'
+    }).reset_index()
+
+    # Calculate area-specific sums for the table
+    area_pivot = heatmap_df.pivot_table(
+        index='Category', 
+        columns='Area Type', 
+        values='Total', 
+        aggfunc='sum'
+    ).fillna(0).astype(int)
+
+    # Merge overall totals with area totals
+    final_cat_table = category_summary.merge(area_pivot, on='Category')
+    
+    # Rename columns for professional display
+    final_cat_table = final_cat_table.rename(columns={
+        'Total': 'Grand Total',
+        'SD': 'Strongly Disagree (1)',
+        'D': 'Disagree (2)'
+    })
+
+    st.write("Below is the consolidated disagreement count for each survey category across all regions:")
+    st.dataframe(final_cat_table, use_container_width=True, hide_index=True)

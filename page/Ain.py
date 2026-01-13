@@ -267,93 +267,126 @@ st.markdown("""
 # 4. SINGLE COMBINED EXPANDER
 # ---------------------------------------------------------
 import streamlit as st
+import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-import pandas as pd
 import numpy as np
 
-with st.expander("Heatmap, Horizontal Bar Chart", expanded=False):
-    
-    # --- PART A: HEATMAP ---
-    # Ensure these names match your CSV/DataFrame exactly
-    col_sd = 'Strongly Disagree(1)'
-    col_d = 'Disagree (2)'
-    col_total = 'Total Disagreement'
+# --- 1. DATA PREPARATION (Internal Logic) ---
+# Assuming all_likert_cols, factor_cols, effect_cols, step_cols, and merged_df are defined previously
 
-    pivot_z = heatmap_df.pivot(index='Likert Item', columns='Area Type', values=col_total).fillna(0)
-    pivot_sd = heatmap_df.pivot(index='Likert Item', columns='Area Type', values=col_sd).fillna(0)
-    pivot_d = heatmap_df.pivot(index='Likert Item', columns='Area Type', values=col_d).fillna(0)
+with st.expander("Heatmap, Horizontal Bar Chart & Insights", expanded=True):
     
-    # Stack data for custom hover effects
-    customdata = np.stack([pivot_sd.values, pivot_d.values], axis=-1)
+    # --- PART A: HEATMAP DATA PROCESSING ---
+    heatmap_data_detailed = []
+    for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
+        for col in all_likert_cols:
+            count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
+            count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
+            total_disagreement_count = count_sd + count_d
 
+            if total_disagreement_count > 0:
+                heatmap_data_detailed.append({
+                    'Area Type': area,
+                    'Likert Item': col,
+                    'Total Disagreement Count': total_disagreement_count,
+                    'Strongly Disagree (1)': count_sd,
+                    'Disagree (2)': count_d,
+                    'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step')
+                })
+
+    heatmap_df_detailed = pd.DataFrame(heatmap_data_detailed)
+
+    # Order Y-axis
+    factor_items = heatmap_df_detailed[heatmap_df_detailed['Category']=='Factor']['Likert Item'].unique().tolist()
+    effect_items = heatmap_df_detailed[heatmap_df_detailed['Category']=='Effect']['Likert Item'].unique().tolist()
+    step_items   = heatmap_df_detailed[heatmap_df_detailed['Category']=='Step']['Likert Item'].unique().tolist()
+    item_order = factor_items + effect_items + step_items
+    heatmap_df_detailed['Likert Item'] = pd.Categorical(heatmap_df_detailed['Likert Item'], categories=item_order, ordered=True)
+
+    # Pivoting
+    heatmap_pivot_z = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
+    heatmap_pivot_sd = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Strongly Disagree (1)').fillna(0)
+    heatmap_pivot_d = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Disagree (2)').fillna(0)
+
+    # Hover Data Construction
+    customdata_array = []
+    for likert_item in heatmap_pivot_z.index:
+        row_data = []
+        for area_type in heatmap_pivot_z.columns:
+            sd_val = heatmap_pivot_sd.loc[likert_item, area_type] if likert_item in heatmap_pivot_sd.index else 0
+            d_val = heatmap_pivot_d.loc[likert_item, area_type] if likert_item in heatmap_pivot_d.index else 0
+            row_data.append([sd_val, d_val])
+        customdata_array.append(row_data)
+    customdata_array = np.array(customdata_array)
+
+    # --- PART A: DISPLAY HEATMAP ---
+    st.subheader("1. Area-wise Disagreement Heatmap")
     fig_heat = go.Figure(data=go.Heatmap(
-        z=pivot_z.values, x=pivot_z.columns, y=pivot_z.index,
-        colorscale='YlGnBu', text=pivot_z.values, texttemplate="%{text}",
-        customdata=customdata,
-        hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total: %{z}<br>SD (1): %{customdata[0]}<br>D (2): %{customdata[1]}<extra></extra>'
+        z=heatmap_pivot_z.values, x=heatmap_pivot_z.columns, y=heatmap_pivot_z.index,
+        colorscale='YlGnBu', text=heatmap_pivot_z.values, texttemplate="%{text}",
+        hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total: %{z}<br>SD (1): %{customdata[0]}<br>D (2): %{customdata[1]}<extra></extra>',
+        customdata=customdata_array
     ))
-    fig_heat.update_layout(height=700, margin=dict(t=30, b=30))
+    fig_heat.update_layout(height=700, margin=dict(t=30, b=30), template='plotly_white')
     st.plotly_chart(fig_heat, use_container_width=True)
 
     st.divider()
 
-    # --- PART B: HORIZONTAL BAR CHART & TABLE (Side by Side) ---
-    col1, col2 = st.columns([1.2, 1])
-    
-    with col1:
-        # Using col_total consistently
-        bar_data = heatmap_df.groupby('Likert Item').agg({col_total: 'sum'}).reset_index()
-        bar_data = bar_data[bar_data['Likert Item'] != 'Students Not Sharing Vehicles']
-        bar_data = bar_data.sort_values(col_total, ascending=True)
+    # --- PART B: HORIZONTAL BAR & TABLE (Side by Side) ---
+    col_left, col_right = st.columns([1.2, 1])
 
-        fig_bar = px.bar(bar_data, x=col_total, y='Likert Item', orientation='h',
-                         color=col_total, color_continuous_scale='Viridis', height=600)
-        fig_bar.update_layout(showlegend=False, margin=dict(l=200))
+    with col_left:
+        st.subheader("2. Total Disagreement Trends")
+        # Reuse heatmap_df_detailed for the bar chart
+        bar_data = heatmap_df_detailed.groupby('Likert Item')['Total Disagreement Count'].sum().reset_index()
+        bar_data = bar_data[bar_data['Likert Item'] != 'Students Not Sharing Vehicles']
+        bar_data = bar_data.sort_values('Total Disagreement Count', ascending=True)
+
+        fig_bar = px.bar(bar_data, x='Total Disagreement Count', y='Likert Item', orientation='h',
+                         color='Total Disagreement Count', color_continuous_scale='Viridis', height=600)
+        fig_bar.update_layout(showlegend=False, margin=dict(l=200), template='plotly_white')
         st.plotly_chart(fig_bar, use_container_width=True)
 
-    with col2:
+    with col_right:
         st.subheader("3. Key Insights Table")
-        summary_rows = []
         
-        # Add Special Item
-        special_data = heatmap_df[heatmap_df['Category'] == 'Special']
-        if not special_data.empty:
-            summary_rows.append(special_data.groupby('Likert Item').sum(numeric_only=True).reset_index())
-        
-        # Add Top/Bottom per Category
-        for cat in ['Factor', 'Effect', 'Step']:
-            cat_data = heatmap_df[heatmap_df['Category'] == cat].groupby('Likert Item').sum(numeric_only=True).reset_index()
-            if not cat_data.empty:
-                cat_sorted = cat_data.sort_values(col_total, ascending=False)
-                summary_rows.append(cat_sorted.iloc[[0]])  # Most Disagreed
-                if len(cat_sorted) > 1:
-                    summary_rows.append(cat_sorted.iloc[[-1]]) # Least Disagreed
-        
-        if summary_rows:
-            final_table = pd.concat(summary_rows)
-            
-            # Mapping columns to clean names for the UI
-            # We use a dictionary to rename only if the column exists to prevent KeyError
-            rename_dict = {
-                col_total: 'Count', 
-                col_sd: 'Total SD', 
-                col_d: 'Total D'
-            }
-            final_table = final_table.rename(columns=rename_dict)
-            
-            st.write("Summary of Most and Least Disagreed Items:")
-            # Select only the columns we want to display
-            display_cols = ['Likert Item', 'Count', 'Total SD', 'Total D']
-            # Filter display_cols to only those that actually exist in final_table
-            existing_display_cols = [c for c in display_cols if c in final_table.columns]
-            
-            st.dataframe(final_table[existing_display_cols], 
-                         use_container_width=True, hide_index=True)
-        else:
-            st.write("No data available for summary.")
+        # Aggregate logic for table
+        overall_summary = heatmap_df_detailed.groupby(['Likert Item', 'Category']).agg({
+            'Strongly Disagree (1)': 'sum',
+            'Disagree (2)': 'sum',
+            'Total Disagreement Count': 'sum'
+        }).reset_index()
 
-st.info("The heatmap shows area-specific counts, while the bar chart highlights overall trends excluding outliers.")
+        # Pivot Area types for the table
+        area_pivot = heatmap_df_detailed.pivot_table(
+            index='Likert Item', columns='Area Type', values='Total Disagreement Count', fill_value=0
+        ).reset_index()
+        
+        final_summary_df = overall_summary.merge(area_pivot, on='Likert Item')
+
+        # Logic to pick Most/Least per Category
+        result_rows = []
+        for category in ['Factor', 'Effect', 'Step']:
+            cat_df = final_summary_df[final_summary_df['Category'] == category]
+            if not cat_df.empty:
+                cat_sorted = cat_df.sort_values('Total Disagreement Count', ascending=False)
+                result_rows.append(cat_sorted.iloc[[0]])  # Most
+                if len(cat_sorted) > 1:
+                    result_rows.append(cat_sorted.iloc[[-1]]) # Least
+
+        if result_rows:
+            final_table = pd.concat(result_rows, ignore_index=True)
+            # Clean column names for display
+            display_table = final_table[[
+                'Likert Item', 'Total Disagreement Count', 'Strongly Disagree (1)', 
+                'Disagree (2)', 'Rural areas', 'Suburban areas', 'Urban areas'
+            ]].rename(columns={'Total Disagreement Count': 'Total'})
+            
+            st.write("Top & Bottom items per category:")
+            st.dataframe(display_table, use_container_width=True, hide_index=True)
+
+st.info("💡 **Tip:** Use the Heatmap to identify specific geographical issues and the Table for categorical extremes.")
 # ---------------------------------------------------------
 # 5. CATEGORY ANALYSIS (Stacked Chart & Category Table)
 # ---------------------------------------------------------

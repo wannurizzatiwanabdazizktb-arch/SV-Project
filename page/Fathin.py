@@ -127,7 +127,7 @@ try:
                       title='<b>Main Solutions (Measures)</b>', 
                       color_discrete_sequence=['#2ecc71'], text_auto='.2f')
         st.plotly_chart(fig7, use_container_width=True)
-        st.write("This graph shows that lack of parking spaces and road damage are the main factors of traffic disruption. To overcome this issue, respondents suggested the implementation of special drop-off zones and traffic officers as effective solutions.")
+    st.write("This graph shows that lack of parking spaces and road damage are the main factors of traffic disruption. To overcome this issue, respondents suggested the implementation of special drop-off zones and traffic officers as effective solutions.")
 
 except Exception as e:
     st.error(f"An unexpected error occurred: {e}")

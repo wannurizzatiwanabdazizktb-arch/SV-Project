@@ -305,3 +305,88 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
 
     st.write("Below is the consolidated disagreement count for each survey category across all regions:")
     st.dataframe(final_cat_table, use_container_width=True, hide_index=True)
+
+# ---------------------------------------------------------
+# 6. RURAL RESPONDENTS ANALYSIS (Bubble Chart & Table)
+# ---------------------------------------------------------
+
+with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=False):
+    
+    # 1. Prepare Rural Data
+    rural_df = merged_df[merged_df['Area Type'] == 'Rural areas']
+    rural_disagreement_data = []
+
+    for col in likert_cols:
+        if col in rural_df.columns:
+            count_sd = (rural_df[col] == 1).sum()
+            count_d  = (rural_df[col] == 2).sum()
+            
+            # Identify category
+            if 'Factor' in col: cat = 'Factor'
+            elif 'Effect' in col: cat = 'Effect'
+            elif 'Step' in col: cat = 'Step'
+            else: cat = 'Other'
+
+            if count_sd > 0:
+                rural_disagreement_data.append({
+                    'Likert Item': col, 'Category': cat,
+                    'Count': count_sd, 'Level': 'Strongly Disagree (1)'
+                })
+            if count_d > 0:
+                rural_disagreement_data.append({
+                    'Likert Item': col, 'Category': cat,
+                    'Count': count_d, 'Level': 'Disagree (2)'
+                })
+
+    df_bubble_rural = pd.DataFrame(rural_disagreement_data)
+
+    if not df_bubble_rural.empty:
+        # --- PART A: BUBBLE CHART ---
+        st.subheader("1. Rural Disagreement Intensity (1 vs 2)")
+        
+        # Sort Y-axis for better readability
+        df_bubble_rural = df_bubble_rural.sort_values(['Category', 'Count'])
+
+        fig_bubble = px.scatter(
+            df_bubble_rural,
+            x='Count',
+            y='Likert Item',
+            size='Count',
+            color='Level',
+            color_discrete_map={'Strongly Disagree (1)':'#1f77b4','Disagree (2)':'#28a745'},
+            hover_data=['Category', 'Count'],
+            size_max=30,
+            height=800,
+            template='plotly_white'
+        )
+        
+        fig_bubble.update_layout(
+            xaxis_title='Number of Responses',
+            yaxis_title='Likert Scale Item',
+            legend_title_text='Disagreement Level'
+        )
+        
+        st.plotly_chart(fig_bubble, use_container_width=True)
+
+        st.divider()
+
+        # --- PART B: RURAL SUMMARY TABLE ---
+        st.subheader("2. Rural Disagreement Summary Table")
+        
+        # Create a pivoted table for the rural data
+        rural_table = df_bubble_rural.pivot_table(
+            index=['Category', 'Likert Item'], 
+            columns='Level', 
+            values='Count', 
+            aggfunc='sum'
+        ).fillna(0).reset_index()
+
+        st.dataframe(rural_table, use_container_width=True, hide_index=True)
+    else:
+        st.write("No disagreement data found for Rural areas.")
+
+# ---------------------------------------------------------
+# FINAL FOOTER
+# ---------------------------------------------------------
+st.markdown("---")
+st.caption("Streamlit Dashboard created for Traffic Congestion Survey Analysis © 2026")

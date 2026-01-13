@@ -50,46 +50,59 @@ if merged_df is None:
     st.stop()
 
 # ---------------------------------------------------------
-# 3. CUSTOM STYLES 
+# 3. CUSTOM STYLES (Refined for Aesthetics)
 # ---------------------------------------------------------
 st.markdown("""
 <style>
-    /* Main Title Styling */
+    /* Main Title & Subtitle logic remains the same */
     .center-title {
-        text-align: center; 
-        font-size: 2.5rem; 
-        font-weight: 850;
-        /* Using a darker gradient for better contrast on white backgrounds */
+        text-align: center; font-size: 2.5rem; font-weight: 850;
         background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
-        -webkit-background-clip: text; 
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.1rem; 
-        letter-spacing: -1.5px;
-        line-height: 1.2;
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        margin-bottom: 0.1rem; letter-spacing: -1.5px; line-height: 1.2;
     }
     
-    /* Subtitle Styling */
     .subtitle {
-        text-align: center; 
-        font-size: 1.1rem; 
-        color: #444444; /* Darker grey for readability */
-        font-weight: 500;
-        font-family: 'Source Sans Pro', sans-serif; 
-        letter-spacing: 0.5px; 
-        margin-bottom: 0.5rem;
+        text-align: center; font-size: 1.1rem; color: #444444; 
+        font-weight: 500; font-family: 'Source Sans Pro', sans-serif; 
+        letter-spacing: 0.5px; margin-bottom: 0.5rem;
     }
-    
+
+    /* --- NEW AESTHETIC DIVIDER --- */
+    .aesthetic-divider {
+        height: 5px;
+        width: 40%; /* Shorter width looks more premium */
+        margin: 20px auto 40px auto;
+        border-radius: 50px;
+        background: linear-gradient(90deg, 
+            rgba(30,60,114,0) 0%, 
+            rgba(30,60,114,1) 50%, 
+            rgba(30,60,114,0) 100%);
+        position: relative;
+    }
+
+    .aesthetic-divider::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 12px;
+        background-color: #1e3c72;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(30,60,114,0.5);
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # 4. HEADER SECTION
 # ---------------------------------------------------------
-st.markdown('<div class="header-container">', unsafe_allow_html=True)
 st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses across Area Types</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
-st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+
 # The New Divider Element
 st.markdown('<div class="aesthetic-divider"></div>', unsafe_allow_html=True)
 

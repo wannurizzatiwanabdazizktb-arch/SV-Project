@@ -104,7 +104,7 @@ disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int
 # --------------------
 # 5. DATA DISPLAY 
 # --------------------
-# Set expanded=False so the section is closed when the page loads
+# Setting expanded=False ensures the table is hidden until the user clicks it
 with st.expander("📊 Disagreement Count Across Area Type", expanded=False):
     
     result_original = {}
@@ -116,24 +116,18 @@ with st.expander("📊 Disagreement Count Across Area Type", expanded=False):
             .count()
         )
 
-    # Create the final DataFrame
+    # Create the final DataFrame and ensure it uses integers for a cleaner look
     disagree_area_type_original = pd.DataFrame(result_original).fillna(0).astype(int)
 
-    # Professional Styling for the Dataframe
-    # We use a background gradient to make high values pop out immediately
-    styled_df = disagree_area_type_original.style \
-        .background_gradient(cmap='YlGnBu', axis=None) \
-        .highlight_max(axis=0, color='#FFD700') \
-        .format("{:,}")
-
-    # Display using st.dataframe for better horizontal handling of many columns
+    # Displaying as a professional, interactive dataframe without custom colors
+    # use_container_width=True ensures it fits your screen perfectly
     st.dataframe(
-        styled_df, 
+        disagree_area_type_original, 
         use_container_width=True, 
-        height=250 # Adjusted height to fit the 3 rows + headers comfortably
+        height=220 
     )
     
-    st.caption("💡 *Note: Use the horizontal scrollbar to view all factors. Yellow highlights indicate the highest disagreement per category.*")
+    st.caption("按 Row/Column headers to sort. Use the horizontal scrollbar to view all survey items.")
 
 # --------------------
 # 6. Summary Box

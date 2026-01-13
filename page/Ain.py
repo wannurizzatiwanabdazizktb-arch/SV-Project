@@ -236,8 +236,32 @@ heatmap_df = load_and_process_data()
 # ---------------------------------------------------------
 # 3. HEADER
 # ---------------------------------------------------------
-st.title("Traffic Congestion Survey: Analysis of Disagreement")
-st.markdown("### Nurul Ain Maisarah Binti Hamidin | S22A0064")
+st.markdown("""
+    <style>
+        .matrix-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        /* Custom Styling for the Metric "Box" */
+        [data-testid="stMetric"] {
+            background-color: #ffffff;
+            border: 2px solid #f0f2f6; /* Subtle border */
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Soft shadow */
+            transition: transform 0.2s ease-in-out;
+        }
+        [data-testid="stMetric"]:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+            border-color: #1e3c72; /* Border turns blue on hover */
+        }
+    </style>
+    <div class="matrix-title">Visualization Disagreement Across Area Type</div>
+""", unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # 4. SINGLE COMBINED EXPANDER

@@ -249,4 +249,3 @@ st.markdown(
     "The violin plot reveals how responses for time wastage are distributed across rural, "
     "suburban, and urban areas."
 )
-

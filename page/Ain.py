@@ -108,9 +108,9 @@ def main():
         # --- Metrics Row ---
         m1, m2, m3, m4 = st.columns(4)
         m1.metric("Total Disagreement", "191", help="Combined Likert 1 & 2")
-        m2.metric("Strongly Disagree (1)", "82", delta="Area Focus: Urban", delta_color="inverse")
-        m3.metric("Disagree (2)", "109", delta="Area Focus: Urban")
-        m4.metric("Key Factor", "Late P/U", help="Late Drop-off/Pick-up received most disagreements")
+        m2.metric("Strongly Disagree (1)", "82")
+        m3.metric("Disagree (2)", "109")
+        m4.metric("Key Factor", "Late P/U")
 
         # --- Visualization Section ---
         st.markdown('<p class="section-header">Visual Insights</p>', unsafe_allow_html=True)
@@ -118,42 +118,42 @@ def main():
         col_left, col_right = st.columns([1, 1])
         
         with col_left:
-            # High-end Plotly Bar Chart
             fig = px.bar(
                 long_df, 
                 x="Area Type", 
                 y="Count", 
                 color="Area Type",
-                title="Disagreement Volume by Area",
+                title="<b>Disagreement Volume by Area</b>",
                 color_discrete_sequence=["#4F46E5", "#06B6D4", "#10B981"],
                 template="plotly_white"
             )
-            fig.update_layout(showlegend=False, bordercolor="#E2E8F0")
+            # FIXED: Removed invalid bordercolor
+            fig.update_layout(
+                showlegend=False,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)'
+            )
             st.plotly_chart(fig, use_container_width=True)
 
         with col_right:
-            # Donut Chart for Distribution
             area_totals = long_df.groupby("Area Type")["Count"].sum().reset_index()
             fig_pie = px.pie(
                 area_totals, 
                 values='Count', 
                 names='Area Type', 
                 hole=0.5,
-                title="Distribution Ratio",
+                title="<b>Distribution Ratio</b>",
                 color_discrete_sequence=["#4F46E5", "#06B6D4", "#10B981"]
             )
             fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+            fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig_pie, use_container_width=True)
 
         # --- Data Table Section ---
         st.markdown('<p class="section-header">Detailed Breakdown</p>', unsafe_allow_html=True)
         with st.expander("🔍 View Raw Disagreement Matrix", expanded=False):
+            # Using a built-in pandas styler for a professional look
             st.dataframe(
-                pivot_df.style.background_gradient(cmap="Blues", axis=1),
+                pivot_df.style.background_gradient(cmap="Blues"),
                 use_container_width=True
             )
-            st.caption("Values represent count of 'Strongly Disagree' and 'Disagree' responses per Likert item.")
-
-if __name__ == "__main__":
-    main()
-

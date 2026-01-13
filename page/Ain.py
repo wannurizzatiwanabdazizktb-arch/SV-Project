@@ -50,23 +50,48 @@ if merged_df is None:
     st.stop()
 
 # ---------------------------------------------------------
-# 3. CUSTOM STYLES (CSS)
+# 3. CUSTOM STYLES 
 # ---------------------------------------------------------
 st.markdown("""
 <style>
+    /* Main Title Styling */
     .center-title {
-        text-align: center; font-size: 2.2rem; font-weight: 800;
-        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        margin-bottom: 0.2rem; letter-spacing: -1px;
+        text-align: center; 
+        font-size: 2.5rem; 
+        font-weight: 850;
+        /* Using a darker gradient for better contrast on white backgrounds */
+        background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.1rem; 
+        letter-spacing: -1.5px;
+        line-height: 1.2;
     }
+    
+    /* Subtitle Styling */
     .subtitle {
-        text-align: center; font-size: 1rem; color: #666;
-        font-family: 'Inter', sans-serif; letter-spacing: 1px; margin-bottom: 1rem;
+        text-align: center; 
+        font-size: 1.1rem; 
+        color: #444444; /* Darker grey for readability */
+        font-weight: 500;
+        font-family: 'Source Sans Pro', sans-serif; 
+        letter-spacing: 0.5px; 
+        margin-bottom: 0.5rem;
     }
+
+    /* Decorative Divider */
     .divider {
-        height: 3px; background: linear-gradient(90deg, transparent, #4facfe, #764ba2, transparent);
-        margin: 10px auto 30px auto; width: 80%; border-radius: 50%;
+        height: 4px; 
+        background: linear-gradient(90deg, rgba(30,60,114,0) 0%, rgba(30,60,114,1) 50%, rgba(30,60,114,0) 100%);
+        margin: 15px auto 40px auto; 
+        width: 60%; 
+        border-radius: 10px;
+    }
+
+    /* Optional: Subtle card effect for the header area */
+    .header-container {
+        padding: 20px;
+        background-color: #ffffff;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -74,10 +99,11 @@ st.markdown("""
 # ---------------------------------------------------------
 # 4. HEADER SECTION
 # ---------------------------------------------------------
+st.markdown('<div class="header-container">', unsafe_allow_html=True)
 st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses across Area Types</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
+st.markdown('</div>', unsafe_allow_html=True)
 # ---------------------------------------------------------
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------

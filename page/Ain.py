@@ -851,7 +851,7 @@ with st.expander("Grouped Horizontal Bar Chart", expanded=False):
 
         # --- BEAUTIFUL SUMMARY BLOCK ---
         st.divider()
-        st.markdown("### **Summary of Urban Sentiment**)
+        st.markdown("### **Summary of Urban Sentiment**")
         st.success("""
         Urban respondents act as the most active "skeptics" (Disagreement) of the survey. 
         While they strongly reject structural assumptions (like Single Gates), their general trend leans toward Disagree (2). 

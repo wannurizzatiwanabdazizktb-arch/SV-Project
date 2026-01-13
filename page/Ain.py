@@ -90,6 +90,8 @@ st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses acr
 st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
+# The New Divider Element
+st.markdown('<div class="aesthetic-divider"></div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # 5. DATA VISUALIZATION TABLE

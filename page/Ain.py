@@ -104,10 +104,11 @@ st.markdown('<div class="center-title">Disagreement (Likert 1–2) Responses acr
 st.markdown('<div class="subtitle">Nurul Ain Maisarah Binti Hamidin | S22A0064</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
+
 # ---------------------------------------------------------
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------
-with st.expander("🔍 View Key Disagreement Insights", expanded=True):
+with st.expander("🔍 View Key Disagreement Insights", expanded=False):
     st.subheader("Disagreement Count Matrix")
     st.dataframe(disagree_area_type_original, use_container_width=True)
 

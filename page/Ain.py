@@ -721,34 +721,17 @@ with st.expander("🌾 Rural Area Deep-Dive (Bubble Chart & Summary)", expanded=
 # ---------------------------------------------------------        
 # FINAL FOOTER
 # ---------------------------------------------------------
-st.markdown("---")
-st.caption("Streamlit Dashboard created for Traffic Congestion Survey Analysis © 2026")
-
-
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-# --- 1. DEFINE FUNCTIONS AT THE TOP ---
-def classify_item(col):
-    """Categorizes survey items based on keywords."""
-    if 'Factor' in col:
-        return 'Factor'
-    elif 'Effect' in col:
-        return 'Effect'
-    elif 'Step' in col:
-        return 'Step'
-    else:
-        return 'Other'
-
-# --- 2. URBAN EXPANDER ---
+# --- 1. URBAN EXPANDER ---
 with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
     
     # Filter for Urban respondents
     urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
     
     disagreement_data = []
-    # Ensure likert_cols is available from your previous data processing step
     for col in likert_cols:
         if col in urban_df.columns:
             count_sd = (urban_df[col] == 1).sum()
@@ -766,31 +749,38 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
     if disagreement_data:
         disagreement_df = pd.DataFrame(disagreement_data).sort_values('Total')
 
-        # --- PART A: PLOTLY FIGURE ---
-        st.subheader("Urban Disagreement: Strongly Disagree vs Disagree")
+        # --- OBJECTIVE ---
+        st.markdown("### **Objective**")
+        st.write("""
+        This analysis investigates how the majority of urban respondents clearly reject the survey’s proposed perceptions. 
+        By comparing **Strongly Disagree (1)** and **Disagree (2)**, we identify whether urbanites outright deny or simply 
+        question the validity of specific traffic factors, effects, and steps.
+        """)
+        st.divider()
+
+        # --- PART A: GROUPED BAR CHART ---
+        st.subheader("1. Disagreement Responses (1 vs 2) among Urban Respondents")
         
+        # Dark Theme Professional Colors
+        # Dark Blue for SD, Dark Green for D
         fig = go.Figure()
 
-        # Strongly Disagree Trace
         fig.add_trace(go.Bar(
-            x=disagreement_df['Strongly Disagree (1)'],
             y=disagreement_df['Likert Scale Item'],
+            x=disagreement_df['Strongly Disagree (1)'],
             orientation='h',
             name='Strongly Disagree (1)',
-            marker=dict(color='#1f77b4'),
-            customdata=disagreement_df[['Item Category', 'Strongly Disagree (1)']],
-            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata[0]}<br><b>Count:</b> %{customdata[1]}<extra></extra>'
+            marker=dict(color='#1B4F72'), # Dark Blue
+            hovertemplate='<b>Item:</b> %{y}<br><b>Count:</b> %{x}<extra></extra>'
         ))
 
-        # Disagree Trace
         fig.add_trace(go.Bar(
-            x=disagreement_df['Disagree (2)'],
             y=disagreement_df['Likert Scale Item'],
+            x=disagreement_df['Disagree (2)'],
             orientation='h',
             name='Disagree (2)',
-            marker=dict(color='#2ca02c'),
-            customdata=disagreement_df[['Item Category', 'Disagree (2)']],
-            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata[0]}<br><b>Count:</b> %{customdata[1]}<extra></extra>'
+            marker=dict(color='#145A32'), # Dark Green
+            hovertemplate='<b>Item:</b> %{y}<br><b>Count:</b> %{x}<extra></extra>'
         ))
 
         fig.update_layout(
@@ -800,7 +790,7 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
             legend_title_text='Disagreement Level',
             template='plotly_white',
             height=800,
-            margin=dict(l=200)
+            margin=dict(l=250)
         )
 
         st.plotly_chart(fig, use_container_width=True)
@@ -808,11 +798,57 @@ with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=True):
         st.divider()
 
         # --- PART B: SUMMARY TABLE ---
-        st.subheader("Summary Table: Urban Disagreement Counts")
+        st.subheader("2. Summary Table: Urban Disagreement Counts")
+        st.dataframe(disagreement_df[['Likert Scale Item', 'Item Category', 'Strongly Disagree (1)', 'Disagree (2)']], 
+                     use_container_width=True, hide_index=True)
+
+        st.divider()
+
+        # --- PART C: LONG ACADEMIC INTERPRETATION ---
+        st.subheader("📝 Deep-Dive Interpretation")
+
+        # Justification
+        st.write("""
+        **Why Use a Grouped Horizontal Bar Chart?** This chart is chosen to provide a side-by-side comparison of the intensity of rejection. 
+        Horizontal orientation is utilized to ensure that long survey item labels remain readable, 
+        while grouping allows us to see at a glance whether respondents are 'Strongly' rejecting a point or simply 'Disagreeing'.
+        """)
+
+        # Highlighted Long Explanation - Strongly Disagree
+        st.markdown("""
+        #### <span style='background-color:#EBF5FB; color:#2E86C1; padding:3px 10px; border-radius:4px;'>**Analysis of Strongly Disagree (1) Intensity**</span>
+        """, unsafe_allow_html=True)
+        st.write("""
+        The visualization reveals that **‘Strongly Disagree (1)’** has a notable level of disagreement with various behavioral and structural theories of traffic congestion. 
+        Given the presence of various access routes as part of the sophisticated urban infrastructure, the **"Single Gate Factor"** records the highest level of strong disagreement (**9**) on the scale. 
+        This reveals that the urban public firmly disapproves of the single-entry point as a primary cause of congestion in a modern city layout.
         
-        # Display as a clean Streamlit dataframe
-        table_df = disagreement_df[['Likert Scale Item', 'Item Category', 'Strongly Disagree (1)', 'Disagree (2)']]
-        st.dataframe(table_df, use_container_width=True, hide_index=True)
+        Furthermore, strongly disagree answers are significantly more prevalent in the **Factor section** than in the consequence (Effect) or action (Step) sections. 
+        This implies that the urban public prefers to refute the various survey root factors of congestion, viewing them as disconnected from their daily reality.
+        """)
+
+        # Highlighted Long Explanation - Disagree
+        st.markdown("""
+        #### <span style='background-color:#EAFAF1; color:#27AE60; padding:3px 10px; border-radius:4px;'>**Analysis of Disagree (2) Ambivalence**</span>
+        """, unsafe_allow_html=True)
+        st.write("""
+        The **‘Disagree (2)’** responses tend to be relatively high on most of the questions, reflecting a considerable but widespread level of disapproval. 
+        For example, **"Students Not Sharing Vehicles" (10)** shows a high Disagree (2) count, reflecting respondent ambivalence; they do not regard individual vehicle usage by students as a primary contributor to city-wide traffic congestion.
+        
+        The overall pattern indicates that **‘Disagree (2)’** has been more common than ‘Strongly Disagree (1)’. This specifies that urban respondents are inclined to **query and question** rather than outright deny most reasons, impacts, and measures associated with congestion. It suggests a more nuanced skepticism compared to the firm rejection seen in rural areas.
+        """)
+
+        # --- BEAUTIFUL SUMMARY BLOCK ---
+        st.divider()
+        st.markdown("### **📌 Summary of Urban Sentiment**")
+        st.success("""
+        **The Urban Verdict:** Urban respondents are the most active "skeptics" of the survey. 
+        While they strongly reject the idea of structural factors (like Single Gates), their general 
+        trend leans toward **Disagree (2)**. This indicates that for urbanites, traffic is an 
+        **ambiguous and multifaceted issue** where they feel the survey's predefined root causes 
+        and solutions are too narrow to be considered "Strongly" accurate or "Strongly" false.
+        """)
+
     else:
         st.warning("No disagreement data found for Urban areas.")
 

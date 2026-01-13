@@ -745,7 +745,36 @@ def classify_item(col):
 # --- 3. URBAN EXPANDER ---
 with st.expander("Grouped Horizontal Bar Chart", expanded=False):
     urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
+
+    # Filter for Urban respondents
+    urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
     
+    disagreement_data = []
+    for col in all_likert_cols:
+        if col in urban_df.columns:
+            count_sd = (urban_df[col] == 1).sum()
+            count_d  = (urban_df[col] == 2).sum()
+
+            if count_sd > 0 or count_d > 0:
+                disagreement_data.append({
+                    'Likert Scale Item': col,
+                    'Item Category': classify_item(col),
+                    'Strongly Disagree (1)': count_sd,
+                    'Disagree (2)': count_d,
+                    'Total': count_sd + count_d
+                })
+
+    if disagreement_data:
+        disagreement_df = pd.DataFrame(disagreement_data).sort_values('Total')
+
+        # --- OBJECTIVE ---
+        st.markdown("### **Objective**")
+        st.write("""
+        This analysis investigates how the majority most clearly reject urban respondent rate with 
+        comparison on strongly disagree (1) and disagree (2).
+        """)
+        st.divider()
+        
 # --- PART A: GROUPED BAR CHART ---
         fig = go.Figure()
 

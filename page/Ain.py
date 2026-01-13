@@ -205,55 +205,89 @@ col4.metric(
 
 st.divider() # Visual separator
 
-# --------------------
-# Heatmap & Horizontal Bar Chart
-# --------------------
+---------------------------------------------------------
+# 1. DATA PROCESSING (Must come BEFORE visualizations)
+# ---------------------------------------------------------
 
-# --- 1. RESEARCH OBJECTIVE ---
+# Define your columns if not already defined
+likert_cols = [
+    'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
+    'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
+    'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 
+    'Late Drop-off/Pick-up Factor', 'Construction/Roadworks Factor', 'Narrow Road Factor', 
+    'Unintended Road Accidents Effect', 'Time Wastage Effect', 'Pressure on Road Users Effect', 
+    'Students Late to School Effect', 'Environmental Pollution Effect', 'Fuel Wastage Effect', 
+    'Students Not Sharing Vehicles', 'Widening Road Step', 'Vehicle Sharing Step', 
+    'Two Gates Step', 'Arrive Early Step', 'Special Drop-off Area Step', 
+    'Pedestrian Bridge Step', 'Traffic Officers Step'
+]
+
+# Create Categorization Lists
+factor_cols = [c for c in likert_cols if 'Factor' in c or 'Sharing Vehicles' in c]
+effect_cols = [c for c in likert_cols if 'Effect' in c]
+step_cols = [c for c in likert_cols if 'Step' in c]
+
+# CALCULATE HEATMAP DATA
+heatmap_data_detailed = []
+for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
+    for col in likert_cols:
+        # Assuming merged_df exists in your environment
+        count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
+        count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
+        total_count = count_sd + count_d
+        
+        if total_count > 0:
+            heatmap_data_detailed.append({
+                'Area Type': area,
+                'Likert Item': col,
+                'Total Disagreement Count': total_count,
+                'Strongly Disagree (1)': count_sd,
+                'Disagree (2)': count_d,
+                'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step')
+            })
+
+processed_data = pd.DataFrame(heatmap_data_detailed)
+
+# CREATE PIVOTS (The variables that were missing)
+heatmap_pivot_z = processed_data.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
+heatmap_pivot_sd = processed_data.pivot(index='Likert Item', columns='Area Type', values='Strongly Disagree (1)').fillna(0)
+heatmap_pivot_d = processed_data.pivot(index='Likert Item', columns='Area Type', values='Disagree (2)').fillna(0)
+
+# CUSTOMDATA ARRAY for interactivity
+customdata_array = np.dstack((heatmap_pivot_sd.values, heatmap_pivot_d.values))
+
+# ---------------------------------------------------------
+# 2. UI LAYOUT
+# ---------------------------------------------------------
+
 st.markdown("### 🎯 Research Objective")
-st.info("""
-**Objective:** To examine how respondents across all area types identify points of disagreement regarding traffic factors, effects, and steps. This reveals patterns in Likert scale counts to determine which items are perceived as less viable or less significant.
-""")
+st.info("How respondents from all area types choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count.")
 
-# --- 2. INTERACTIVE VISUALIZATIONS (Expander Closed by Default) ---
-with st.expander("Heatmap & Horizontal Bar Chart Analysis", expanded=False):
+with st.expander("📊 View Detailed Heatmap & Bar Chart Analysis", expanded=False):
     
-    # --- A. HEATMAP ---
-    # (Assuming heatmap_pivot_z and customdata_array are calculated as per your logic)
+    # Heatmap
     fig_heatmap = go.Figure(data=go.Heatmap(
         z=heatmap_pivot_z.values,
         x=heatmap_pivot_z.columns,
         y=heatmap_pivot_z.index,
-        colorscale='Greys',  # Professional Monochrome
+        colorscale='Greys',
         text=heatmap_pivot_z.values,
         texttemplate="%{text}",
-        hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total Disagreement: %{z}<br>Strongly Disagree: %{customdata[0]}<br>Disagree: %{customdata[1]}<extra></extra>',
-        customdata=customdata_array
+        customdata=customdata_array,
+        hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total: %{z}<br>SD (1): %{customdata[0]}<br>D (2): %{customdata[1]}<extra></extra>'
     ))
-    
-    fig_heatmap.update_layout(
-        title="Disagreement Responses (1 & 2) Across Area Types",
-        template='plotly_white',
-        height=700
-    )
+    fig_heatmap.update_layout(template='plotly_white', height=700)
     st.plotly_chart(fig_heatmap, use_container_width=True)
 
-    # --- B. HORIZONTAL BAR CHART ---
-    # Sort for professional display
-    filtered_df_sorted = filtered_df.sort_values('Total Disagreement Count', ascending=True)
-    
+    # Horizontal Bar Chart
+    # (Using your disagreement_summary_df or processed_data)
     fig_bar = px.bar(
-        filtered_df_sorted,
-        x='Total Disagreement Count',
-        y='Likert Item',
-        orientation='h',
-        title='Total Disagreement Counts (1 & 2) for Each Likert Item Across All Area Types',
-        color='Total Disagreement Count',
-        color_continuous_scale='Greys',
-        height=700
+        processed_data.groupby('Likert Item')['Total Disagreement Count'].sum().reset_index().sort_values('Total Disagreement Count'),
+        x='Total Disagreement Count', y='Likert Item', orientation='h',
+        color='Total Disagreement Count', color_continuous_scale='Greys'
     )
-    fig_bar.update_layout(template='plotly_white')
     st.plotly_chart(fig_bar, use_container_width=True)
+
 
 # --- 3. INTERPRETATION & ANALYSIS ---
 st.markdown("### 🧐 Interpretation and Analysis")

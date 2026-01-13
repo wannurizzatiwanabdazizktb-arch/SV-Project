@@ -194,6 +194,16 @@ fig.data[0].hovertemplate = "Factor: %{y}<br>Effect: %{x}<br>Correlation = %{z}<
 # --- Show figure in Streamlit ---
 st.plotly_chart(fig, use_container_width=True)
 
+# ---  Interpretation ---
+st.markdown(
+    """
+    <div style="text-align: justify;">
+    This Spearman correlation heatmap provides a detailed understanding of how specific congestion factors relate to various effects in rural areas which reveal the pattern of these relationship. Notably, undisciplined drivers show a strong positive correlation with unintended road accidents which suggest that behavioral issues significantly compromise road safety. Similarly, narrow roads and construction/roadworks are strongly linked to time wastage and pressure on road users which support that infrastructure limitations play a critical part in stress and inefficiency of road users due to congestion. Besides that, students arriving late to school are most correlated with late work and late drop-off/pick-up which indicate the impact of schedule patterns on academic punctuality. In the meantime, factors like rainy weather, single gate access, and damaged roads are somewhat linked to fuel waste and environmental pollution. This suggests that environmental and physical conditions lead to financial inefficiency and environmental problems. Overall, the heatmap emphasizes that various congestion impacts result from separate but related causes. In order for focused actions to be successful, they must be in line with these particular factor-effect correlations. 
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 #--------------------------------------------------------- 
 # Radar Chart: Percentage Score of effect from one factor.
 #---------------------------------------------------------

@@ -62,7 +62,7 @@ if status_filter != "All":
 
 st.write(f"Number of responses used in Goal 2: {len(sub)}")
 
-# ---------- 1) SUMMARY + BAR ----------
+# 1) Summary table + horizontal bar
 st.subheader("1. Summary of effect scores")
 
 mean_effects = sub[effect_cols].mean()
@@ -70,33 +70,37 @@ std_effects = sub[effect_cols].std()
 
 summary_df = pd.DataFrame({
     "Mean": mean_effects.round(2),
-    "Std": std_effects.round(2),
+    "Std": std_effects.round(2)
 }).sort_values("Mean", ascending=False)
 
-st.dataframe(summary_df)
+col_table, col_bar = st.columns([1, 1.2])
 
-fig, ax = plt.subplots(figsize=(8, 4))
-sns.barplot(
-    x=summary_df["Mean"].values,
-    y=summary_df.index,
-    palette="Blues_r",
-    ax=ax
-)
-ax.set_xlabel("Mean score (1–5)")
-ax.set_ylabel("")
-ax.set_title("Overall mean effect scores")
-st.pyplot(fig)
+with col_table:
+    st.dataframe(summary_df, use_container_width=True)
+
+with col_bar:
+    fig, ax = plt.subplots(figsize=(5, 3))
+    sns.barplot(
+        x=summary_df["Mean"].values,
+        y=summary_df.index,
+        palette="Blues_r",
+        ax=ax
+    )
+    ax.set_xlabel("Mean score (1–5)")
+    ax.set_ylabel("")
+    ax.set_title("Mean effect scores", fontsize=10)
+    st.pyplot(fig, clear_figure=True)
 
 st.markdown(
     "Most effects have mean scores above 4.0, indicating strong agreement that "
     "congestion leads to serious negative outcomes."
 )
 
-# ---------- 2) BOX PLOTS BY GENDER ----------
+# 2) Boxplots by Gender
 st.subheader("2. Effect distributions by Gender (boxplots)")
 
 if sub["Gender"].nunique() > 1:
-    fig, axes = plt.subplots(2, 3, figsize=(12, 6))
+    fig, axes = plt.subplots(2, 3, figsize=(9, 4))
     axes = axes.flatten()
     for i, col in enumerate(effect_cols):
         sns.boxplot(
@@ -108,9 +112,9 @@ if sub["Gender"].nunique() > 1:
         )
         axes[i].set_xlabel("")
         axes[i].set_ylabel("")
-        axes[i].set_title(col, fontsize=9)
+        axes[i].set_title(col, fontsize=8)
     plt.tight_layout()
-    st.pyplot(fig)
+    st.pyplot(fig, clear_figure=True)
 else:
     st.info("Only one gender present after filtering; boxplot by gender not shown.")
 
@@ -118,7 +122,7 @@ st.markdown(
     "Boxplots show how tightly or widely scores are spread for each gender, beyond just the means."
 )
 
-# ---------- 3) GROUPED BAR BY STATUS ----------
+# 3) Grouped bar by Status
 st.subheader("3. Mean key effects by Status (grouped bar)")
 
 selected_effects = [
@@ -130,7 +134,7 @@ selected_effects = [
 if sub["Status"].nunique() > 0:
     status_means = sub.groupby("Status")[selected_effects].mean()
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(7, 3.5))
     status_means.plot(
         kind="bar",
         color=sns.color_palette("Blues", len(selected_effects)),
@@ -138,10 +142,9 @@ if sub["Status"].nunique() > 0:
     )
     ax.set_ylabel("Mean score (1–5)")
     ax.set_xlabel("Status")
-    ax.tick_params(axis="x", rotation=45)
-    ax.set_title("Mean scores for key effects by Status")
-    ax.legend(title="Effect")
-    st.pyplot(fig)
+    ax.tick_params(axis="x", rotation=30)
+    ax.set_title("Mean scores by Status", fontsize=10)
+    st.pyplot(fig, clear_figure=True)
 else:
     st.info("No status variation after filtering; grouped bar not shown.")
 
@@ -150,13 +153,13 @@ st.markdown(
     "safety and punctuality."
 )
 
-# ---------- 4) HEATMAP: CAUSES VS EFFECTS ----------
+# 4) Heatmap: causes vs effects
 st.subheader("4. Correlation between causes and effects (heatmap)")
 
 corr_cols = cause_cols + effect_cols
 corr = sub[corr_cols].corr()
 
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(7, 4))
 sns.heatmap(
     corr.loc[cause_cols, effect_cols],
     annot=True,
@@ -166,18 +169,19 @@ sns.heatmap(
     vmax=1,
     ax=ax
 )
-ax.set_title("Correlation between causes and effects of congestion")
+ax.set_title("Cause–effect correlations", fontsize=10)
 ax.set_xlabel("Effect variables")
 ax.set_ylabel("Cause variables")
-st.pyplot(fig)
+plt.xticks(rotation=30, ha="right")
+st.pyplot(fig, clear_figure=True)
 
 st.markdown(
     "Higher correlations suggest that where certain causes are perceived as serious, "
     "respondents also report stronger negative effects."
 )
 
-# ---------- 5) STACKED BAR BY GENDER ----------
-st.subheader("5. Distribution of 'Students Late to School Effect' scores by Gender (stacked bar)")
+# 5) Stacked bar: distribution by Gender
+st.subheader("5. 'Students Late to School Effect' scores by Gender (stacked bar)")
 
 target = "Students Late to School Effect"
 
@@ -195,7 +199,7 @@ if sub["Gender"].nunique() > 1:
             dist_pivot[s] = 0
     dist_pivot = dist_pivot[[1, 2, 3, 4, 5]]
 
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(5.5, 3.2))
     bottom = np.zeros(len(dist_pivot))
     colors = sns.color_palette("Blues", 5)
 
@@ -205,17 +209,17 @@ if sub["Gender"].nunique() > 1:
             dist_pivot.index,
             values,
             bottom=bottom,
-            label=f"Score {score}",
+            label=f"{score}",
             color=colors[i]
         )
         bottom += values
 
-    ax.set_ylabel("Proportion of respondents")
+    ax.set_ylabel("Proportion")
     ax.set_xlabel("Gender")
-    ax.set_title(f"Distribution of '{target}' scores by Gender")
+    ax.set_title("Distribution of scores (1–5)", fontsize=10)
     ax.set_ylim(0, 1)
-    ax.legend(title="Likert score", bbox_to_anchor=(1.05, 1), loc="upper left")
-    st.pyplot(fig)
+    ax.legend(title="Score", bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=8)
+    st.pyplot(fig, clear_figure=True)
 else:
     st.info("Only one gender present after filtering; stacked bar not shown.")
 
@@ -224,13 +228,13 @@ st.markdown(
     "on students being late."
 )
 
-# ---------- 6) VIOLIN PLOT BY AREA TYPE ----------
-st.subheader("6. Distribution of 'Time Wastage Effect' by Area Type (violin plot)")
+# 6) Violin plot by Area Type
+st.subheader("6. Distribution of 'Time Wastage Effect' by Area Type")
 
 target_violin = "Time Wastage Effect"
 
 if sub["Area Type"].nunique() > 0:
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(6, 3.5))
     sns.violinplot(
         data=sub,
         x="Area Type",
@@ -239,13 +243,13 @@ if sub["Area Type"].nunique() > 0:
     )
     ax.set_xlabel("Area Type")
     ax.set_ylabel("Score (1–5)")
-    ax.set_title(f"Distribution of '{target_violin}' by Area Type")
+    ax.set_title("Time Wastage by Area Type", fontsize=10)
     ax.tick_params(axis="x", rotation=20)
-    st.pyplot(fig)
+    st.pyplot(fig, clear_figure=True)
 else:
     st.info("No area type variation after filtering; violin plot not shown.")
 
 st.markdown(
-    "The violin plot reveals how responses for time wastage are distributed across rural, "
-    "suburban, and urban areas."
+    "The violin plot shows how time-wastage scores are distributed across rural, suburban, "
+    "and urban areas."
 )

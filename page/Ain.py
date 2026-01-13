@@ -288,8 +288,6 @@ st.markdown("""
 # ---------------------------------------------------------
 # --- 1. CONFIGURATION & DATA ---
 # Ensure merged_df and column lists are defined before this block
-# --- 1. CONFIGURATION & DATA ---
-# Ensure merged_df and column lists are defined before this block
 
 with st.expander("📊 Heatmap, Trends & Strategic Insights", expanded=True):
     
@@ -491,7 +489,6 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
     st.divider()
 
     # --- PART A: STACKED BAR CHART ---
-    # Defining a consistent color map for the chart and subtitles
     cat_color_map = {
         'Factor': '#1f77b4',  # Blue
         'Effect': '#ff7f0e',  # Orange
@@ -546,55 +543,69 @@ with st.expander("📊 Category-Level Disagreement Analysis", expanded=True):
     st.dataframe(final_cat_table, use_container_width=True, hide_index=True)
 
     st.divider()
+
+    st.write("Below is a clear, structured academic-style explanation that follows your request exactly:")
     
-    # --- WHY USE A STACKED BAR CHART? ---
+    # --- JUSTIFICATION SECTION ---
+    st.markdown("### **Justification for Using a Stacked Bar Chart**")
     st.markdown("""
-    #### **🌈 Why Use a Stacked Bar Chart?**
-    * **Visualizing the 'Rejector':** Identifies which specific area (Urban, Rural, or Suburban) drives the rejection.
-    * **Part-to-Whole Comparison:** Shows the **'Factor'** category accounts for the majority of total disagreements.
-    * **Trend Separation:** Makes "Urban" dominance immediately visible through color stacking.
+    A stacked bar chart titled “Disagreement Counts (1 & 2) by Category and Area Type” is selected because it allows simultaneous comparison across two dimensions: 
+    (1) category type (Factor, Effect, Step) and (2) area type (rural, suburban, urban), while also visually combining Strongly Disagree (1) and Disagree (2) into a single disagreement structure. 
+
+    This visualization is particularly effective for revealing which category accumulates the greatest rejection and where that rejection is most concentrated geographically. Unlike separate bar charts, the stacked format highlights both magnitude and distribution, making patterns of disagreement clearer and more interpretable for survey-based Likert data.
     """)
 
     st.divider()
-    st.subheader("🔍 Why Respondents Rejected These Suggestions")
+    st.subheader("📝 Interpretation by Category")
 
-    # --- COLORED SUBTITLES SECTION ---
-
-    # FACTOR ANALYSIS (Blue)
-    st.markdown(f"### <span style='color:{cat_color_map['Factor']}'>🏆 Factor: The Highest Rejection</span>", unsafe_allow_html=True)
-    st.write("""
-    **Data:** Highest disagreement counts overall, led by **Urban areas (85)**.
+    # --- 1. FACTOR ANALYSIS (Blue Highlight) ---
+    st.markdown(f"""
+    ### <span style='background-color:{cat_color_map['Factor']}; color:white; padding:5px 15px; border-radius:5px;'>1. Factor Category (Highest Disagreement)</span>
+    """, unsafe_allow_html=True)
     
-    **Why they choose Likert 1 & 2:** Urban respondents likely feel the survey's "Factors" are too simplistic. 
-    For urbanites, traffic congestion is **complex and systemic** rather than basic criteria. 
-    They chose 1 and 2 to signal that the survey perception is disconnected from urban reality.
+    st.write(f"""
+    The **Factor category** records the highest total disagreement count (130) among all categories, indicating that respondents most strongly reject the proposed causes of traffic congestion presented in the survey. 
+
+    This rejection is most pronounced in **urban areas (85)**, compared to rural (31) and suburban (14) areas, demonstrating a clear and distinct urban-driven trend. Urban respondents appear to disagree substantially with simplified or predefined congestion factors, suggesting that real-life traffic issues in cities are perceived as multifaceted, systemic, and context-dependent. 
+
+    In real-world terms, urban commuters likely experience congestion as a result of interacting variables (infrastructure limits, public transport gaps, population density, peak-hour dynamics), making the survey’s factor assumptions feel incomplete or oversimplified.
     """)
 
-    # STEP ANALYSIS (Green)
-    st.markdown(f"### <span style='color:{cat_color_map['Step']}'>⚠️ Step: High Inconsistency</span>", unsafe_allow_html=True)
-    st.write("""
-    **Data:** Large inconsistency across areas, diverging most in **Urban (35)**, then Rural (20).
+    # --- 2. EFFECT ANALYSIS (Orange Highlight) ---
+    st.markdown(f"""
+    ### <span style='background-color:{cat_color_map['Effect']}; color:white; padding:5px 15px; border-radius:5px;'>2. Effect Category (Lowest Disagreement)</span>
+    """, unsafe_allow_html=True)
     
-    **Why they choose Likert 1 & 2:** Respondents are labeling the proposed solution as **impractical or insufficient**. 
-    Because urban traffic is dynamic, "one-size-fits-all" suggestions are seen as ineffective for local needs.
+    st.write(f"""
+    The **Effect category** shows the lowest level of disagreement (30) across all categories, with relatively low disagreement in urban (21), rural (6), and suburban (3) areas. 
+
+    This consistency indicates that respondents largely agree on the consequences of traffic congestion, regardless of where they live. The shared acceptance suggests that the impacts of congestion—such as time loss, stress, and reduced productivity—are universally experienced, making the effects more observable and less debatable in everyday life. 
+
+    In real-life contexts, this reflects a common lived experience, where congestion effects are tangible and widely acknowledged, even if the causes or solutions are contested.
     """)
 
-    # EFFECT ANALYSIS (Orange)
-    st.markdown(f"### <span style='color:{cat_color_map['Effect']}'>✅ Effect: The Common Ground</span>", unsafe_allow_html=True)
-    st.write("""
-    **Data:** Lowest levels of disagreement (Urban: 21, Suburban: 3, Rural: 6).
+    # --- 3. STEP ANALYSIS (Green Highlight) ---
+    st.markdown(f"""
+    ### <span style='background-color:{cat_color_map['Step']}; color:white; padding:5px 15px; border-radius:5px;'>3. Step Category (Moderate but Inconsistent Disagreement)</span>
+    """, unsafe_allow_html=True)
     
-    **Why they chose Likert 1 & 2 less often:** Most respondents agree on what traffic *does* to them. 
-    Regardless of where they live, people share the same "pain," meaning the survey's "Effect" 
-    suggestions accurately reflect their experiences.
+    st.write(f"""
+    The **Step category** records a moderate total disagreement (31) but displays notable variation across areas, with the highest disagreement in urban areas (17), followed by rural (11) and suburban (3). 
+
+    This pattern suggests uncertainty or skepticism toward the proposed solutions, particularly among urban respondents. In dense and highly dynamic traffic environments, suggested steps may be viewed as impractical, insufficient, or disconnected from real operational challenges. 
+
+    From a real-life perspective, urban respondents may perceive that one-size-fits-all solutions do not adequately address complex traffic flows, enforcement issues, or behavioral diversity, leading to hesitation or rejection of the proposed actions.
     """)
 
-    # --- FINAL CONCLUSION ---
+    # --- FINAL CONCLUSION BLOCK (Professional Styling) ---
     st.divider()
-    st.markdown("### **📌 Final Conclusion**")
-    st.error("""
-    **The most popular choice for disagreement is the "Factor" category.** This reveals a major gap: respondents—especially those in urban areas—firmly reject the survey’s assumptions about what causes traffic. 
-    The survey authors should re-evaluate these factors, as they are deemed too simple for the complex, systemic nature of real-world traffic congestion.
+    
+    # Styled Conclusion Container
+    st.markdown("### 📌 **Overall Conclusion**")
+    st.info("""
+    In conclusion, the **Factor category is the most rejected**, followed by **Step**, while **Effect** receives the least disagreement. This hierarchy indicates that respondents agree on what traffic congestion causes in their daily lives (effects) but disagree with how the problem is defined (factors) and how it should be solved (steps)—especially in urban settings. 
+
+    The findings highlight that real-life traffic experiences, particularly in urban areas, are more complex than the survey’s proposed assumptions and interventions. As a result, urban respondents are more likely to reject simplified explanations and prescribed solutions, emphasizing the need for context-sensitive, adaptive, and realistic traffic management strategies.
     """)
 # ---------------------------------------------------------
 # 6. RURAL RESPONDENTS ANALYSIS (Bubble Chart & Table)

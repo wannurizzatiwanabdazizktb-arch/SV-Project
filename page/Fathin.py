@@ -166,5 +166,3 @@ with col_b:
 
 except Exception as e:
     st.error(f"An unexpected error occurred: {e}")
-
-masukkan code untuk gambar diatas

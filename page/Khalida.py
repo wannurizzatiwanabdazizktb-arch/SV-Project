@@ -8,8 +8,8 @@ sns.set(style="whitegrid")
 
 @st.cache_data
 def load_data():
-    # This must match the file name in your repo
     df = pd.read_csv("traffic_survey.csv")
+    # drop index column if it exists
     if "Unnamed: 0" in df.columns:
         df = df.drop(columns=["Unnamed: 0"])
     return df
@@ -32,7 +32,7 @@ cause_cols = [
     "Lack of Parking Space Factor",
 ]
 
-# ----- Goal 2 tab / page -----
+# ---------- PAGE HEADER ----------
 st.header("Effects of School-area Congestion")
 
 st.markdown("""
@@ -41,12 +41,18 @@ wastage, stress, lateness, environmental pollution, and fuel wastage, and how th
 differ by gender, status, and area type.
 """)
 
-# optional local filters for this page
+# ---------- FILTERS ----------
 col1, col2 = st.columns(2)
 with col1:
-    gender_filter = st.selectbox("Filter by Gender (Goal 2)", ["All"] + sorted(df["Gender"].dropna().unique().tolist()))
+    gender_filter = st.selectbox(
+        "Filter by Gender (Goal 2)",
+        ["All"] + sorted(df["Gender"].dropna().unique().tolist())
+    )
 with col2:
-    status_filter = st.selectbox("Filter by Status (Goal 2)", ["All"] + sorted(df["Status"].dropna().unique().tolist()))
+    status_filter = st.selectbox(
+        "Filter by Status (Goal 2)",
+        ["All"] + sorted(df["Status"].dropna().unique().tolist())
+    )
 
 sub = df.copy()
 if gender_filter != "All":
@@ -56,7 +62,7 @@ if status_filter != "All":
 
 st.write(f"Number of responses used in Goal 2: {len(sub)}")
 
-# 1) Summary table + horizontal bar
+# ---------- 1) SUMMARY + BAR ----------
 st.subheader("1. Summary of effect scores")
 
 mean_effects = sub[effect_cols].mean()
@@ -64,7 +70,7 @@ std_effects = sub[effect_cols].std()
 
 summary_df = pd.DataFrame({
     "Mean": mean_effects.round(2),
-    "Std": std_effects.round(2)
+    "Std": std_effects.round(2),
 }).sort_values("Mean", ascending=False)
 
 st.dataframe(summary_df)
@@ -81,9 +87,12 @@ ax.set_ylabel("")
 ax.set_title("Overall mean effect scores")
 st.pyplot(fig)
 
-st.markdown("Most effects have mean scores above 4.0, indicating strong agreement that congestion leads to serious negative outcomes.")
+st.markdown(
+    "Most effects have mean scores above 4.0, indicating strong agreement that "
+    "congestion leads to serious negative outcomes."
+)
 
-# 2) Boxplots by Gender
+# ---------- 2) BOX PLOTS BY GENDER ----------
 st.subheader("2. Effect distributions by Gender (boxplots)")
 
 if sub["Gender"].nunique() > 1:
@@ -105,9 +114,11 @@ if sub["Gender"].nunique() > 1:
 else:
     st.info("Only one gender present after filtering; boxplot by gender not shown.")
 
-st.markdown("Boxplots show how tightly or widely scores are spread for each gender, beyond just the means.")
+st.markdown(
+    "Boxplots show how tightly or widely scores are spread for each gender, beyond just the means."
+)
 
-# 3) Grouped bar by Status
+# ---------- 3) GROUPED BAR BY STATUS ----------
 st.subheader("3. Mean key effects by Status (grouped bar)")
 
 selected_effects = [
@@ -134,9 +145,12 @@ if sub["Status"].nunique() > 0:
 else:
     st.info("No status variation after filtering; grouped bar not shown.")
 
-st.markdown("Parents and teachers may rate student-related impacts higher, reflecting their concern for safety and punctuality.")
+st.markdown(
+    "Parents and teachers may rate student-related impacts higher, reflecting their concern for "
+    "safety and punctuality."
+)
 
-# 4) Heatmap: causes vs effects
+# ---------- 4) HEATMAP: CAUSES VS EFFECTS ----------
 st.subheader("4. Correlation between causes and effects (heatmap)")
 
 corr_cols = cause_cols + effect_cols
@@ -157,9 +171,12 @@ ax.set_xlabel("Effect variables")
 ax.set_ylabel("Cause variables")
 st.pyplot(fig)
 
-st.markdown("Higher correlations suggest that where certain causes are perceived as serious, respondents also report stronger negative effects.")
+st.markdown(
+    "Higher correlations suggest that where certain causes are perceived as serious, "
+    "respondents also report stronger negative effects."
+)
 
-# 5) Stacked bar: distribution by Gender
+# ---------- 5) STACKED BAR BY GENDER ----------
 st.subheader("5. Distribution of 'Students Late to School Effect' scores by Gender (stacked bar)")
 
 target = "Students Late to School Effect"
@@ -173,7 +190,6 @@ if sub["Gender"].nunique() > 1:
     )
 
     dist_pivot = dist.pivot(index="Gender", columns=target, values="proportion").fillna(0)
-    # ensure all 1–5 columns exist
     for s in [1, 2, 3, 4, 5]:
         if s not in dist_pivot.columns:
             dist_pivot[s] = 0
@@ -203,9 +219,12 @@ if sub["Gender"].nunique() > 1:
 else:
     st.info("Only one gender present after filtering; stacked bar not shown.")
 
-st.markdown("This shows whether one gender gives more extreme scores (e.g., more 5s) on students being late.")
+st.markdown(
+    "This shows whether one gender gives more extreme scores (for example, more 5s) "
+    "on students being late."
+)
 
-# 6) Violin plot by Area Type (no blue theme)
+# ---------- 6) VIOLIN PLOT BY AREA TYPE ----------
 st.subheader("6. Distribution of 'Time Wastage Effect' by Area Type (violin plot)")
 
 target_violin = "Time Wastage Effect"
@@ -226,5 +245,8 @@ if sub["Area Type"].nunique() > 0:
 else:
     st.info("No area type variation after filtering; violin plot not shown.")
 
-st.markdown("The violin plot reveals how responses for time wastage are distributed across rural, suburban, and urban areas.")
+st.markdown(
+    "The violin plot reveals how responses for time wastage are distributed across rural, "
+    "suburban, and urban areas."
+)
 

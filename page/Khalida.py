@@ -8,7 +8,7 @@ sns.set(style="whitegrid")
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("traffic_survey.csv")  # make sure filename matches your CSV
+    df = pd.read_csv("traffic_survey.csv")
     if "Unnamed: 0" in df.columns:
         df = df.drop(columns=["Unnamed: 0"])
     return df

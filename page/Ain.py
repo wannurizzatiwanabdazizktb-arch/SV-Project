@@ -205,11 +205,19 @@ col4.metric(
 
 st.divider() # Visual separator
 
----------------------------------------------------------
-# 1. DATA PROCESSING (Must come BEFORE visualizations)
-# ---------------------------------------------------------
+import streamlit as st
+import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
-# Define your columns if not already defined
+import plotly.express as px
+
+# ---------------------------------------------------------
+# 1. DATA PROCESSING (Crucial: Define variables before UI)
+# ---------------------------------------------------------
+
+# Ensure merged_df exists (assuming it is loaded from gspread or local)
+# merged_df = ... 
+
 likert_cols = [
     'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
     'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
@@ -222,22 +230,21 @@ likert_cols = [
     'Pedestrian Bridge Step', 'Traffic Officers Step'
 ]
 
-# Create Categorization Lists
+# Categorization Logic
 factor_cols = [c for c in likert_cols if 'Factor' in c or 'Sharing Vehicles' in c]
 effect_cols = [c for c in likert_cols if 'Effect' in c]
 step_cols = [c for c in likert_cols if 'Step' in c]
 
-# CALCULATE HEATMAP DATA
-heatmap_data_detailed = []
+# Pre-calculate Heatmap Data to avoid NameErrors in the UI section
+heatmap_list = []
 for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
     for col in likert_cols:
-        # Assuming merged_df exists in your environment
         count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
         count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
         total_count = count_sd + count_d
         
         if total_count > 0:
-            heatmap_data_detailed.append({
+            heatmap_list.append({
                 'Area Type': area,
                 'Likert Item': col,
                 'Total Disagreement Count': total_count,
@@ -246,26 +253,28 @@ for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
                 'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step')
             })
 
-processed_data = pd.DataFrame(heatmap_data_detailed)
+processed_data = pd.DataFrame(heatmap_list)
 
-# CREATE PIVOTS (The variables that were missing)
+# Generate Pivots for Plotly
 heatmap_pivot_z = processed_data.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
 heatmap_pivot_sd = processed_data.pivot(index='Likert Item', columns='Area Type', values='Strongly Disagree (1)').fillna(0)
 heatmap_pivot_d = processed_data.pivot(index='Likert Item', columns='Area Type', values='Disagree (2)').fillna(0)
 
-# CUSTOMDATA ARRAY for interactivity
+# Interactivity array (SD and D counts for hover)
 customdata_array = np.dstack((heatmap_pivot_sd.values, heatmap_pivot_d.values))
 
 # ---------------------------------------------------------
-# 2. UI LAYOUT
+# 2. UI LAYOUT & VISUALS
 # ---------------------------------------------------------
 
 st.markdown("### 🎯 Research Objective")
-st.info("How respondents from all area types choose most disagreements (factors, effects, and step), to reveal the pattern of each Likert scale item count.")
+st.info("""**Objective:** How respondents from all area types choose most disagreements (factors, effects, and step), 
+to reveal the pattern of each Likert scale item count and perceive viability in traffic issues.""")
 
+# Visualization Expander (Closed by default)
 with st.expander("📊 View Detailed Heatmap & Bar Chart Analysis", expanded=False):
     
-    # Heatmap
+    # Monochrome Heatmap
     fig_heatmap = go.Figure(data=go.Heatmap(
         z=heatmap_pivot_z.values,
         x=heatmap_pivot_z.columns,
@@ -276,62 +285,59 @@ with st.expander("📊 View Detailed Heatmap & Bar Chart Analysis", expanded=Fal
         customdata=customdata_array,
         hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total: %{z}<br>SD (1): %{customdata[0]}<br>D (2): %{customdata[1]}<extra></extra>'
     ))
-    fig_heatmap.update_layout(template='plotly_white', height=700)
+    fig_heatmap.update_layout(title="Disagreement Responses Across Area Types", template='plotly_white', height=700)
     st.plotly_chart(fig_heatmap, use_container_width=True)
 
-    # Horizontal Bar Chart
-    # (Using your disagreement_summary_df or processed_data)
+    # Monochrome Bar Chart
+    bar_data = processed_data.groupby('Likert Item')['Total Disagreement Count'].sum().reset_index().sort_values('Total Disagreement Count')
     fig_bar = px.bar(
-        processed_data.groupby('Likert Item')['Total Disagreement Count'].sum().reset_index().sort_values('Total Disagreement Count'),
-        x='Total Disagreement Count', y='Likert Item', orientation='h',
+        bar_data, x='Total Disagreement Count', y='Likert Item', orientation='h',
+        title='Total Disagreement Counts Across All Areas',
         color='Total Disagreement Count', color_continuous_scale='Greys'
     )
+    fig_bar.update_layout(template='plotly_white', height=700)
     st.plotly_chart(fig_bar, use_container_width=True)
 
+# ---------------------------------------------------------
+# 3. ANALYSIS & SUMMARY
+# ---------------------------------------------------------
 
-# --- 3. INTERPRETATION & ANALYSIS ---
 st.markdown("### 🧐 Interpretation and Analysis")
 with st.container(border=True):
     st.write("""
-    Items with higher disagreement counts indicate that respondents perceive them as **less important** or **less viable**.
-    
-    * **Primary Factor:** The *"Late Drop-off/Pick-up Factor"* (22) showed significant disagreement, particularly in **Urban areas (12)**, where disagreement and strong disagreement were split evenly (11 each).
-    * **Lowest Disagreement:** The *"Narrow Road Factor"* (5) had the least disagreement, suggesting a widespread recognition that road constraints are valid contributors to congestion.
-    * **Behavioral vs. Infrastructure:** Analysis reveals that behavioral factors are viewed as less significant compared to infrastructure-related issues.
-    * **Unintended Road Accidents (11):** Specifically in urban regions (9), the data suggests an unclear understanding of the direct cause-and-effect relationship between congestion and actual accidents.
-    * **Vehicle Sharing Step (14):** Showing non-acceptance of proposals requiring personal behavior changes, with consistent disagreement across Rural (6) and Urban (6) settings.
+    The **Late Drop-off/Pick-up Factor** (22) showed the highest overall disagreement, specifically in **Urban areas** (12). 
+    In contrast, the **Narrow Road Factor** (5) recorded the lowest disagreement, indicating its high recognition as a true traffic contributor. 
+    Analysis shows behavioral factors are often viewed as less viable than physical infrastructure steps.
     """)
 
-# --- 4. SUMMARY OF EXTREMES (Highest & Lowest) ---
 st.markdown("### 🏆 Extremes by Category")
 
-# Function to get high/low for display
+# Helper function for extremes
 def get_extremes(df, category):
     cat_df = df[df['Category'] == category].sort_values('Count Disagreement', ascending=False)
     return cat_df.iloc[0], cat_df.iloc[-1]
 
-# Extracting results (Assuming final_summary_df has Category column)
-f_high, f_low = get_extremes(processed_data.groupby('Likert Item').agg({'Total Disagreement Count':'sum','Category':'first'}).reset_index().rename(columns={'Total Disagreement Count':'Count Disagreement'}), 'Factor')
-e_high, e_low = get_extremes(processed_data.groupby('Likert Item').agg({'Total Disagreement Count':'sum','Category':'first'}).reset_index().rename(columns={'Total Disagreement Count':'Count Disagreement'}), 'Effect')
-s_high, s_low = get_extremes(processed_data.groupby('Likert Item').agg({'Total Disagreement Count':'sum','Category':'first'}).reset_index().rename(columns={'Total Disagreement Count':'Count Disagreement'}), 'Step')
+# Summary Data Preparation
+summary_agg = processed_data.groupby(['Likert Item', 'Category'])['Total Disagreement Count'].sum().reset_index()
+summary_agg.columns = ['Likert Item', 'Category', 'Count Disagreement']
 
-col1, col2, col3 = st.columns(3)
+f_h, f_l = get_extremes(summary_agg, 'Factor')
+e_h, e_l = get_extremes(summary_agg, 'Effect')
+s_h, s_l = get_extremes(summary_agg, 'Step')
 
-with col1:
+c1, c2, c3 = st.columns(3)
+with c1:
     st.markdown("**Factors**")
-    st.caption(f"Highest: {f_high['Likert Item']} ({int(f_high['Count Disagreement'])})")
-    st.caption(f"Lowest: {f_low['Likert Item']} ({int(f_low['Count Disagreement'])})")
-
-with col2:
+    st.caption(f"🔼 Highest: {f_h['Likert Item']} ({int(f_h['Count Disagreement'])})")
+    st.caption(f"🔽 Lowest: {f_l['Likert Item']} ({int(f_l['Count Disagreement'])})")
+with c2:
     st.markdown("**Effects**")
-    st.caption(f"Highest: {e_high['Likert Item']} ({int(e_high['Count Disagreement'])})")
-    st.caption(f"Lowest: {e_low['Likert Item']} ({int(e_low['Count Disagreement'])})")
-
-with col3:
+    st.caption(f"🔼 Highest: {e_h['Likert Item']} ({int(e_h['Count Disagreement'])})")
+    st.caption(f"🔽 Lowest: {e_l['Likert Item']} ({int(e_l['Count Disagreement'])})")
+with c3:
     st.markdown("**Steps**")
-    st.caption(f"Highest: {s_high['Likert Item']} ({int(s_high['Count Disagreement'])})")
-    st.caption(f"Lowest: {s_low['Likert Item']} ({int(s_low['Count Disagreement'])})")
+    st.caption(f"🔼 Highest: {s_h['Likert Item']} ({int(s_h['Count Disagreement'])})")
+    st.caption(f"🔽 Lowest: {s_l['Likert Item']} ({int(s_l['Count Disagreement'])})")
 
-# --- 5. CONCLUSION ---
 st.divider()
-st.markdown("The most popular choices of disagreement per category are: **Students Not Sharing Vehicles** (Factor - 33), **Unintended Road Accidents Effect** (Effect - 11), and **Vehicle Sharing Step** (Step - 14).")
+st.markdown("**Conclusion:** The most popular choices of disagreement per category are: **Students Not Sharing Vehicles** (Factor - 33), **Unintended Road Accidents Effect** (Effect - 11), and **Vehicle Sharing Step** (Step - 14).")

@@ -743,9 +743,7 @@ def classify_item(col):
         return 'Other'
 
 # --- 3. URBAN EXPANDER ---
-with st.expander("Grouped Horizontal Bar Chart", expanded=False):
-    urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
-
+with st.expander("🏙️ Urban Area Detailed Breakdown", expanded=False):
     # Filter for Urban respondents
     urban_df = merged_df[merged_df['Area Type'] == 'Urban areas']
     
@@ -774,8 +772,8 @@ with st.expander("Grouped Horizontal Bar Chart", expanded=False):
         comparison on strongly disagree (1) and disagree (2).
         """)
         st.divider()
-        
-# --- PART A: GROUPED BAR CHART ---
+
+        # --- PART A: GROUPED BAR CHART ---
         fig = go.Figure()
 
         # Strongly Disagree Trace (Dark Blue)
@@ -785,9 +783,13 @@ with st.expander("Grouped Horizontal Bar Chart", expanded=False):
             orientation='h',
             name='Strongly Disagree (1)',
             marker=dict(color='#1B4F72'),
-            # Adding Item Category to the hover template
-            customdata=disagreement_df['Item Category'],
-            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata}<br><b>Count:</b> %{x}<extra></extra>'
+            customdata=disagreement_df[['Item Category', 'Strongly Disagree (1)']],
+            hovertemplate=(
+                '<b>Likert Scale Item:</b> %{y}<br>' +
+                '<b>Item Category:</b> %{customdata[0]}<br>' +
+                '<b>Disagreement Level:</b> Strongly Disagree (1)<br>' +
+                '<b>Number of Disagreement Responses:</b> %{customdata[1]}<extra></extra>'
+            )
         ))
 
         # Disagree Trace (Dark Green)
@@ -797,8 +799,13 @@ with st.expander("Grouped Horizontal Bar Chart", expanded=False):
             orientation='h',
             name='Disagree (2)',
             marker=dict(color='#145A32'),
-            customdata=disagreement_df['Item Category'],
-            hovertemplate='<b>Item:</b> %{y}<br><b>Category:</b> %{customdata}<br><b>Count:</b> %{x}<extra></extra>'
+            customdata=disagreement_df[['Item Category', 'Disagree (2)']],
+            hovertemplate=(
+                '<b>Likert Scale Item:</b> %{y}<br>' +
+                '<b>Item Category:</b> %{customdata[0]}<br>' +
+                '<b>Disagreement Level:</b> Disagree (2)<br>' +
+                '<b>Number of Disagreement Responses:</b> %{customdata[1]}<extra></extra>'
+            )
         ))
 
         fig.update_layout(
@@ -818,6 +825,7 @@ with st.expander("Grouped Horizontal Bar Chart", expanded=False):
         st.divider()
 
         # --- PART B: SUMMARY TABLE ---
+        st.markdown("### **Urban Disagreement Summary Table**")
         st.dataframe(disagreement_df[['Likert Scale Item', 'Item Category', 'Strongly Disagree (1)', 'Disagree (2)']], 
                      use_container_width=True, hide_index=True)
 

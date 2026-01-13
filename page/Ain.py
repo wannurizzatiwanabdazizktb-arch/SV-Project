@@ -182,10 +182,6 @@ with m_col4:
 
 st.markdown("<br>", unsafe_allow_html=True) # Add some spacing
 st.markdown("---")
-# ---------------------------------------------------------
-# 1. PAGE CONFIGURATION
-# ---------------------------------------------------------
-st.set_page_config(page_title="Traffic Survey Analysis", page_icon="📊", layout="wide")
 
 # ---------------------------------------------------------
 # 2. DATA LOADING & PROCESSING

@@ -203,7 +203,8 @@ with m_col4:
 st.markdown(
     """
     <div style="font-size: 0.85rem; color: #808080; font-style: italic;">
-    Why 109 total disagreement? You can see the details in the "Table of Counting Disagreement Likert Scale Across Type Areas" below.
+    Why 109 total disagreement? You can see the details in the "Table of Counting Disagreement Likert Scale Across Type Areas" above.
+    These counts do not indicate the number of unique respondents, as individual respondents may contribute multiple disagreement responses across different items.
     </div>
     """, 
     unsafe_allow_html=True

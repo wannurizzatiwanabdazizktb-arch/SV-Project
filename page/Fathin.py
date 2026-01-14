@@ -29,8 +29,7 @@ try:
 
     # --- HEADER SECTION ---
     st.title("📊 Analysis of Factors and Perceptions of Traffic Congestion")
-    st.write("This visual analyzes the relationship between the factor causing traffic congestion and impact on road users...")
-
+    st.write("This visual is to analyze the relationship between the factors causing traffic congestion and its impact on road users, as well as evaluate the effectiveness of the proposed intervention measures by taking into account the influence of the demographic profile of the respondents and differences in area categories at the study location.")
     st.markdown("---")
 
     # --- SUMMARY OVERVIEW ---
@@ -62,9 +61,10 @@ try:
     )
     fig1.update_layout(xaxis_ticksuffix="%")
     st.plotly_chart(fig1, use_container_width=True)
-    st.write(f"Factor **{factor_means.iloc[-1]['Factor']}** recorded the highest percentage of **{factor_means.iloc[-1]['Percentage']:.1f}%**.")
-
-    st.markdown("---")
+    st.write(f"The graph above shows the percentage importance of factors that contribute to traffic congestion. 
+               Factor **{factor_means.iloc[-1]['Factor']}** recorded the highest percentage of **{factor_means.iloc[-1]['Percentage']:.1f}%**, 
+                followed by other infrastructure factors.")
+st.markdown("---")
 
     # --- SECTION 2: DEMOGRAPHIC COMPARISON ---
     st.subheader("City Demographic Analysis")
@@ -78,8 +78,7 @@ try:
         fig2.update_layout(xaxis_ticksuffix="%")
         st.plotly_chart(fig2, use_container_width=True)
     
-    st.write("The graph illustrates the varying perceptions across Urban, Suburban, and Rural areas...")
-
+    st.write("The graph illustrates the varying perceptions of congestion factors across Urban, Suburban, and Rural areas. Urban respondents highlighted parking shortages and aggressive driving as prominent issues, suggesting these lead to severe congestion. In Suburban areas, the focus was on the impact of construction and road works, attributed to infrastructure development aimed at accommodating population growth. Rural respondents pointed to narrow roads and road damage as significant concerns due to less maintained infrastructure. Additionally, the late drop-off and pick-up of children impacts congestion in all areas, particularly in urban settings. Overall, urban congestion is driven by parking issues, suburban areas by development disruptions, and rural regions by inadequate infrastructure quality.")
     st.markdown("---")
 
     # --- SECTION 3: HEATMAP ---
@@ -89,6 +88,7 @@ try:
         heatmap_perc = (heatmap_df / 5) * 100
         fig3 = px.imshow(heatmap_perc, text_auto=".1f", aspect="auto", color_continuous_scale='YlGnBu')
         st.plotly_chart(fig3, use_container_width=True)
+    st.write("The heatmap displays average scores on congestion factors regarding respondents' status, highlighting that university students and residents are most affected by traffic congestion near schools. This is reflected in high scores for these groups. Teachers show a moderate concern, particularly regarding entrance and exit factors. Key infrastructure issues, such as insufficient parking and narrow roads, score highly among students and parents, with residents particularly concerned about narrow roads. Consistent factors affecting all groups include rainy weather and road damage. User behavior factors are less significant, as respondents attribute more impact to infrastructure issues rather than road user behavior.")
 
     st.markdown("---")
 
@@ -102,6 +102,7 @@ try:
     
     fig5 = px.scatter(data, x=f_select, y=k_select, trendline="ols")
     st.plotly_chart(fig5, use_container_width=True)
+    st.write("This Regression Graph shows the relationship between factors and effects and for example there is a positive relationship between rainy weather and the impact of accidents, which shows that an increase in adverse weather factors contributes directly to an increase in the risk of accidents.")
 
     st.markdown("---")
 
@@ -126,6 +127,7 @@ try:
                       title='<b>Main Solutions (%)</b>', color_discrete_sequence=['#2ecc71'], text_auto='.1f')
         fig7.update_layout(xaxis_ticksuffix="%")
         st.plotly_chart(fig7, use_container_width=True)
+    st.write("The diagram illustrates a bar chart detailing factors contributing to traffic congestion in front of schools and suggests solutions. Key issues include lack of parking, narrow roads, and behavioral factors like undisciplined driving. Recommendations to alleviate congestion focus on creating drop-off zones, deploying traffic officers, and enhancing road infrastructure. The graph reflects residents' calls for improved traffic control and physical infrastructure to address these concerns, emphasizing the need for better stopping spaces and road conditions to ensure smoother traffic in the future.")
 
 except Exception as e:
     st.error(f"An unexpected error occurred: {e}")

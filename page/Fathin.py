@@ -65,8 +65,7 @@ try:
     st.plotly_chart(fig1, use_container_width=True)
     
     # FIXED: Added the missing closing parenthesis below
-    st.write("This graph shows that infrastructure issues are the main cause of the problem compared to behavioral factors.")
-
+    st.write("The graph shows that the main factor contributing to traffic congestion is the lack of parking spaces, with a score of over 4.3. Other important factors include damaged roads and narrow streets, which are ranked second and third, as they impede traffic flow and cause sudden stops. Construction work also plays a major role by reducing lane availability. In addition, driver behavior, especially from undisciplined drivers, contributes significantly to congestion. Weather conditions, such as rain, exacerbate the situation by reducing road capacity. Overall, physical space constraints, especially limited parking spaces and narrow streets, are the main contributors to traffic congestion, although lower scores are given to factors such as late parents and students without cars that affect the number of vehicles during peak hours.")
     st.markdown("---")
 
     # --- SECTION 2: DEMOGRAPHIC COMPARISON ---
@@ -77,7 +76,7 @@ try:
         fig2 = px.bar(comparison_data, x='Score', y='Factor', color='Area Type', barmode='group', orientation='h')
         st.plotly_chart(fig2, use_container_width=True)
 
-    st.write("This graph shows that rural areas experience the most significant impact of almost all of the disruption factors studied, especially infrastructure issues such as lack of parking and narrow roads, while student car sharing practices are the factor with the lowest impact across all area categories.")
+    st.write("The graph illustrates the varying perceptions of congestion factors across Urban, Suburban, and Rural areas. Urban respondents highlighted parking shortages and aggressive driving as prominent issues, suggesting these lead to severe congestion. In Suburban areas, the focus was on the impact of construction and road works, attributed to infrastructure development aimed at accommodating population growth. Rural respondents pointed to narrow roads and road damage as significant concerns due to less maintained infrastructure. Additionally, the late drop-off and pick-up of children impacts congestion in all areas, particularly in urban settings. Overall, urban congestion is driven by parking issues, suburban areas by development disruptions, and rural regions by inadequate infrastructure quality.")
 
     st.markdown("---")
 
@@ -88,7 +87,7 @@ try:
         fig3 = px.imshow(heatmap_df, text_auto=".2f", aspect="auto")
         st.plotly_chart(fig3, use_container_width=True)
 
-    st.write("This heatmap graph shows that university students are the group that gives the highest scores on most factors, with the issue of lack of parking being the most critical problem for them and their parents.")
+    st.write("The heatmap displays average scores on congestion factors regarding respondents' status, highlighting that university students and residents are most affected by traffic congestion near schools. This is reflected in high scores for these groups. Teachers show a moderate concern, particularly regarding entrance and exit factors. Key infrastructure issues, such as insufficient parking and narrow roads, score highly among students and parents, with residents particularly concerned about narrow roads. Consistent factors affecting all groups include rainy weather and road damage. User behavior factors are less significant, as respondents attribute more impact to infrastructure issues rather than road user behavior.")
 
     st.markdown("---")
 
@@ -127,7 +126,7 @@ try:
                       title='<b>Main Solutions (Measures)</b>', 
                       color_discrete_sequence=['#2ecc71'], text_auto='.2f')
         st.plotly_chart(fig7, use_container_width=True)
-    st.write("This graph shows that lack of parking spaces and road damage are the main factors of traffic disruption. To overcome this issue, respondents suggested the implementation of special drop-off zones and traffic officers as effective solutions.")
+    st.write("The diagram illustrates a bar chart detailing factors contributing to traffic congestion in front of schools and suggests solutions. Key issues include lack of parking, narrow roads, and behavioral factors like undisciplined driving. Recommendations to alleviate congestion focus on creating drop-off zones, deploying traffic officers, and enhancing road infrastructure. The graph reflects residents' calls for improved traffic control and physical infrastructure to address these concerns, emphasizing the need for better stopping spaces and road conditions to ensure smoother traffic in the future.")
 
 except Exception as e:
     st.error(f"An unexpected error occurred: {e}")

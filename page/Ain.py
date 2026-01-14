@@ -131,7 +131,7 @@ with st.expander("Table of Counting Disagreement Likert Scale Across Type Areas"
             this indicates that two rural respondents selected either Strongly Disagree or Disagree 
             for that particular item. These values reflect the frequency of disagreement responses 
             for each item, rather than the total number of respondents (102), as each respondent 
-            provided responses to multiple Likert items. So if 102 is select 1 or 2 scale mean the total disagreement is 2,448 responses for 24 item.
+            provided responses to multiple Likert items. So if all 102 is just select 1 or 2 scale mean the total disagreement is 2,448 responses for 24 item.
             </div>
             """, 
             unsafe_allow_html=True
@@ -194,13 +194,23 @@ with m_col3:
 
 with m_col4:
     st.metric(
-        label="Most Disagreement Item",
-        value="22",
-        help="Late Drop-off/Pick-up Factor | Rural Areas: 6 | Suburban Areas: 4 | Urban Areas: 12"
+        label="Total Respondend",
+        value="102",
+        help="Rural Areas:38 | Suburban Areas: 15 | Urban Areas: 49"
     )
 
 st.markdown("<br>", unsafe_allow_html=True) # Add some spacing
 st.markdown("---")
+
+# --- Grey Small Font Note ---
+st.markdown(
+    """
+    <div style="font-size: 0.85rem; color: #808080; font-style: italic;">
+    Why 109 total disagreement? You can see the details in the "Table of Counting Disagreement Likert Scale Across Type Areas" below.
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 # ---------------------------------------------------------
 # 2. DATA LOADING & PROCESSING

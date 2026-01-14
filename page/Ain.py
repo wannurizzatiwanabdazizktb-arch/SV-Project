@@ -131,7 +131,7 @@ with st.expander("Table of Counting Disagreement Likert Scale Across Type Areas"
             this indicates that two rural respondents selected either Strongly Disagree or Disagree 
             for that particular item. These values reflect the frequency of disagreement responses 
             for each item, rather than the total number of respondents (102), as each respondent 
-            provided responses to multiple Likert items.
+            provided responses to multiple Likert items. So if 102 is select 1 or 2 scale mean the total disagreement is 2,448 responses for 24 item.
             </div>
             """, 
             unsafe_allow_html=True

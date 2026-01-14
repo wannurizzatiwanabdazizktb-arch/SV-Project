@@ -37,41 +37,59 @@ step_cols = [
     'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step'
 ]
 
-# Combine all lists into one for the loop
+# 1. Define your column groups (ensure these are defined before use)
+# If these come from a specific logic, you can define them here
+factor_cols = [] # Add your column names
+effect_cols = []
+step_cols = []
 all_likert_cols = factor_cols + effect_cols + step_cols
 
 @st.cache_data
 def load_and_process_data():
     try:
-        # Ensure the filename matches exactly
-        df = pd.read_csv("disagree_summary(Ain).csv")
+        # Load data from GitHub
+        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+        df = pd.read_csv(url)
         
-        # Define column ranges (Likert scale columns)
+        # Define Likert columns (Indices 3 to 27)
         likert_cols = df.columns[3:28].tolist()
         
         # Aggregate Disagreement (Likert 1 & 2) by Area Type
+        # Using .value_counts() inside a dictionary comprehension is often faster
         result_map = {}
         for col in likert_cols:
-            # Filter for 1 (Strongly Disagree) and 2 (Disagree)
-            result_map[col] = (
+            disagree_counts = (
                 df[df[col].isin([1, 2])]
                 .groupby('Area Type')[col]
                 .count()
             )
+            result_map[col] = disagree_counts
         
+        # Create the summary DataFrame
         disagreement_df = pd.DataFrame(result_map).fillna(0).astype(int)
+        
         return df, disagreement_df, likert_cols
     
     except Exception as e:
-        st.error(f"Error loading data: {e}")
-        return None, None, None
+        # We log the error but return Nones to be handled by the UI
+        return None, None, str(e)
 
-# Load the data
-merged_df, disagree_area_type_original, likert_cols = load_and_process_data()
+# 2. Execution Logic
+merged_df, disagree_area_type_original, likert_cols_or_error = load_and_process_data()
 
 if merged_df is None:
-    st.error("CSV file not found or data format is incorrect. Please check 'disagree_summary(Ain).csv'.")
+    st.error(f"Failed to load data. Error: {likert_cols_or_error}")
+    st.info("Check if the GitHub URL is public and the CSV format is correct.")
     st.stop()
+
+# If successful, assign the list back
+likert_cols = likert_cols_or_error
+
+# 3. Simple UI Preview
+st.title("Likert Disagreement Analysis")
+st.write("### Disagreement Summary by Area Type")
+st.dataframe(disagree_area_type_original)
+
 
 st.markdown("""
 <style>

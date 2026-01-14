@@ -36,7 +36,6 @@ try:
     # --- SUMMARY OVERVIEW ---
     with st.container():
         st.subheader("📌 Summary Overview")
-        total_respondents = len(data)
         
         avg_factors = data[factor_cols].mean()
         top_factor_name = avg_factors.idxmax().replace(' Factor', '').replace(' factor', '')
@@ -44,30 +43,52 @@ try:
         avg_impacts = data[kesan_cols].mean()
         top_impact_name = avg_impacts.idxmax().replace(' Impact', '').replace(' impact', '')
         
-        col_m1, col_m2, col_m3 = st.columns(3)
-        col_m1.metric("Total Respondents", f"{total_respondents}")
-        col_m2.metric("Primary Cause", top_factor_name)
-        col_m3.metric("Major Impact", top_impact_name)
+        col_m1, col_m2 = st.columns(2)
+        col_m1.metric("Primary Cause", top_factor_name)
+        col_m2.metric("Major Impact", top_impact_name)
 
     st.info(f"Analysis identifies **{top_factor_name}** as the leading contributor.")
     st.markdown("---")
 
-    # --- SECTION 1: AVERAGE SCORES ---
-    st.subheader("1. Average Factor Scores (Overall)")
-    factor_means = data[factor_cols].mean().sort_values(ascending=True).reset_index()
-    factor_means.columns = ['Factor', 'Average Score']
-    factor_means['Factor'] = factor_means['Factor'].str.replace(' Factor', '', case=False)
+# --- SECTION 1: AVERAGE SCORES (IN PERCENTAGE) ---
+st.subheader("1. Average Factor Scores (Percentage)")
 
-    fig1 = px.bar(
-        factor_means, x='Average Score', y='Factor', orientation='h',
-        title='Average Factor Scores', color='Average Score', text_auto='.2f'
-    )
-    st.plotly_chart(fig1, use_container_width=True)
-    
-    # FIXED: Added the missing closing parenthesis below
-    st.write("The graph shows that the main factor contributing to traffic congestion is the lack of parking spaces, with a score of over 4.3. Other important factors include damaged roads and narrow streets, which are ranked second and third, as they impede traffic flow and cause sudden stops. Construction work also plays a major role by reducing lane availability. In addition, driver behavior, especially from undisciplined drivers, contributes significantly to congestion. Weather conditions, such as rain, exacerbate the situation by reducing road capacity. Overall, physical space constraints, especially limited parking spaces and narrow streets, are the main contributors to traffic congestion, although lower scores are given to factors such as late parents and students without cars that affect the number of vehicles during peak hours.")
-    st.markdown("---")
+# 1. Kira purata asal
+factor_means = data[factor_cols].mean().sort_values(ascending=True).reset_index()
+factor_means.columns = ['Factor', 'Score']
 
+# 2. Formula Tukar ke Peratus: (Skor / 5) * 100
+# Anda boleh tukar angka 5 kepada 4 atau 7 mengikut skala maksimum anda
+factor_means['Percentage'] = (factor_means['Score'] / 5) * 100
+
+# 3. Bersihkan nama untuk paparan
+factor_means['Factor'] = factor_means['Factor'].str.replace(' Factor', '', case=False)
+
+# 4. Bina Grafik
+fig1 = px.bar(
+    factor_means, 
+    x='Percentage', 
+    y='Factor', 
+    orientation='h',
+    title='<b>Average Factor Importance (%)</b>',
+    color='Percentage', 
+    color_continuous_scale='Viridis',
+    text_auto='.1f', # Papar 1 tempat perpuluhan
+    labels={'Percentage': 'Importance (%)'}
+)
+
+# Tambah simbol '%' pada label paksi X
+fig1.update_layout(xaxis_ticksuffix="%")
+
+st.plotly_chart(fig1, use_container_width=True)
+
+# Update teks analisis mengikut peratus
+st.write(f"""
+The graph above shows the percentage importance of factors that contribute to traffic congestion. 
+Factor **{factor_means.iloc[-1]['Factor']}** recorded the highest percentage of **{factor_means.iloc[-1]['Percentage']:.1f}%**, 
+followed by other infrastructure factors.
+""")
+st.markdown("---")
     # --- SECTION 2: DEMOGRAPHIC COMPARISON ---
     st.subheader("City Demographic Analysis")
     if 'Area Type' in data.columns:

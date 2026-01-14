@@ -20,9 +20,6 @@ st.set_page_config(
 # ---------------------------------------------------------
 # 2. DATA LOADING & PROCESSING FUNCTIONS
 # ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-
 # Set page configuration
 st.set_page_config(page_title="Likert Data Viewer", layout="wide")
 
@@ -93,34 +90,36 @@ st.markdown('<div class="aesthetic-divider"></div>', unsafe_allow_html=True)
 # ---------------------------------------------------------
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------
-# 1. DATA LOADING (Assume load_raw_data() is defined as before)
+# 1. Load Data
+df, error = load_raw_data()
+
+# 2. UI Container (The Expander)
 with st.expander("Table of Counting Disagreement Likert Scale Across Type Areas", expanded=False):
-    df, error = load_raw_data()
+    if df is not None:
+        # --- TITLE SECTION ---
+        st.markdown("""
+            <style>
+                .matrix-title {
+                    font-family: 'Inter', sans-serif;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    color: #1e3c72; 
+                    margin-top: 10px;
+                    margin-bottom: 15px;
+                }
+            </style>
+            <div class="matrix-title">Disagreement Count Matrix</div>
+        """, unsafe_allow_html=True)
 
-if df is not None:
-    # --- 1. TITLE SECTION ---
-    st.markdown("""
-        <style>
-            .matrix-title {
-                font-family: 'Inter', sans-serif;
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: #1e3c72; 
-                margin-top: 10px;
-                margin-bottom: 15px;
-            }
-        </style>
-        <div class="matrix-title">Disagreement Count Matrix</div>
-    """, unsafe_allow_html=True)
+        # --- DATA TABLE SECTION ---
+        # Displays the raw data exactly like the CSV
+        st.dataframe(df, use_container_width=True)
 
-    # --- 2. DATA TABLE SECTION ---
-    # This shows the raw data exactly as requested
-    st.dataframe(df, use_container_width=True)
-
-    # --- 3. EXPANDER SECTION (Under the Table) ---
+        # --- EXPLANATION SECTION (Bottom of Expander) ---
         st.markdown(
             """
-            <div style="font-size: 0.85rem; line-height: 1.4; color: #808080;">
+            <div style="font-size: 0.85rem; line-height: 1.4; color: #808080; border-top: 1px solid #eee; pt-3;">
+            <br>
             The total number of Likert items analysed is 24, after excluding “Students Not Sharing Vehicles”. 
             Since each of the 102 respondents answered all 24 items, a single respondent may select 
             “Strongly Disagree (1)” or “Disagree (2)” multiple times across different items. 
@@ -137,9 +136,8 @@ if df is not None:
             """, 
             unsafe_allow_html=True
         )
-
-else:
-    st.error(f"Error loading data: {error}")
+    else:
+        st.error(f"Error loading data: {error}")
 # ---------------------------------------------------------
 # 5. SUMMARY METRICS BOX
 # ---------------------------------------------------------

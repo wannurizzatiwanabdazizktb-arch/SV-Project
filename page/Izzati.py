@@ -287,6 +287,16 @@ fig.update_layout(
 # --- Show figure in Streamlit ---
 st.plotly_chart(fig, use_container_width=True)
 
+# ---  Interpretation ---
+st.markdown(
+    """
+    <div style="text-align: justify;">
+    This radar chart offers insight into how perceptions of traffic congestion effects align with respondents’ views on narrow roads as a contributing factor in rural areas. Respondents who strongly agree that narrow roads contribute to congestion consistently report higher perceived severity across all measured congestion effects which suggest a group of serious concerns rather than individual opinions. The strongest correlation shows in time wastage and pressure on road users, demonstrating that those who consider narrow roads as problematic are particularly vulnerable to congestion-related delays and psychological stress. Significantly, increased agreement is also seen for effects like unintended road accidents, fuel waste, and environmental pollution which reflect a wider belief that problems associated with traffic congestion go beyond merely irritation. On the other hand, those who are unsure or less aware about the effect of narrow roadways have more common and moderate views. This suggest less differentiation in the view of the effects of congestion. The radar chart emphasizes how infrastructural perceptions affect broader views on traffic conditions in rural school environments by showing a pattern of perception agreement where opinion in a particular congestion factor corresponds with a more thorough recognition of congestion-related problems.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 #----------------------------------------------------------------
 # Box Plot: Congestion Effect by Severity of a Key Traffic Factor
 #----------------------------------------------------------------
@@ -328,3 +338,13 @@ fig = px.bar(
 
 # --- Show figure in Streamlit ---
 st.plotly_chart(fig, use_container_width=True)
+
+# ---  Interpretation ---
+st.markdown(
+    """
+    <div style="text-align: justify;">
+    This radar chart offers insight into how perceptions of traffic congestion effects align with respondents’ views on narrow roads as a contributing factor in rural areas. Respondents who strongly agree that narrow roads contribute to congestion consistently report higher perceived severity across all measured congestion effects which suggest a group of serious concerns rather than individual opinions. The strongest correlation shows in time wastage and pressure on road users, demonstrating that those who consider narrow roads as problematic are particularly vulnerable to congestion-related delays and psychological stress. Significantly, increased agreement is also seen for effects like unintended road accidents, fuel waste, and environmental pollution which reflect a wider belief that problems associated with traffic congestion go beyond merely irritation. On the other hand, those who are unsure or less aware about the effect of narrow roadways have more common and moderate views. This suggest less differentiation in the view of the effects of congestion. The radar chart emphasizes how infrastructural perceptions affect broader views on traffic conditions in rural school environments by showing a pattern of perception agreement where opinion in a particular congestion factor corresponds with a more thorough recognition of congestion-related problems.
+    </div>
+    """,
+    unsafe_allow_html=True
+)

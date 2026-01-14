@@ -94,7 +94,8 @@ st.markdown('<div class="aesthetic-divider"></div>', unsafe_allow_html=True)
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------
 # 1. DATA LOADING (Assume load_raw_data() is defined as before)
-df, error = load_raw_data()
+with st.expander("Table of Counting Disagreement Likert Scale Across Type Areas", expanded=False):
+    df, error = load_raw_data()
 
 if df is not None:
     # --- 1. TITLE SECTION ---
@@ -117,7 +118,6 @@ if df is not None:
     st.dataframe(df, use_container_width=True)
 
     # --- 3. EXPANDER SECTION (Under the Table) ---
-    with st.expander("ℹ️ Note on Data Interpretation", expanded=False):
         st.markdown(
             """
             <div style="font-size: 0.85rem; line-height: 1.4; color: #808080;">

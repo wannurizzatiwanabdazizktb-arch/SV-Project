@@ -44,7 +44,7 @@ all_likert_cols = factor_cols + effect_cols + step_cols
 def load_and_process_data():
     try:
         # Ensure the filename matches exactly
-        df = pd.read_csv("cleaned_data.csv")
+        df = pd.read_csv("disagree_summary(Ain).csv")
         
         # Define column ranges (Likert scale columns)
         likert_cols = df.columns[3:28].tolist()
@@ -70,7 +70,7 @@ def load_and_process_data():
 merged_df, disagree_area_type_original, likert_cols = load_and_process_data()
 
 if merged_df is None:
-    st.error("CSV file not found or data format is incorrect. Please check 'cleaned_data.csv'.")
+    st.error("CSV file not found or data format is incorrect. Please check 'disagree_summary(Ain).csv'.")
     st.stop()
 
 st.markdown("""

@@ -20,30 +20,8 @@ st.set_page_config(
 # ---------------------------------------------------------
 # 2. DATA LOADING & PROCESSING FUNCTIONS
 # ---------------------------------------------------------
-factor_cols = [
-    'Rainy Weather Factor', 'Increasing Population Factor', 'Undisciplined Driver Factor',
-    'Damaged Road Factor', 'Leaving Work Late Factor', 'Single Gate Factor',
-    'Lack of Pedestrian Bridge Factor', 'Lack of Parking Space Factor', 
-    'Late Drop-off/Pick-up Factor', 'Construction/Roadworks Factor', 'Narrow Road Factor'
-]
-
-effect_cols = [
-    'Unintended Road Accidents Effect', 'Time Wastage Effect', 'Pressure on Road Users Effect', 
-    'Students Late to School Effect', 'Environmental Pollution Effect', 'Fuel Wastage Effect'
-]
-
-step_cols = [
-    'Widening Road Step', 'Vehicle Sharing Step', 'Two Gates Step', 'Arrive Early Step',
-    'Special Drop-off Area Step', 'Pedestrian Bridge Step', 'Traffic Officers Step'
-]
-
 # 1. Define your column groups (ensure these are defined before use)
 # If these come from a specific logic, you can define them here
-factor_cols = [] # Add your column names
-effect_cols = []
-step_cols = []
-all_likert_cols = factor_cols + effect_cols + step_cols
-
 @st.cache_data
 def load_and_process_data():
     try:

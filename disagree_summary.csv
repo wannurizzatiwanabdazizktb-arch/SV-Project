@@ -1,0 +1,4 @@
+Area Type,Arrive Early Step,Construction/Roadworks Factor,Damaged Road Factor,Environmental Pollution Effect,Fuel Wastage Effect,Increasing Population Factor,Lack of Parking Space Factor,Lack of Pedestrian Bridge Factor,Late Drop-off/Pick-up Factor,Leaving Work Late Factor,Narrow Road Factor,Pedestrian Bridge Step,Pressure on Road Users Effect,Rainy Weather Factor,Single Gate Factor,Special Drop-off Area Step,Students Late to School Effect,Time Wastage Effect,Traffic Officers Step,Two Gates Step,Undisciplined Driver Factor,Unintended Road Accidents Effect,Vehicle Sharing Step,Widening Road Step
+Rural areas,2.0,2.0,2.0,1.0,1.0,2.0,2.0,2.0,6.0,5.0,0.0,0.0,1.0,2.0,6.0,1.0,1.0,1.0,0.0,1.0,2.0,1.0,6.0,1.0
+Suburban areas,1.0,1.0,1.0,1.0,1.0,2.0,0.0,1.0,4.0,2.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,2.0,1.0,2.0,0.0
+Urban areas,2.0,7.0,6.0,1.0,6.0,6.0,7.0,7.0,12.0,10.0,5.0,2.0,1.0,6.0,14.0,2.0,2.0,2.0,2.0,2.0,5.0,9.0,6.0,1.0

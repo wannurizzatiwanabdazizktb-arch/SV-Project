@@ -20,53 +20,59 @@ st.set_page_config(
 # ---------------------------------------------------------
 # 2. DATA LOADING & PROCESSING FUNCTIONS
 # ---------------------------------------------------------
-# 1. Define your column groups (ensure these are defined before use)
-# If these come from a specific logic, you can define them here
+import streamlit as st
+import pandas as pd
+
+# Set page configuration
+st.set_page_config(page_title="Likert Data Viewer", layout="wide")
+
+# 1. DATA LOADING FUNCTION (Matches CSV exactly)
 @st.cache_data
-def load_and_process_data():
+def load_raw_data():
     try:
-        # Load data from GitHub
         url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
         df = pd.read_csv(url)
-        
-        # Define Likert columns (Indices 3 to 27)
-        likert_cols = df.columns[3:28].tolist()
-        
-        # Aggregate Disagreement (Likert 1 & 2) by Area Type
-        # Using .value_counts() inside a dictionary comprehension is often faster
-        result_map = {}
-        for col in likert_cols:
-            disagree_counts = (
-                df[df[col].isin([1, 2])]
-                .groupby('Area Type')[col]
-                .count()
-            )
-            result_map[col] = disagree_counts
-        
-        # Create the summary DataFrame
-        disagreement_df = pd.DataFrame(result_map).fillna(0).astype(int)
-        
-        return df, disagreement_df, likert_cols
-    
+        return df, None
     except Exception as e:
-        # We log the error but return Nones to be handled by the UI
-        return None, None, str(e)
+        return None, str(e)
 
-# 2. Execution Logic
-merged_df, disagree_area_type_original, likert_cols_or_error = load_and_process_data()
+# 2. EXECUTION & UI
+st.title("📊 Dataset Analysis")
 
-if merged_df is None:
-    st.error(f"Failed to load data. Error: {likert_cols_or_error}")
-    st.info("Check if the GitHub URL is public and the CSV format is correct.")
-    st.stop()
+df, error = load_raw_data()
 
-# If successful, assign the list back
-likert_cols = likert_cols_or_error
+if df is not None:
+    # --- EXPANDER SECTION ---
+    with st.expander("ℹ️ Note on Data Interpretation"):
+        # Using HTML to ensure the font is small
+        st.markdown(
+            """
+            <div style="font-size: 0.85rem; line-height: 1.4; color: #555;">
+            The total number of Likert items analysed is 24, after excluding “Students Not Sharing Vehicles”. 
+            Since each of the 102 respondents answered all 24 items, a single respondent may select 
+            “Strongly Disagree (1)” or “Disagree (2)” multiple times across different items. 
+            Therefore, if respondents consistently chose Likert 1 or 2 across several items, the cumulative 
+            count of disagreement responses can exceed 102. These totals represent the frequency of 
+            disagreement responses across items, not the number of unique respondents. 
+            <br><br>
+            For example, if the table shows a value of 2.0 for “Arrive Early Step” in rural areas, 
+            this indicates that two rural respondents selected either Strongly Disagree or Disagree 
+            for that particular item. These values reflect the frequency of disagreement responses 
+            for each item, rather than the total number of respondents (102), as each respondent 
+            provided responses to multiple Likert items.
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
-# 3. Simple UI Preview
-st.title("Likert Disagreement Analysis")
-st.write("### Disagreement Summary by Area Type")
-st.dataframe(disagree_area_type_original)
+    # --- DATA TABLE SECTION ---
+    st.write(f"### Displaying Raw Data: `disagree_summary(Ain).csv`")
+    
+    # Display the table exactly as it is in the CSV
+    st.dataframe(df, use_container_width=True)
+
+else:
+    st.error(f"Error loading data: {error}")
 
 
 st.markdown("""

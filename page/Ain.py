@@ -199,9 +199,6 @@ with m_col4:
         help="Rural Areas:38 | Suburban Areas: 15 | Urban Areas: 49"
     )
 
-st.markdown("<br>", unsafe_allow_html=True) # Add some spacing
-st.markdown("---")
-
 # --- Grey Small Font Note ---
 st.markdown(
     """

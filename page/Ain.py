@@ -93,19 +93,34 @@ st.markdown('<div class="aesthetic-divider"></div>', unsafe_allow_html=True)
 # ---------------------------------------------------------
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------
-
-# 2. EXECUTION & UI
-st.title("📊 Dataset Analysis")
-
+# 1. DATA LOADING (Assume load_raw_data() is defined as before)
 df, error = load_raw_data()
 
 if df is not None:
-    # --- EXPANDER SECTION ---
-    with st.expander("ℹ️ Note on Data Interpretation"):
-        # Using HTML to ensure the font is small
+    # --- 1. TITLE SECTION ---
+    st.markdown("""
+        <style>
+            .matrix-title {
+                font-family: 'Inter', sans-serif;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #1e3c72; 
+                margin-top: 10px;
+                margin-bottom: 15px;
+            }
+        </style>
+        <div class="matrix-title">Disagreement Count Matrix</div>
+    """, unsafe_allow_html=True)
+
+    # --- 2. DATA TABLE SECTION ---
+    # This shows the raw data exactly as requested
+    st.dataframe(df, use_container_width=True)
+
+    # --- 3. EXPANDER SECTION (Under the Table) ---
+    with st.expander("ℹ️ Note on Data Interpretation", expanded=False):
         st.markdown(
             """
-            <div style="font-size: 0.85rem; line-height: 1.4; color: #555;">
+            <div style="font-size: 0.85rem; line-height: 1.4; color: #808080;">
             The total number of Likert items analysed is 24, after excluding “Students Not Sharing Vehicles”. 
             Since each of the 102 respondents answered all 24 items, a single respondent may select 
             “Strongly Disagree (1)” or “Disagree (2)” multiple times across different items. 
@@ -123,33 +138,8 @@ if df is not None:
             unsafe_allow_html=True
         )
 
-    # --- DATA TABLE SECTION ---
-    st.write(f"### Displaying Raw Data: `disagree_summary(Ain).csv`")
-    
-    # Display the table exactly as it is in the CSV
-    st.dataframe(df, use_container_width=True)
-
 else:
     st.error(f"Error loading data: {error}")
-# Set expanded=False to ensure the expander is closed when the page loads
-with st.expander("Data Disagreement Across Area Type Table", expanded=False):
-    
-    # Custom Styled Subheader using HTML and CSS
-    st.markdown("""
-        <style>
-            .matrix-title {
-                font-family: 'Inter', sans-serif;
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: #1e3c72; /* Matches your header theme */
-                margin-top: 10px;
-                margin-bottom: 15px;
-            }
-        </style>
-        <div class="matrix-title">Disagreement Count Matrix</div>
-    """, unsafe_allow_html=True)
-
-
 # ---------------------------------------------------------
 # 5. SUMMARY METRICS BOX
 # ---------------------------------------------------------

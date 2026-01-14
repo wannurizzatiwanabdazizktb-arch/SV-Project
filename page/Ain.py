@@ -275,110 +275,84 @@ st.markdown("""
 # ---------------------------------------------------------
 # HEATMAP & HORIZONTAL BAR CHART WITH TABLE
 # ---------------------------------------------------------
-# --- 1. CONFIGURATION & DATA ---
-# Ensure merged_df and column lists are defined before this block
+# ---------------------------------------------------------
+    # 2. ANALYSIS CALCULATIONS
+    # ---------------------------------------------------------
+    # A. Correlation Matrix
+    corr_matrix = df[likert_cols].corr()
 
-with st.expander("Heatmap, and Stacked Bar", expanded=False):
+    # B. Percentage Calculation for Top 10
+    # Assuming total respondents = 102 as per your note
+    total_respondents = 102
+    item_sums = df[likert_cols].sum().sort_values(ascending=False)
+    top_10_df = pd.DataFrame({
+        'Item Name': item_sums.index[:10],
+        'Total Count': item_sums.values[:10],
+        'Percentage (%)': (item_sums.values[:10] / total_respondents * 100).round(2)
+    })
+
+    # C. Data for Stacked Bar (Grouped by Area Type)
+    # We sum the items per area type
+    area_summary = df.groupby('Area Type')[likert_cols].sum().T
+    area_perc = area_summary.div(area_summary.sum(axis=1), axis=0) * 100
+
+    # ---------------------------------------------------------
+    # 3. VISUALIZATIONS
+    # ---------------------------------------------------------
     
-    # --- OBJECTIVE SECTION ---
-    st.markdown("""
-    ### **Objective**
-    Identify how respondents across **Rural, Suburban, and Urban** areas distribute their disagreements. 
-    By analyzing the highest and lowest disagreement counts for **Factors, Effects, and Steps**, 
-    we reveal the specific patterns and outliers within each Likert scale category.
-    """)
-    st.divider()
+    st.title("📊 Advanced Disagreement Analysis")
 
-    # --- PART A: DATA PROCESSING ---
-    heatmap_data_detailed = []
-    for area in ['Rural areas', 'Suburban areas', 'Urban areas']:
-        for col in all_likert_cols:
-            count_sd = merged_df.loc[merged_df['Area Type'] == area, col].isin([1]).sum()
-            count_d  = merged_df.loc[merged_df['Area Type'] == area, col].isin([2]).sum()
-            total_dis = count_sd + count_d
+    # --- HEATMAP SECTION ---
+    st.subheader("🔥 Item Correlation Heatmap")
+    fig_heat, ax_heat = plt.subplots(figsize=(12, 10))
+    sns.heatmap(corr_matrix, annot=False, cmap='RdYlGn', ax=ax_heat, center=0)
+    plt.xticks(rotation=45, ha='right', fontsize=8)
+    plt.yticks(fontsize=8)
+    st.pyplot(fig_heat)
 
-            if total_dis >= 0: # Include 0s for complete pattern analysis
-                heatmap_data_detailed.append({
-                    'Area Type': area,
-                    'Likert Item': col,
-                    'Total Disagreement Count': total_dis,
-                    'Strongly Disagree (1)': count_sd,
-                    'Disagree (2)': count_d,
-                    'Category': ('Factor' if col in factor_cols else 'Effect' if col in effect_cols else 'Step')
-                })
+    # --- STACKED BAR SECTION ---
+    st.subheader("📊 Distribution of Disagreement by Area Type (%)")
+    fig_bar, ax_bar = plt.subplots(figsize=(12, 7))
+    area_perc.plot(kind='bar', stacked=True, ax=ax_bar, color=['#ff9999','#66b3ff','#99ff99'])
+    plt.ylabel("Percentage of Total Disagreement")
+    plt.legend(title="Area Type", bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.xticks(rotation=45, ha='right', fontsize=8)
+    st.pyplot(fig_bar)
 
-    heatmap_df_detailed = pd.DataFrame(heatmap_data_detailed)
+    # --- TABLES SECTION ---
+    col_t1, col_t2 = st.columns([1, 1])
 
-    # --- PART B: HEATMAP ---
-    st.subheader("1. Disagreement Distribution Pattern")
-    
-    # Pivot and Reorder
-    heatmap_pivot_z = heatmap_df_detailed.pivot(index='Likert Item', columns='Area Type', values='Total Disagreement Count').fillna(0)
-    # Reorder index based on your categories
-    item_order = [i for i in (factor_cols + effect_cols + step_cols) if i in heatmap_pivot_z.index]
-    heatmap_pivot_z = heatmap_pivot_z.reindex(item_order)
+    with col_t1:
+        st.write("### 🏆 Top 10 Disagreement Items (%)")
+        st.dataframe(top_10_df, hide_index=True, use_container_width=True)
 
-    fig_heat = go.Figure(data=go.Heatmap(
-        z=heatmap_pivot_z.values,
-        x=heatmap_pivot_z.columns,
-        y=heatmap_pivot_z.index,
-        colorscale='YlGnBu',
-        text=heatmap_pivot_z.values,
-        texttemplate="%{text}",
-        hovertemplate='<b>%{y}</b><br>Area: %{x}<br>Total Disagreement: %{z}<extra></extra>'
-    ))
-    fig_heat.update_layout(height=600, margin=dict(t=10, b=10), template='plotly_white')
-    st.plotly_chart(fig_heat, use_container_width=True)
+    with col_t2:
+        st.write("### 🔗 Correlation Table (Top Interactions)")
+        # Showing a simplified version of strong correlations
+        corr_unstack = corr_matrix.unstack().reset_index()
+        corr_unstack.columns = ['Item A', 'Item B', 'Correlation']
+        # Filter out self-correlation and duplicates
+        top_corr = corr_unstack[corr_unstack['Item A'] != corr_unstack['Item B']].sort_values(by='Correlation', ascending=False).head(10)
+        st.dataframe(top_corr, hide_index=True, use_container_width=True)
 
-    st.divider()
-
-    # --- PART C: BAR & STRUCTURED TABLE ---
-    col_left, col_right = st.columns([1, 1.2])
-
-    with col_left:
-        st.subheader("2. Overall Trend")
-        bar_data = heatmap_df_detailed.groupby('Likert Item')['Total Disagreement Count'].sum().reset_index()
-        bar_data = bar_data.sort_values('Total Disagreement Count', ascending=True)
-
-        fig_bar = px.bar(bar_data, x='Total Disagreement Count', y='Likert Item', orientation='h',
-                         color='Total Disagreement Count', color_continuous_scale='Viridis')
-        fig_bar.update_layout(showlegend=False, height=500, margin=dict(l=150), template='plotly_white')
-        st.plotly_chart(fig_bar, use_container_width=True)
-
-    with col_right:
-        st.subheader("3. Structured Key Insights")
+    # --- YOUR ORIGINAL EXPANDER & MATRIX ---
+    st.markdown("---")
+    with st.expander("Table of Counting Disagreement Likert Scale Across Type Areas", expanded=False):
+        st.markdown('<div class="matrix-title">Disagreement Count Matrix</div>', unsafe_allow_html=True)
+        st.dataframe(df, use_container_width=True)
         
-        # Aggregate for insights
-        summary = heatmap_df_detailed.groupby(['Likert Item', 'Category']).agg({
-            'Total Disagreement Count': 'sum'
-        }).reset_index()
-        
-        area_pivot = heatmap_df_detailed.pivot_table(
-            index='Likert Item', columns='Area Type', values='Total Disagreement Count', fill_value=0
-        ).reset_index()
-        
-        final_summary_df = summary.merge(area_pivot, on='Likert Item')
+        st.markdown(
+            """
+            <div style="font-size: 0.85rem; line-height: 1.4; color: #808080;">
+            The total number of Likert items analysed is 24, after excluding “Students Not Sharing Vehicles”. 
+            Since each of the 102 respondents answered all 24 items... (Note continues)
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 
-        # Create the specific "Top Factor, Bottom Factor..." structure
-        structured_rows = []
-        for cat in ['Factor', 'Effect', 'Step']:
-            cat_data = final_summary_df[final_summary_df['Category'] == cat].sort_values('Total Disagreement Count', ascending=False)
-            if not cat_data.empty:
-                # Add a Label column to help the user
-                top_row = cat_data.iloc[[0]].copy()
-                top_row.insert(0, 'Rank', f'Highest {cat}')
-                structured_rows.append(top_row)
-                
-                bottom_row = cat_data.iloc[[-1]].copy()
-                bottom_row.insert(0, 'Rank', f'Lowest {cat}')
-                structured_rows.append(bottom_row)
-
-        if structured_rows:
-            insight_table = pd.concat(structured_rows, ignore_index=True)
-            st.dataframe(
-                insight_table[['Rank', 'Likert Item', 'Total Disagreement Count', 'Rural areas', 'Suburban areas', 'Urban areas']],
-                use_container_width=True, hide_index=True
-            )
+else:
+    st.error(f"Error loading data: {error}")
     
 # --- FORMAL ANALYSIS & STRATEGIC INSIGHTS SECTION ---
     st.divider()

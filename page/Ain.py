@@ -36,45 +36,6 @@ def load_raw_data():
     except Exception as e:
         return None, str(e)
 
-# 2. EXECUTION & UI
-st.title("📊 Dataset Analysis")
-
-df, error = load_raw_data()
-
-if df is not None:
-    # --- EXPANDER SECTION ---
-    with st.expander("ℹ️ Note on Data Interpretation"):
-        # Using HTML to ensure the font is small
-        st.markdown(
-            """
-            <div style="font-size: 0.85rem; line-height: 1.4; color: #555;">
-            The total number of Likert items analysed is 24, after excluding “Students Not Sharing Vehicles”. 
-            Since each of the 102 respondents answered all 24 items, a single respondent may select 
-            “Strongly Disagree (1)” or “Disagree (2)” multiple times across different items. 
-            Therefore, if respondents consistently chose Likert 1 or 2 across several items, the cumulative 
-            count of disagreement responses can exceed 102. These totals represent the frequency of 
-            disagreement responses across items, not the number of unique respondents. 
-            <br><br>
-            For example, if the table shows a value of 2.0 for “Arrive Early Step” in rural areas, 
-            this indicates that two rural respondents selected either Strongly Disagree or Disagree 
-            for that particular item. These values reflect the frequency of disagreement responses 
-            for each item, rather than the total number of respondents (102), as each respondent 
-            provided responses to multiple Likert items.
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-
-    # --- DATA TABLE SECTION ---
-    st.write(f"### Displaying Raw Data: `disagree_summary(Ain).csv`")
-    
-    # Display the table exactly as it is in the CSV
-    st.dataframe(df, use_container_width=True)
-
-else:
-    st.error(f"Error loading data: {error}")
-
-
 st.markdown("""
 <style>
     /* Main Title & Subtitle logic remains the same */
@@ -133,6 +94,43 @@ st.markdown('<div class="aesthetic-divider"></div>', unsafe_allow_html=True)
 # 5. DATA VISUALIZATION TABLE
 # ---------------------------------------------------------
 
+# 2. EXECUTION & UI
+st.title("📊 Dataset Analysis")
+
+df, error = load_raw_data()
+
+if df is not None:
+    # --- EXPANDER SECTION ---
+    with st.expander("ℹ️ Note on Data Interpretation"):
+        # Using HTML to ensure the font is small
+        st.markdown(
+            """
+            <div style="font-size: 0.85rem; line-height: 1.4; color: #555;">
+            The total number of Likert items analysed is 24, after excluding “Students Not Sharing Vehicles”. 
+            Since each of the 102 respondents answered all 24 items, a single respondent may select 
+            “Strongly Disagree (1)” or “Disagree (2)” multiple times across different items. 
+            Therefore, if respondents consistently chose Likert 1 or 2 across several items, the cumulative 
+            count of disagreement responses can exceed 102. These totals represent the frequency of 
+            disagreement responses across items, not the number of unique respondents. 
+            <br><br>
+            For example, if the table shows a value of 2.0 for “Arrive Early Step” in rural areas, 
+            this indicates that two rural respondents selected either Strongly Disagree or Disagree 
+            for that particular item. These values reflect the frequency of disagreement responses 
+            for each item, rather than the total number of respondents (102), as each respondent 
+            provided responses to multiple Likert items.
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+
+    # --- DATA TABLE SECTION ---
+    st.write(f"### Displaying Raw Data: `disagree_summary(Ain).csv`")
+    
+    # Display the table exactly as it is in the CSV
+    st.dataframe(df, use_container_width=True)
+
+else:
+    st.error(f"Error loading data: {error}")
 # Set expanded=False to ensure the expander is closed when the page loads
 with st.expander("Data Disagreement Across Area Type Table", expanded=False):
     
@@ -150,12 +148,7 @@ with st.expander("Data Disagreement Across Area Type Table", expanded=False):
         </style>
         <div class="matrix-title">Disagreement Count Matrix</div>
     """, unsafe_allow_html=True)
-    
-    # Display the styled dataframe
-    st.dataframe(disagree_area_type_original, use_container_width=True)
 
-# Divider for clean separation
-st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 # ---------------------------------------------------------
 # 5. SUMMARY METRICS BOX

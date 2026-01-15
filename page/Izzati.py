@@ -327,7 +327,7 @@ fig = px.bar(
     y="Frequency",
     color=congestion_effect,
     barmode="group",
-     color_discrete_sequence=["purple", "mediumpurple", "gold", "lightgreen", "green"],
+    color_discrete_sequence=["purple", "mediumpurple", "gold", "lightgreen", "green"],
     title=f"Distribution of {congestion_effect} by Severity of {key_factor} (Rural Areas)",
     labels={
         "Factor Severity": "Severity of Traffic Factor",

@@ -495,6 +495,15 @@ with st.expander("STACKED BAR CHART", expanded=False):
 # ---------------------------------------------------------
 # BUBBLE CHART WITH TABLE
 # ---------------------------------------------------------
+    @st.cache_data
+def load_raw_data():
+    try:
+        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+        df = pd.read_csv(url)
+        return df, None
+    except Exception as e:
+        return None, str(e)
+        
     # --- MAIN EXPANDER ---
     with st.expander("🔍 Comprehensive Rural Disagreement Analysis Report", expanded=True):
         

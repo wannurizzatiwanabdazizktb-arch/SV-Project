@@ -172,7 +172,7 @@ fig = go.Figure(
         z=z_values,
         x=heatmap_rect.columns,
         y=heatmap_rect.index,
-        colorscale="sunset",
+        colorscale="RdBu_r",
         zmin=-1, zmax=1,
         colorbar=dict(title="Spearman r"),
         text=z_values,           # numbers to display

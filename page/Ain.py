@@ -686,4 +686,73 @@ if df_urban_full is not None:
         """, unsafe_allow_html=True)
 else:
     st.error("Could not load Urban data. Please ensure 'Urban areas' exists in the Area Type column.")
+
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# 1. THE FUNCTION (Definition)
+@st.cache_data
+def get_processed_data():
+    try:
+        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+        df_raw = pd.read_csv(url)
+        
+        # Data Cleaning
+        df_raw['Area Type'] = df_raw['Area Type'].str.replace(' areas', '', case=False).str.strip()
+        
+        # Create df_melted inside the function
+        df_melted = df_raw.melt(id_vars=['Area Type'], var_name='Full_Item', value_name='Count')
+        
+        def extract_category(full_name):
+            parts = full_name.rsplit(' ', 1)
+            return (parts[0], parts[1]) if len(parts) > 1 else (parts[0], "Other")
+        
+        extracted = df_melted['Full_Item'].apply(lambda x: pd.Series(extract_category(x)))
+        df_melted['Likert Item'] = extracted[0]
+        df_melted['Category'] = extracted[1]
+        
+        area_totals = df_melted.groupby('Area Type')['Count'].transform('sum')
+        df_melted['Percentage'] = (df_melted['Count'] / area_totals * 100).round(2)
+        
+        # IMPORTANT: You must return BOTH dataframes
+        return df_raw, df_melted
+    except Exception as e:
+        st.error(f"Function Error: {e}")
+        return None, None
+
+# 2. THE ASSIGNMENT (This is where you define df_melted for the rest of the script)
+# If you skip this line, df_melted will remain "undefined"
+df_raw, df_melted = get_processed_data()
+
+# 3. THE UI LOGIC
+if df_melted is not None:
+    with st.expander("📊 BUBBLE CHART WITH TABLE", expanded=True):
+        st.markdown("### Objective")
+        st.info("To analyze how the majority most clearly reject the rural respondent rate.")
+
+        # Prepare tooltips safely
+        c_data = df_melted[['Likert Item', 'Area Type', 'Category', 'Count', 'Percentage']].values
+
+        fig = px.scatter(
+            df_melted, # Now df_melted is defined!
+            x="Area Type",
+            y="Likert Item",
+            size="Count",
+            color="Category",
+            hover_name="Likert Item",
+            size_max=35,
+            template="plotly_white",
+            height=800,
+            category_orders={"Area Type": ["Rural", "Suburban", "Urban"]}
+        )
+
+        fig.update_traces(
+            customdata=c_data,
+            hovertemplate="<b>Item:</b> %{customdata[0]}<br><b>Area:</b> %{customdata[1]}<br><b>Count:</b> %{customdata[3]}<extra></extra>"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("Waiting for data to load...")
     

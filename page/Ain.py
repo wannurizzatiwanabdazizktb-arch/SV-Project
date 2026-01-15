@@ -492,9 +492,9 @@ with st.expander("STACKED BAR CHART", expanded=False):
     </div>
     """, unsafe_allow_html=True)
 
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+# ---------------------------------------------------------
+# BUBBLE CHART WITH TABLE
+# ---------------------------------------------------------
 
 # 1. DATA LOADING FUNCTION
 @st.cache_data
@@ -515,7 +515,7 @@ if error:
 elif df_raw is not None:
     # --- MAIN EXPANDER ---
     # Everything is contained within this single expander as requested
-    with st.expander("🔍 Comprehensive Rural Disagreement Analysis Report", expanded=True):
+    with st.expander("BUBBLE CHART", expanded=False):
         
         # 1. OBJECTIVE SECTION
         st.markdown("### **Objective**")
@@ -627,4 +627,134 @@ elif df_raw is not None:
             * **Systemic Resistance:** Rural respondents show a unified rejection pattern across items related to logistics and infrastructure compared to other categories.
             * **Significance of 'Strongly Disagree':** The large bubble sizes in the Rural column indicate that the rejection is not just a simple disagreement, but a significant majority volume.
             * **Consensus Check:** Items with smaller bubbles indicate areas where rural respondents were less inclined to reject the statement, showing potential areas of neutral ground.
+                """,)
+
+# ---------------------------------------------------------
+# GROUPED HORIZONTAL BAR CHART WITH TABLE
+# ---------------------------------------------------------
+
+# 1. DATA LOADING FUNCTION
+@st.cache_data
+def load_urban_data():
+    try:
+        # Using your GitHub repository URL
+        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+        df = pd.read_csv(url)
+        return df, None
+    except Exception as e:
+        return None, str(e)
+
+# Load the data
+df_raw, error = load_urban_data()
+
+if error:
+    st.error(f"Error loading data: {error}")
+elif df_raw is not None:
+
+    # --- MAIN EXPANDER ---
+    with st.expander("GROUPED HORIZONTAL BAR CHART ", expanded=False):
+        
+        # 1. OBJECTIVE SECTION
+        st.markdown("### **Objective**")
+        st.info("How the majority most clearly reject urban respondent rate with comparison on strongly disagree (1) and disagree (2).")
+        
+        # --- DATA PROCESSING ---
+        # Extract and transform Urban data
+        df_urban_full = df_raw[df_raw['Area Type'] == 'Urban areas'].melt(
+            id_vars=['Area Type'], var_name='Full_Item', value_name='Count'
+        )
+
+        def split_item_cat(full_name):
+            parts = full_name.rsplit(' ', 1)
+            return parts[0], parts[1] if len(parts) > 1 else "Unknown"
+
+        df_urban_full[['Likert Item', 'Category']] = df_urban_full['Full_Item'].apply(lambda x: pd.Series(split_item_cat(x)))
+
+        # Calculate Percentages within Category
+        category_sums = df_urban_full.groupby('Category')['Count'].transform('sum')
+        df_urban_full['Percentage'] = (df_urban_full['Count'] / category_sums * 100).round(2)
+        df_urban_full['Type'] = 'Total Disagreement'
+
+        # 2. GENERATE HORIZONTAL BAR CHART
+        st.markdown("### **Visual Analysis: Urban Rejection Weight**")
+        
+        fig = px.bar(
+            df_urban_full,
+            x="Percentage",
+            y="Likert Item",
+            color="Category",
+            orientation='h',
+            text="Percentage",
+            title="Urban Disagreement Analysis: Comprehensive Item Breakdown (24 Items)",
+            hover_data=["Category", "Count", "Type"],
+            height=900,
+            template="plotly_white",
+            color_discrete_sequence=px.colors.qualitative.Pastel
+        )
+
+        # PRESERVING YOUR EXACT HOVER TOOLTIPS
+        fig.update_traces(
+            texttemplate='%{text}%',
+            textposition='outside',
+            hovertemplate="<br>".join([
+                "<b>Item:</b> %{y}",
+                "<b>Category:</b> %{customdata[0]}",
+                "<b>Disagreement Type:</b> %{customdata[2]}",
+                "<b>Count:</b> %{customdata[1]}",
+                "<b>Percentage:</b> %{x}%",
+                "<extra></extra>"
+            ])
+        )
+
+        fig.update_layout(
+            xaxis_title="Percentage within Category (%)",
+            yaxis_title="Likert Item",
+            yaxis={'categoryorder':'total ascending'},
+            margin=dict(l=200, r=50, t=80, b=50)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # 3. URBAN DETAILED TABLE
+        st.markdown("### **Data Breakdown: Urban Respondents**")
+        
+        # Calculate percentages relative to the Urban Total
+        total_urban_sum = df_urban_full['Count'].sum()
+        df_table = df_urban_full.copy()
+        df_table['Contribution to Total'] = (df_table['Count'] / total_urban_sum * 100).round(2).astype(str) + '%'
+        
+        # Display professional table
+        st.dataframe(
+            df_table[['Likert Item', 'Category', 'Count', 'Percentage', 'Contribution to Total']]
+            .style.background_gradient(subset=['Count'], cmap='Oranges'),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        # 4. WHY THIS GRAPH & INSIGHTS (EXPLANATION)
+        st.divider()
+        st.markdown("### **Explanation & Result Insights**")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### **Why this Grouped Horizontal Bar Chart?**")
+            st.write("""
+            * **Comparative Ranking:** The horizontal orientation provides ample space for long survey text, making it easier to read than vertical bars.
+            * **Category Normalization:** By using percentages within each category, we can see which *Factor* or *Effect* is the most dominant "deal-breaker" for urbanites, regardless of the sample size.
+            * **Precision Positioning:** Placing the percentage values outside the bars allows for immediate numerical comparison without relying solely on visual length.
             """)
+
+        with col2:
+            st.markdown("#### **Key Results & Insights**")
+            # Dynamic insight for the highest urban count
+            top_urban_item = df_urban_full.loc[df_urban_full['Count'].idxmax(), 'Likert Item']
+            
+            st.write(f"""
+            * **Critical Rejection Point:** The item **"{top_urban_item}"** represents the highest volume of disagreement among urban respondents.
+            * **Urban Skepticism:** Unlike rural respondents, urbanites show a higher rejection rate in categories involving service efficiency and digital integration.
+            * **Consensus Density:** High percentage clusters in the 'Effect' category suggest that urban respondents are most united in their rejection of the perceived outcomes of the survey items.
+            * **Actionable Gap:** Items with the lowest percentage indicate areas where urban rejection is "soft," meaning respondents were less likely to choose "Strongly Disagree" (1) compared to other items.
+            """)
+
+

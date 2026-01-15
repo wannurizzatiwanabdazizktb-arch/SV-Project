@@ -755,6 +755,135 @@ elif df_raw is not None:
             * **Urban Skepticism:** Unlike rural respondents, urbanites show a higher rejection rate in categories involving service efficiency and digital integration.
             * **Consensus Density:** High percentage clusters in the 'Effect' category suggest that urban respondents are most united in their rejection of the perceived outcomes of the survey items.
             * **Actionable Gap:** Items with the lowest percentage indicate areas where urban rejection is "soft," meaning respondents were less likely to choose "Strongly Disagree" (1) compared to other items.
+            """
+            )
+# ---------------------------------------------------------
+# RADAR CHART WITH TABLE
+# ---------------------------------------------------------
+            
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+
+# 1. DATA LOADING FUNCTION
+@st.cache_data
+def load_suburban_data():
+    try:
+        # Using the GitHub URL for consistency
+        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+        df = pd.read_csv(url)
+        return df, None
+    except Exception as e:
+        return None, str(e)
+
+# Load the data
+df_raw, error = load_suburban_data()
+
+if error:
+    st.error(f"Error loading data: {error}")
+elif df_raw is not None:
+
+    # --- MAIN EXPANDER ---
+    with st.expander("RADAR CHART", expanded=False):
+        
+        # 1. OBJECTIVE SECTION
+        st.markdown("### **Objective**")
+        st.info("To analysis How the majority most clearly reject suburban respondent rate with comparison on strongly disagree (1) and disagree (2).")
+        
+        # --- DATA PROCESSING ---
+        # Filter for Suburban
+        df_sub = df_raw[df_raw['Area Type'] == 'Suburban areas'].melt(
+            id_vars=['Area Type'], var_name='Full_Item', value_name='Count'
+        )
+
+        def split_item_cat(full_name):
+            parts = full_name.rsplit(' ', 1)
+            return parts[0], parts[1] if len(parts) > 1 else "Unknown"
+
+        df_sub[['Likert Item', 'Category']] = df_sub['Full_Item'].apply(lambda x: pd.Series(split_item_cat(x)))
+        
+        total_sub_sum = df_sub['Count'].sum()
+        df_sub['Percentage'] = (df_sub['Count'] / total_sub_sum * 100).round(2)
+        df_sub = df_sub.sort_values(by=['Category', 'Likert Item'])
+
+        # Close the radar loop
+        df_radar_plot = pd.concat([df_sub, df_sub.iloc[[0]]])
+
+        # 2. GENERATE PROFESSIONAL RADAR CHART
+        st.markdown("### **Visual Analysis: Suburban Disagreement Footprint**")
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatterpolar(
+            r=df_radar_plot['Percentage'],
+            theta=df_radar_plot['Likert Item'],
+            fill='toself',
+            name='Suburban Disagreement',
+            marker=dict(color='purple'),
+            # COMPLETE INFORMATION FOR HOVER
+            customdata=df_radar_plot[['Likert Item', 'Category', 'Count', 'Percentage']],
+            hovertemplate="<br>".join([
+                "<b>Item:</b> %{customdata[0]}",
+                "<b>Category:</b> %{customdata[1]}",
+                "---------------------------",
+                "<b>Raw Count (SD+D):</b> %{customdata[2]}",
+                "<b>Weight in Area:</b> %{customdata[3]}%",
+                "<extra></extra>"
+            ])
+        ))
+
+        fig.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0, df_sub['Percentage'].max() + 1],
+                    ticksuffix='%'
+                )
+            ),
+            showlegend=False,
+            height=800,
+            template="plotly_white",
+            margin=dict(l=100, r=100, t=50, b=50)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # 3. SUBURBAN DETAILED TABLE
+        st.markdown("### **Data Breakdown: Suburban Respondents**")
+        
+        # Formatting for table display
+        df_table = df_sub.copy()
+        df_table['Percentage'] = df_table['Percentage'].astype(str) + '%'
+        
+        st.dataframe(
+            df_table[['Likert Item', 'Category', 'Count', 'Percentage']]
+            .style.background_gradient(subset=['Count'], cmap='Purples'),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        # 4. WHY THIS GRAPH & INSIGHTS (EXPLANATION)
+        st.divider()
+        st.markdown("### **Explanation & Result Insights**")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### **Why this Radar Chart?**")
+            st.write("""
+            * **Symmetry Analysis:** The Radar chart is ideal for identifying "outliers" in rejection. Points that stretch further from the center show items where suburban disagreement is significantly higher than average.
+            * **Holistic View:** It allows for all 24 items to be displayed in a circular pattern, preventing the "scrolling fatigue" of long bar charts while maintaining item readability.
+            * **Cluster Detection:** It visually groups items by Category (Factor/Effect/Step) along the perimeter, showing if a specific "side" of the survey is being rejected more heavily.
+            """)
+
+        with col2:
+            st.markdown("#### **Key Results & Insights**")
+            top_sub_item = df_sub.loc[df_sub['Count'].idxmax(), 'Likert Item']
+            
+            st.write(f"""
+            * **Primary Point of Rejection:** Suburban respondents most strongly reject **"{top_sub_item}"**, as indicated by the furthest peak on the radar.
+            * **Balanced Disagreement:** The suburban "footprint" tends to be more balanced across categories than Urban areas, suggesting a more generalized dissatisfaction rather than focus on one specific factor.
+            * **Majority Consensus:** The overlap of Disagree (2) and Strongly Disagree (1) counts indicates that for suburban areas, the rejection rate is driven by a consistent volume across 24 variables.
+            * **Strategic Gap:** Any indentations toward the center of the radar represent items where suburban respondents were less likely to disagree, highlighting potential areas for compromise or better reception.
             """)
 
 

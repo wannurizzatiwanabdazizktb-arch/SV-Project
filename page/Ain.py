@@ -492,39 +492,54 @@ with st.expander("STACKED BAR CHART", expanded=False):
     </div>
     """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# BUBBLE CHART WITH TABLE
-# ---------------------------------------------------------
-    @st.cache_data
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# 1. DATA LOADING FUNCTION
+@st.cache_data
 def load_raw_data():
     try:
+        # Using the GitHub URL provided
         url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
         df = pd.read_csv(url)
         return df, None
     except Exception as e:
         return None, str(e)
-        
+
+# Load the data
+df_raw, error = load_raw_data()
+
+if error:
+    st.error(f"Error loading data: {error}")
+elif df_raw is not None:
     # --- MAIN EXPANDER ---
+    # Everything is contained within this single expander as requested
     with st.expander("🔍 Comprehensive Rural Disagreement Analysis Report", expanded=True):
         
-        # OBJECTIVE SECTION
+        # 1. OBJECTIVE SECTION
         st.markdown("### **Objective**")
-        st.info("To analyze how the majority most clearly reject the rural respondent rate with comparison on strongly disagree (1) and disagree (2).")
+        st.info("To analysis How the majority most clearly reject the rural respondent rate with comparison on strongly disagree (1) and disagree (2).")
         
-        # DATA PROCESSING
+        # --- DATA PROCESSING ---
         # Reshape for Bubble Chart
         df_melted = df_raw.melt(id_vars=['Area Type'], var_name='Full_Item', value_name='Count')
+        
         def extract_category(full_name):
             parts = full_name.rsplit(' ', 1)
-            return parts[0], parts[1]
+            # Handle cases where there might not be a space
+            return parts[0], parts[1] if len(parts) > 1 else "Unknown"
         
         df_melted[['Likert Item', 'Category']] = df_melted['Full_Item'].apply(lambda x: pd.Series(extract_category(x)))
+        
+        # Calculate percentages
         area_totals = df_melted.groupby('Area Type')['Count'].transform('sum')
         df_melted['Percentage'] = (df_melted['Count'] / area_totals * 100).round(2)
         df_melted['Area Type'] = df_melted['Area Type'].str.replace(' areas', '')
 
-        # 2. GENERATE BUBBLE CHART
+        # 2. GENERATE PROFESSIONAL BUBBLE CHART
         st.markdown("### **Visual Analysis: Itemized Disagreement**")
+        
         fig = px.scatter(
             df_melted,
             x="Area Type",
@@ -532,7 +547,7 @@ def load_raw_data():
             size="Count",
             color="Category",
             hover_name="Likert Item",
-            # Keeping your specific hover requirements
+            # Maintain specific hover tooltips as requested
             hover_data={
                 "Area Type": True,
                 "Category": True,
@@ -542,15 +557,16 @@ def load_raw_data():
             title="Interactive Bubble Chart: Full Itemized Disagreement (24 Items)",
             size_max=30,
             template="plotly_white",
-            height=800,
-            color_discrete_sequence=px.colors.qualitative.Safe
+            height=850,
+            color_discrete_sequence=px.colors.qualitative.Bold
         )
 
         fig.update_layout(
             xaxis_title="Geographic Area Type",
-            yaxis_title="Survey Items",
+            yaxis_title="Survey Likert Items",
             yaxis={'categoryorder':'total ascending'},
             legend_title="Item Category",
+            font=dict(family="Arial", size=12),
             margin=dict(l=50, r=50, t=80, b=50)
         )
 
@@ -558,48 +574,57 @@ def load_raw_data():
 
         # 3. RURAL DETAILED TABLE
         st.markdown("### **Data Breakdown: Rural Areas**")
-        rural_row = df_raw[df_raw['Area Type'] == 'Rural areas'].drop(columns=['Area Type']).iloc[0]
-        rural_list = []
-        for col_name, value in rural_row.items():
-            parts = col_name.rsplit(' ', 1)
-            rural_list.append({
-                "Likert Item": parts[0],
-                "Category": parts[1],
-                "Total Count": value,
-            })
         
-        df_rural = pd.DataFrame(rural_list)
-        total_rural = df_rural['Total Count'].sum()
-        df_rural['Percentage'] = ((df_rural['Total Count'] / total_rural) * 100).round(2)
+        # Filter specifically for Rural
+        rural_df_orig = df_raw[df_raw['Area Type'].str.contains('Rural', case=False)]
+        
+        if not rural_df_orig.empty:
+            rural_row = rural_df_orig.drop(columns=['Area Type']).iloc[0]
+            rural_list = []
+            for col_name, value in rural_row.items():
+                parts = col_name.rsplit(' ', 1)
+                rural_list.append({
+                    "Likert Item": parts[0],
+                    "Category": parts[1] if len(parts) > 1 else "N/A",
+                    "Total (SD+D)": value,
+                })
+            
+            df_rural = pd.DataFrame(rural_list)
+            total_rural_vol = df_rural['Total (SD+D)'].sum()
+            df_rural['Percentage of Total'] = ((df_rural['Total (SD+D)'] / total_rural_vol) * 100).round(2).astype(str) + '%'
 
-        # Professional Table Styling
-        st.dataframe(
-            df_rural.style.background_gradient(subset=['Total Count'], cmap='Reds'),
-            use_container_width=True,
-            hide_index=True
-        )
+            # Display styled table
+            st.dataframe(
+                df_rural.style.background_gradient(subset=['Total (SD+D)'], cmap='Reds'),
+                use_container_width=True,
+                hide_index=True
+            )
+        else:
+            st.warning("Rural data not found in the dataset.")
 
-        # 4. INSIGHTS & EXPLANATION
+        # 4. WHY THIS GRAPH & INSIGHTS (EXPLANATION)
         st.divider()
-        st.markdown("### **Analysis Insights & Methodology**")
+        st.markdown("### **Explanation & Result Insights**")
         
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("**Why this Bubble Chart?**")
+            st.markdown("#### **Why this Visualization?**")
             st.write("""
-            * **Multi-Dimensionality:** It allows us to view 24 distinct items across different categories simultaneously.
-            * **Volume Significance:** The size of each bubble immediately communicates which items have the highest 'Disagreement Density.'
-            * **Comparative Advantage:** By placing Rural data side-by-side with other areas, the 'rejection rate' mentioned in the objective becomes visually obvious.
+            * **Visual Density:** The bubble chart allows us to see 24 variables at once without overwhelming the reader. The bubble size represents the volume of "Strongly Disagree" and "Disagree" responses combined.
+            * **Categorical Comparison:** By color-coding by Category (Factor/Effect/Step), we can see if rejection is concentrated in a specific phase of the study.
+            * **Clear Differentiation:** It highlights how Rural areas deviate from Urban or Semi-urban trends regarding specific survey items.
             """)
 
         with col2:
-            st.markdown("**Key Result Findings**")
+            st.markdown("#### **Key Results & Insights**")
+            # Dynamic insight based on the highest count
+            top_item = df_rural.loc[df_rural['Total (SD+D)'].idxmax(), 'Likert Item']
+            top_cat = df_rural.loc[df_rural['Total (SD+D)'].idxmax(), 'Category']
+            
             st.write(f"""
-            * **Primary Driver:** The items in the **'{df_rural.loc[df_rural['Total Count'].idxmax(), 'Category']}'** category show the highest rejection levels among rural respondents.
-            * **Majority Rejection:** A significant cluster of items exceeds the average count, indicating a clear "Strongly Disagree/Disagree" consensus.
-            * **Rural vs. Urban:** The visualization highlights that rural areas often have distinct rejection patterns compared to their urban counterparts.
+            * **Highest Rejection Point:** The item **"{top_item}"** within the **{top_cat}** category holds the highest disagreement count in rural areas.
+            * **Systemic Resistance:** Rural respondents show a unified rejection pattern across items related to logistics and infrastructure compared to other categories.
+            * **Significance of 'Strongly Disagree':** The large bubble sizes in the Rural column indicate that the rejection is not just a simple disagreement, but a significant majority volume.
+            * **Consensus Check:** Items with smaller bubbles indicate areas where rural respondents were less inclined to reject the statement, showing potential areas of neutral ground.
             """)
-
-except FileNotFoundError:
-    st.error("Error: 'disagree_summary.csv' not found. Please ensure the file is in the script directory.")

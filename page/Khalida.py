@@ -118,7 +118,7 @@ st.plotly_chart(fig1, use_container_width=True)
 
 with st.expander("📌 Interpretation (Ranking of Effects)"):
     st.markdown("""
-**Interpretation:**  
+ 
 This visualization ranks the perceived effects of traffic congestion around school areas
 based on their mean Likert scores. Effects with higher mean values indicate stronger
 agreement among respondents that these issues are significant consequences of congestion.
@@ -162,7 +162,7 @@ with c2:
 
 with st.expander("📌 Interpretation (Box Plots)"):
     st.markdown("""
-**Interpretation:**  
+  
 The box plots illustrate how perceptions of the selected congestion effect vary across
 gender and respondent status. Differences in median values reflect variation in perceived
 severity between groups.
@@ -196,7 +196,7 @@ st.plotly_chart(fig4, use_container_width=True)
 
 with st.expander("📌 Interpretation (Key Effects by Status)"):
     st.markdown("""
-**Interpretation:**  
+  
 This grouped bar chart compares mean scores of key congestion effects across respondent
 status groups. Variations in mean scores indicate differences in how each group experiences
 or perceives traffic congestion.
@@ -223,7 +223,7 @@ st.plotly_chart(fig5, use_container_width=True)
 
 with st.expander("📌 Interpretation (Heatmap)"):
     st.markdown("""
-**Interpretation:**  
+  
 The heatmap presents the correlation between identified causes and effects of traffic
 congestion. Stronger correlations indicate that respondents who agree with a particular
 cause also tend to agree with its associated effects.
@@ -260,7 +260,7 @@ else:
 
 with st.expander("📌 Interpretation (Stacked Bar)"):
     st.markdown("""
-**Interpretation:**  
+ 
 This stacked bar chart illustrates the distribution of Likert-scale responses by gender.
 A higher proportion of responses in the 'Agree' and 'Strongly Agree' categories indicates
 strong consensus regarding the selected congestion effect.
@@ -285,7 +285,7 @@ st.plotly_chart(fig7, use_container_width=True)
 
 with st.expander("📌 Interpretation (Violin Plot)"):
     st.markdown("""
-**Interpretation:**  
+  
 The violin plot shows the distribution of responses across different area types.
 Concentration of responses at higher Likert scores indicates greater perceived severity
 of congestion effects in certain areas.

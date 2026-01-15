@@ -279,6 +279,34 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# 1. Loading Function
+@st.cache_data
+def load_raw_data():
+    try:
+        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+        df = pd.read_csv(url)
+        return df, None
+    except Exception as e:
+        return None, str(e)
+
+# 2. Main Logic
+df, error = load_raw_data()
+
+if df is not None:
+    # Your Metric Columns (m_col1, etc) go here...
+    
+    # --- HEATMAP SECTION ---
+    # (Ensure df_summary logic is defined here before px.imshow)
+    
+    # --- TABLE SECTION ---
+    with st.expander("Table of Counting Disagreement Likert Scale Across Type Areas", expanded=False):
+        # Everything inside here MUST be indented 4 spaces
+        st.markdown('<div class="matrix-title">Disagreement Count Matrix</div>', unsafe_allow_html=True)
+        st.dataframe(df, use_container_width=True)
+        st.markdown('<div style="color: grey; font-size: 0.8rem;">Note text here...</div>', unsafe_allow_html=True)
+else:
+    st.error(f"Data load failed: {error}")
+
 # Set page configuration
 st.set_page_config(page_title="Likert Data Viewer", layout="wide")
 

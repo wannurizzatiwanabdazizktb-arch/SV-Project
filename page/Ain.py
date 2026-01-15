@@ -275,12 +275,6 @@ st.markdown("""
 # ---------------------------------------------------------
 # HEATMAP & HORIZONTAL BAR CHART WITH TABLE
 # ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
-
 # --- 1. DATA PREPARATION ---
 data = {
     'Area': ['Rural', 'Rural', 'Rural', 'Suburban', 'Suburban', 'Suburban', 'Urban', 'Urban', 'Urban'],
@@ -311,7 +305,7 @@ pivot_low = df_summary.pivot(index='Category', columns='Area', values='Lowest It
 
 # --- 2. STREAMLIT UI ---
 
-with st.expander("Heatmap and Horizontal Bar Graph", expanded=True):
+with st.expander("Heatmap and Horizontal Bar Graph", expanded=False):
     
     # Objective Section
     st.markdown("### Objective")
@@ -400,10 +394,6 @@ with st.expander("Heatmap and Horizontal Bar Graph", expanded=True):
 # ---------------------------------------------------------
 # STACKED BAR CHART WITH TABLE
 # ---------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
 # --- 1. DATA PREPARATION ---
 # Unified data for both graph and table
 data = {
@@ -418,10 +408,10 @@ total_sum = df_bar['Count'].sum()
 df_bar['Percentage'] = (df_bar['Count'] / total_sum * 100).round(2)
 
 # --- 2. STREAMLIT UI ---
-with st.expander("📊 Disagreement Analysis: Percentage Distribution Matrix", expanded=True):
+with st.expander("Disagreement Analysis: Percentage Distribution Matrix", expanded=False):
     
     # Objective Section
-    st.markdown("### 🎯 Objective")
+    st.markdown("### Objective")
     st.info("""**To analyze how respondents from different area types choose most disagreements (factors, effects, or step), 
     revealing gaps between real-world experiences and the survey’s assumptions.**""")
 
@@ -463,7 +453,7 @@ with st.expander("📊 Disagreement Analysis: Percentage Distribution Matrix", e
     st.plotly_chart(fig, use_container_width=True)
 
     # --- STYLED TABLE SECTION ---
-    st.markdown("### 📋 Disagreement Distribution Matrix")
+    st.markdown("### Disagreement Distribution Matrix")
     
     # Pivot for the matrix layout
     # We create a column for display that combines count and percentage
@@ -481,7 +471,7 @@ with st.expander("📊 Disagreement Analysis: Percentage Distribution Matrix", e
 
     # --- INSIGHTS SECTION ---
     st.markdown("---")
-    st.markdown("### 💡 Visualization Insights & Results")
+    st.markdown("### Visualization Insights & Results")
     
     st.markdown("""
     <div style="font-size: 0.9rem; color: #555; line-height: 1.6;">
@@ -498,6 +488,124 @@ with st.expander("📊 Disagreement Analysis: Percentage Distribution Matrix", e
         <li><b>Suburban Consistency:</b> Suburban areas show the lowest overall disagreement counts across all categories, indicating that the survey items for suburban environments might align more closely with student experiences.</li>
         <li><b>Step Gaps:</b> Across all areas, "Steps" (proposed solutions/actions) consistently show lower disagreement than "Factors." This indicates that while respondents disagree with the identified causes, they are more open to the proposed steps or mitigation strategies.</li>
         <li><b>Assumption Mismatch:</b> The significantly higher counts in the "Factor" category across all areas reveal a systematic gap: the survey's theoretical "Factors" for disagreement are where the most friction exists between the researcher's assumptions and the students' actual environment.</li>
+    </ol>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# BUBBLE CHART WITH TABLE
+# ---------------------------------------------------------
+
+# --- 1. DATA LOADING & PROCESSING ---
+    
+    # Reshape for Bubble Chart
+    df_melted = df_raw.melt(id_vars=['Area Type'], var_name='Full_Item', value_name='Count')
+    
+    # Extract Category
+    def extract_category(full_name):
+        parts = full_name.rsplit(' ', 1)
+        return parts[0], parts[1]
+    
+    df_melted[['Likert Item', 'Category']] = df_melted['Full_Item'].apply(lambda x: pd.Series(extract_category(x)))
+    
+    # Calculate Percentages
+    area_totals = df_melted.groupby('Area Type')['Count'].transform('sum')
+    df_melted['Percentage'] = (df_melted['Count'] / area_totals * 100).round(2)
+    df_melted['Area Type'] = df_melted['Area Type'].str.replace(' areas', '')
+    
+    return df_raw, df_melted
+
+df_raw, df_melted = get_processed_data()
+
+# --- 2. STREAMLIT UI ---
+with st.expander("BUBBLE CHART WITH TABLE", expanded=False):
+    
+    # Objective Section
+    st.markdown("### Objective")
+    st.info("""**To analyze how the majority most clearly reject the rural respondent rate with comparison on strongly disagree (1) and disagree (2).**""")
+
+    # --- BUBBLE CHART SECTION ---
+    # Maintaining exact hovertooltips as requested
+    fig = px.scatter(
+        df_melted,
+        x="Area Type",
+        y="Likert Item",
+        size="Count",
+        color="Category",
+        hover_name="Likert Item",
+        size_max=35,
+        template="plotly_white",
+        height=800,
+        color_discrete_sequence=px.colors.qualitative.Bold
+    )
+
+    fig.update_traces(
+        customdata=df_melted,
+        hovertemplate="<br>".join([
+            "<b>Item:</b> %{hovertext}",
+            "<b>Area:</b> %{x}",
+            "<b>Category:</b> %{customdata[3]}",
+            "<b>Count:</b> %{marker.size}",
+            "<b>Percentage:</b> %{customdata[4]}%",
+            "<b>Type:</b> Total Disagreement",
+            "<extra></extra>"
+        ])
+    )
+
+    fig.update_layout(
+        title="Interactive Bubble Chart: Full Itemized Disagreement (24 Items)",
+        xaxis_title="Geographic Area Type",
+        yaxis_title="Survey Likert Items",
+        yaxis={'categoryorder':'total ascending'},
+        legend_title="Category"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # --- RURAL ANALYSIS TABLE SECTION ---
+    st.markdown("### Comprehensive Rural Disagreement Analysis")
+    
+    # Processing Rural Data specifically for the table
+    rural_row = df_raw[df_raw['Area Type'] == 'Rural areas'].drop(columns=['Area Type']).iloc[0]
+    rural_list = []
+    for col_name, value in rural_row.items():
+        parts = col_name.rsplit(' ', 1)
+        rural_list.append({
+            "Likert Item": parts[0],
+            "Category": parts[1],
+            "Total (1&2)": value,
+        })
+    
+    df_rural = pd.DataFrame(rural_list)
+    total_rural = df_rural['Total (1&2)'].sum()
+    df_rural['Percentage'] = (df_rural['Total (1&2)'] / total_rural * 100).round(2)
+    
+    # Styling the table with a gradient
+    styled_rural = df_rural.sort_values(by="Total (1&2)", ascending=False).style.background_gradient(
+        subset=['Total (1&2)'], cmap='Reds'
+    ).format({"Percentage": "{:.2f}%"})
+    
+    st.dataframe(styled_rural, use_container_width=True, hide_index=True)
+
+    # --- INSIGHTS SECTION ---
+    st.markdown("---")
+    st.markdown("### Visualization Rationale & Result Insights")
+    
+    st.markdown("""
+    <div style="font-size: 0.9rem; color: #555; line-height: 1.6;">
+    <b>Why Choose the Bubble Chart?</b>
+    <ul>
+        <li><b>Volume Identification:</b> Unlike a standard bar chart, the bubble chart allows for the simultaneous visualization of 24 distinct items across 3 areas. The size of the bubble immediately flags high-rejection items (Strongly Disagree/Disagree).</li>
+        <li><b>Categorical Patterns:</b> By color-coding "Factors," "Effects," and "Steps," we can see if rural rejection is clustered around a specific survey phase.</li>
+    </ul>
+
+    <b>Key Results & Explanation:</b>
+    <ol>
+        <li><b>The Rural "Vehicle Sharing" Peak:</b> The largest bubble in the Rural column belongs to the 'Vehicle Sharing' item. This indicates the most significant "rejection" or disagreement rate among rural respondents compared to urban counterparts.</li>
+        <li><b>Low Variance in 'Effects':</b> Rural respondents show very small, consistent bubbles in the 'Effects' category, suggesting that while they disagree with the 'Factors' (causes), they find the 'Effects' (consequences) to be more predictable or acceptable.</li>
+        <li><b>Rejecting Assumptions:</b> The high concentration of larger bubbles in the "Factor" category for Rural areas suggests a disconnect between the researcher's theoretical factors and the actual infrastructure/social reality in rural settings.</li>
+        <li><b>Consistency of Step Rejection:</b> Interestingly, Rural areas show smaller bubbles for 'Steps' (proposed solutions). This reveals that while they reject the current 'Factors', they are less likely to strongly disagree with the proposed mitigation steps.</li>
+        <li><b>Pattern Recognition:</b> By comparing bubble sizes across columns, it is evident that Urban areas have a much wider distribution of high disagreement, whereas Rural rejection is highly localized to specific "hot-spot" items.</li>
     </ol>
     </div>
     """, unsafe_allow_html=True)

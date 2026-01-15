@@ -110,7 +110,7 @@ fig1 = px.bar(
     orientation="h",
     labels={"x": "Mean Likert Score", "y": ""},
     color=mean_effects.values,
-    color_continuous_scale="Magma",
+    color_continuous_scale="Blues",
 )
 
 fig1.update_layout(height=350)

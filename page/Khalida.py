@@ -36,7 +36,6 @@ cause_cols = [
 st.title("🚦 Interactive Analysis of Traffic Congestion Around Schools")
 
 st.markdown("""
-### 🎯 Objective of the Study
 
 This study aims to investigate how strongly respondents agree that traffic congestion
 around school areas causes **time wastage**, **students being late to school**, **road

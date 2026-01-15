@@ -42,7 +42,7 @@ This study aims to investigate how strongly respondents agree that traffic conge
 around school areas causes **time wastage**, **students being late to school**, **road
 accidents**, and **environmental pollution**. Additionally, the study examines whether
 these perceptions vary across different demographic groups, particularly **gender** and
-**respondent status**, using interactive scientific visualizations.
+**respondent status**.
 """)
 
 st.markdown("""

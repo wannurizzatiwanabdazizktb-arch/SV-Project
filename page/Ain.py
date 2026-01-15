@@ -305,7 +305,7 @@ pivot_low = df_summary.pivot(index='Category', columns='Area', values='Lowest It
 
 # --- 2. STREAMLIT UI ---
 
-with st.expander("HHEATMAP & HORIZONTAL BAR CHART", expanded=False):
+with st.expander("HEATMAP & HORIZONTAL BAR CHART", expanded=False):
     
     # Objective Section
     st.markdown("### Objective")
@@ -492,267 +492,122 @@ with st.expander("STACKED BAR CHART", expanded=False):
     </div>
     """, unsafe_allow_html=True)
 
-
-@st.cache_data
-def get_processed_data():
-    try:
-        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
-        df_raw = pd.read_csv(url)
-        
-        # 1. CLEAN THE AREA NAMES IMMEDIATELY
-        # This removes 'areas', 'Areas', and any extra spaces
-        df_raw['Area Type'] = df_raw['Area Type'].str.replace(' areas', '', case=False).str.strip()
-        
-        # 2. Reshape for Bubble Chart
-        df_melted = df_raw.melt(id_vars=['Area Type'], var_name='Full_Item', value_name='Count')
-        
-        def extract_category(full_name):
-            parts = full_name.rsplit(' ', 1)
-            if len(parts) < 2: return parts[0], "Other"
-            return parts[0], parts[1]
-        
-        extracted = df_melted['Full_Item'].apply(lambda x: pd.Series(extract_category(x)))
-        df_melted['Likert Item'] = extracted[0]
-        df_melted['Category'] = extracted[1]
-        
-        # 3. Calculate Area-specific Percentages
-        area_totals = df_melted.groupby('Area Type')['Count'].transform('sum')
-        df_melted['Percentage'] = (df_melted['Count'] / area_totals * 100).round(2)
-        
-        return df_raw, df_melted
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return None, None
-
-# --- Inside the UI ---
-if df_melted is not None:
-    # Build a specific data array for the tooltip to prevent IndexErrors
-    # We ensure we have Item, Area, Category, Count, and Percentage
-    hover_df = df_melted[['Likert Item', 'Area Type', 'Category', 'Count', 'Percentage']]
-
-    fig = px.scatter(
-        df_melted,
-        x="Area Type",
-        y="Likert Item",
-        size="Count",
-        color="Category",
-        hover_name="Likert Item",
-        size_max=35,
-        template="plotly_white",
-        height=800,
-        # Force all categories to show even if they have 0 count
-        category_orders={"Area Type": ["Rural", "Suburban", "Urban"]} 
-    )
-
-    fig.update_traces(
-        customdata=hover_df.values,
-        hovertemplate="<br>".join([
-            "<b>Item:</b> %{customdata[0]}",
-            "<b>Area:</b> %{customdata[1]}",
-            "<b>Category:</b> %{customdata[2]}",
-            "<b>Count:</b> %{customdata[3]}",
-            "<b>Percentage:</b> %{customdata[4]}%",
-            "<extra></extra>"
-        ])
-    )
-
-    fig.update_layout(
-        xaxis_type='category', # Forces Rural, Suburban, Urban to show as labels
-        yaxis={'categoryorder':'total ascending'}
-    )
-    st.plotly_chart(fig, use_container_width=True)
 # ---------------------------------------------------------
-# GROUPED HORINZONTAL BAR CHART WITH TABLE
+# BUBBLE CHART WITH TABLE
 # ---------------------------------------------------------
-
-# --- 1. DATA PREPARATION ---
-@st.cache_data
-def load_urban_analysis():
-    # Loading the data
-    url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
-    df_raw = pd.read_csv(url)
-    
-    # Extract Urban data and transform
-    urban_df = df_raw[df_raw['Area Type'] == 'Urban areas'].copy()
-    
-    if urban_df.empty:
-        return None, "Urban data not found."
-
-    # Melt for processing
-    df_melted = urban_df.melt(id_vars=['Area Type'], var_name='Full_Item', value_name='Count')
-    
-    # Split Item and Category
-    def split_item_cat(full_name):
-        parts = full_name.rsplit(' ', 1)
-        return parts[0], parts[1]
-    
-    df_melted[['Likert Item', 'Category']] = df_melted['Full_Item'].apply(lambda x: pd.Series(split_item_cat(x)))
-    
-    # Calculate Percentages within Categories (for Bar Chart)
-    cat_sums = df_melted.groupby('Category')['Count'].transform('sum')
-    df_melted['Pct_Category'] = (df_melted['Count'] / cat_sums * 100).round(2)
-    
-    # Calculate Percentages relative to Urban Total (for Table)
-    total_urban = df_melted['Count'].sum()
-    df_melted['Pct_Total'] = (df_melted['Count'] / total_urban * 100).round(2)
-    
-    df_melted['Type'] = 'Total Disagreement'
-    
-    return df_melted, total_urban
-
-df_urban_full, total_count = load_urban_analysis()
-
-# --- 2. STREAMLIT UI ---
-if df_urban_full is not None:
-    with st.expander("GROUPED HORINZONTAL BAR CHART", expanded=False):
-        
-        # Objective Section
-        st.markdown("### Objective")
-        st.info("""**To analyze how the majority most clearly reject urban respondent rate with comparison on strongly disagree (1) and disagree (2).**""")
-
-        # --- HORIZONTAL BAR CHART ---
-        # Note: customdata maps [Category, Count, Type] to indices [0, 1, 2] for the tooltip
-        fig = px.bar(
-            df_urban_full,
-            x="Pct_Category",
-            y="Likert Item",
-            color="Category",
-            orientation='h',
-            text="Pct_Category",
-            title="Urban Disagreement Analysis: Breakdown (24 Items)",
-            height=850,
-            template="plotly_white",
-            color_discrete_sequence=px.colors.sequential.Oranges_r,
-            custom_data=["Category", "Count", "Type"]
-        )
-
-        fig.update_traces(
-            texttemplate='%{text}%',
-            textposition='outside',
-            hovertemplate="<br>".join([
-                "<b>Item:</b> %{y}",
-                "<b>Category:</b> %{customdata[0]}",
-                "<b>Disagreement Type:</b> %{customdata[2]}",
-                "<b>Count:</b> %{customdata[1]}",
-                "<b>Percentage:</b> %{x}%",
-                "<extra></extra>"
-            ])
-        )
-
-        fig.update_layout(
-            xaxis_title="Percentage within Category (%)",
-            yaxis_title="Likert Item",
-            yaxis={'categoryorder':'total ascending'},
-            margin=dict(l=200, r=50, t=80, b=50)
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
-        # --- DETAILED DATA TABLE ---
-        st.markdown(f"### Detailed Disagreement Analysis: Urban Respondents (Total Count: {int(total_count)})")
-        
-        # Prepare table for display
-        df_table = df_urban_full[['Likert Item', 'Category', 'Count', 'Pct_Total']].copy()
-        df_table.columns = ['Likert Item', 'Category', 'Total', 'Percentage of Urban Total']
-        
-        # Styling with Oranges gradient
-        styled_urban = df_table.sort_values(by="Total", ascending=False).style.background_gradient(
-            subset=['Total'], cmap='Oranges'
-        ).format({"Percentage of Urban Total": "{:.2f}%"})
-        
-        st.dataframe(styled_urban, use_container_width=True, hide_index=True)
-
-        # --- INSIGHTS SECTION ---
-        st.markdown("---")
-        st.markdown("### Visualization Rationale & Result Insights")
-        
-        st.markdown("""
-        <div style="font-size: 0.9rem; color: #555; line-height: 1.6;">
-        <b>Why Choose the Horizontal Bar Chart?</b>
-        <ul>
-            <li><b>Readability of Labels:</b> With 24 distinct Likert items, a vertical chart would cause text overlap. The horizontal orientation ensures every item name is fully legible.</li>
-            <li><b>Category Weighting:</b> By calculating the percentage within each category (Factor/Effect/Step), we can see which items are the "leading" causes of disagreement within their respective groups.</li>
-        </ul>
-
-        <b>Key Results & Urban Patterns:</b>
-        <ol>
-            <li><b>Urban Concentration in 'Factors':</b> The analysis reveals that urban respondents focus their disagreement heavily on the "Factor" items, specifically relating to structural or operational issues.</li>
-            <li><b>The 'Unintended Road Accidents' Effect:</b> In the Effects category, "Unintended Road Accidents" shows a significantly higher rejection rate, suggesting urban students are highly skeptical of the survey's link between the study variables and accident outcomes.</li>
-            <li><b>Solution Acceptance:</b> Urban respondents show the least amount of "Strongly Disagree" (1) and "Disagree" (2) in the 'Steps' category. This indicates that even though they reject the stated 'Factors', they generally align with the proposed mitigation steps.</li>
-            <li><b>High Raw Volume:</b> Compared to Rural or Suburban data, the Urban raw counts are significantly higher, indicating that Urban environments present the most friction or "rejection" regarding the survey's assumptions.</li>
-            <li><b>Item Ranking:</b> The sorting order reveals that urban rejection is not random; it is highly concentrated in items involving physical infrastructure and traffic flow factors.</li>
-        </ol>
-        </div>
-        """, unsafe_allow_html=True)
-else:
-    st.error("Could not load Urban data. Please ensure 'Urban areas' exists in the Area Type column.")
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# 1. THE FUNCTION (Definition)
+# Set page configuration for a professional look
+st.set_page_config(page_title="Rural Disagreement Analysis", layout="wide")
+
+# 1. Load the data (Ensure 'disagree_summary.csv' is in the same folder)
 @st.cache_data
-def get_processed_data():
-    try:
-        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
-        df_raw = pd.read_csv(url)
+def load_data():
+    df_raw = pd.read_csv('disagree_summary.csv')
+    return df_raw
+
+try:
+    df_raw = load_data()
+
+    # --- MAIN EXPANDER ---
+    with st.expander("🔍 Comprehensive Rural Disagreement Analysis Report", expanded=True):
         
-        # Data Cleaning
-        df_raw['Area Type'] = df_raw['Area Type'].str.replace(' areas', '', case=False).str.strip()
+        # OBJECTIVE SECTION
+        st.markdown("### **Objective**")
+        st.info("To analyze how the majority most clearly reject the rural respondent rate with comparison on strongly disagree (1) and disagree (2).")
         
-        # Create df_melted inside the function
+        # DATA PROCESSING
+        # Reshape for Bubble Chart
         df_melted = df_raw.melt(id_vars=['Area Type'], var_name='Full_Item', value_name='Count')
-        
         def extract_category(full_name):
             parts = full_name.rsplit(' ', 1)
-            return (parts[0], parts[1]) if len(parts) > 1 else (parts[0], "Other")
+            return parts[0], parts[1]
         
-        extracted = df_melted['Full_Item'].apply(lambda x: pd.Series(extract_category(x)))
-        df_melted['Likert Item'] = extracted[0]
-        df_melted['Category'] = extracted[1]
-        
+        df_melted[['Likert Item', 'Category']] = df_melted['Full_Item'].apply(lambda x: pd.Series(extract_category(x)))
         area_totals = df_melted.groupby('Area Type')['Count'].transform('sum')
         df_melted['Percentage'] = (df_melted['Count'] / area_totals * 100).round(2)
-        
-        # IMPORTANT: You must return BOTH dataframes
-        return df_raw, df_melted
-    except Exception as e:
-        st.error(f"Function Error: {e}")
-        return None, None
+        df_melted['Area Type'] = df_melted['Area Type'].str.replace(' areas', '')
 
-# 2. THE ASSIGNMENT (This is where you define df_melted for the rest of the script)
-# If you skip this line, df_melted will remain "undefined"
-df_raw, df_melted = get_processed_data()
-
-# 3. THE UI LOGIC
-if df_melted is not None:
-    with st.expander("📊 BUBBLE CHART WITH TABLE", expanded=True):
-        st.markdown("### Objective")
-        st.info("To analyze how the majority most clearly reject the rural respondent rate.")
-
-        # Prepare tooltips safely
-        c_data = df_melted[['Likert Item', 'Area Type', 'Category', 'Count', 'Percentage']].values
-
+        # 2. GENERATE BUBBLE CHART
+        st.markdown("### **Visual Analysis: Itemized Disagreement**")
         fig = px.scatter(
-            df_melted, # Now df_melted is defined!
+            df_melted,
             x="Area Type",
             y="Likert Item",
             size="Count",
             color="Category",
             hover_name="Likert Item",
-            size_max=35,
+            # Keeping your specific hover requirements
+            hover_data={
+                "Area Type": True,
+                "Category": True,
+                "Count": True,
+                "Percentage": ":.2f"
+            },
+            title="Interactive Bubble Chart: Full Itemized Disagreement (24 Items)",
+            size_max=30,
             template="plotly_white",
             height=800,
-            category_orders={"Area Type": ["Rural", "Suburban", "Urban"]}
+            color_discrete_sequence=px.colors.qualitative.Safe
         )
 
-        fig.update_traces(
-            customdata=c_data,
-            hovertemplate="<b>Item:</b> %{customdata[0]}<br><b>Area:</b> %{customdata[1]}<br><b>Count:</b> %{customdata[3]}<extra></extra>"
+        fig.update_layout(
+            xaxis_title="Geographic Area Type",
+            yaxis_title="Survey Items",
+            yaxis={'categoryorder':'total ascending'},
+            legend_title="Item Category",
+            margin=dict(l=50, r=50, t=80, b=50)
         )
 
         st.plotly_chart(fig, use_container_width=True)
-else:
-    st.warning("Waiting for data to load...")
-    
+
+        # 3. RURAL DETAILED TABLE
+        st.markdown("### **Data Breakdown: Rural Areas**")
+        rural_row = df_raw[df_raw['Area Type'] == 'Rural areas'].drop(columns=['Area Type']).iloc[0]
+        rural_list = []
+        for col_name, value in rural_row.items():
+            parts = col_name.rsplit(' ', 1)
+            rural_list.append({
+                "Likert Item": parts[0],
+                "Category": parts[1],
+                "Total Count": value,
+            })
+        
+        df_rural = pd.DataFrame(rural_list)
+        total_rural = df_rural['Total Count'].sum()
+        df_rural['Percentage'] = ((df_rural['Total Count'] / total_rural) * 100).round(2)
+
+        # Professional Table Styling
+        st.dataframe(
+            df_rural.style.background_gradient(subset=['Total Count'], cmap='Reds'),
+            use_container_width=True,
+            hide_index=True
+        )
+
+        # 4. INSIGHTS & EXPLANATION
+        st.divider()
+        st.markdown("### **Analysis Insights & Methodology**")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**Why this Bubble Chart?**")
+            st.write("""
+            * **Multi-Dimensionality:** It allows us to view 24 distinct items across different categories simultaneously.
+            * **Volume Significance:** The size of each bubble immediately communicates which items have the highest 'Disagreement Density.'
+            * **Comparative Advantage:** By placing Rural data side-by-side with other areas, the 'rejection rate' mentioned in the objective becomes visually obvious.
+            """)
+
+        with col2:
+            st.markdown("**Key Result Findings**")
+            st.write(f"""
+            * **Primary Driver:** The items in the **'{df_rural.loc[df_rural['Total Count'].idxmax(), 'Category']}'** category show the highest rejection levels among rural respondents.
+            * **Majority Rejection:** A significant cluster of items exceeds the average count, indicating a clear "Strongly Disagree/Disagree" consensus.
+            * **Rural vs. Urban:** The visualization highlights that rural areas often have distinct rejection patterns compared to their urban counterparts.
+            """)
+
+except FileNotFoundError:
+    st.error("Error: 'disagree_summary.csv' not found. Please ensure the file is in the script directory.")

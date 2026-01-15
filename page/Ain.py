@@ -495,23 +495,6 @@ with st.expander("STACKED BAR CHART", expanded=False):
 # ---------------------------------------------------------
 # BUBBLE CHART WITH TABLE
 # ---------------------------------------------------------
-
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-# Set page configuration for a professional look
-st.set_page_config(page_title="Rural Disagreement Analysis", layout="wide")
-
-# 1. Load the data (Ensure 'disagree_summary.csv' is in the same folder)
-@st.cache_data
-def load_data():
-    df_raw = pd.read_csv('disagree_summary.csv')
-    return df_raw
-
-try:
-    df_raw = load_data()
-
     # --- MAIN EXPANDER ---
     with st.expander("🔍 Comprehensive Rural Disagreement Analysis Report", expanded=True):
         

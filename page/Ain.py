@@ -311,10 +311,10 @@ pivot_low = df_summary.pivot(index='Category', columns='Area', values='Lowest It
 
 # --- 2. STREAMLIT UI ---
 
-with st.expander("📊 Analysis of Disagreement Patterns Across Area Types", expanded=True):
+with st.expander("Heatmap and Horizontal Bar Graph", expanded=True):
     
     # Objective Section
-    st.markdown("### 🎯 Objective")
+    st.markdown("### Objective")
     st.info("""**To analyze how respondents from all area types choose most and lowest disagreements items percentages 
     (factors, effects, and step), to reveal the pattern of each Likert scale item count.**""")
 
@@ -336,8 +336,8 @@ with st.expander("📊 Analysis of Disagreement Patterns Across Area Types", exp
             "<b>Total Disagreement Count:</b> %{customdata[2]}",
             "<extra></extra>",
             "-----------------------------------------",
-            "<b>🏆 Highest Contributor:</b> %{customdata[0]}",
-            "<b>📉 Lowest Contributor:</b> %{customdata[1]}"
+            "<b>Highest Contributor:</b> %{customdata[0]}",
+            "<b>Lowest Contributor:</b> %{customdata[1]}"
         ]),
         customdata=np.stack((pivot_high.values, pivot_low.values, pivot_raw.values), axis=-1)
     )
@@ -370,12 +370,12 @@ with st.expander("📊 Analysis of Disagreement Patterns Across Area Types", exp
     st.plotly_chart(fig_bar, use_container_width=True)
 
     # --- SUMMARY TABLE ---
-    st.markdown("### 📋 Disagreement Summary Table")
+    st.markdown("### Disagreement Summary Table")
     st.dataframe(df_summary, use_container_width=True, hide_index=True)
 
     # --- INSIGHTS & EXPLANATIONS ---
     st.markdown("---")
-    st.markdown("### 💡 Why this Visualization? Insights & Results")
+    st.markdown("### Why this Visualization? Insights & Results")
     
     # Styling for grey small font as requested in previous turns
     st.markdown("""
@@ -396,4 +396,108 @@ with st.expander("📊 Analysis of Disagreement Patterns Across Area Types", exp
     </ol>
     </div>
     """, unsafe_allow_html=True)
+
+# ---------------------------------------------------------
+# STACKED BAR CHART WITH TABLE
+# ---------------------------------------------------------
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# --- 1. DATA PREPARATION ---
+# Unified data for both graph and table
+data = {
+    'Area Type': ['Rural', 'Rural', 'Rural', 'Suburban', 'Suburban', 'Suburban', 'Urban', 'Urban', 'Urban'],
+    'Category': ['Factor', 'Effect', 'Step', 'Factor', 'Effect', 'Step', 'Factor', 'Effect', 'Step'],
+    'Count': [31.0, 6.0, 11.0, 14.0, 3.0, 3.0, 85.0, 21.0, 17.0]
+}
+df_bar = pd.DataFrame(data)
+
+# Calculate Percentages
+total_sum = df_bar['Count'].sum()
+df_bar['Percentage'] = (df_bar['Count'] / total_sum * 100).round(2)
+
+# --- 2. STREAMLIT UI ---
+with st.expander("📊 Disagreement Analysis: Percentage Distribution Matrix", expanded=True):
     
+    # Objective Section
+    st.markdown("### 🎯 Objective")
+    st.info("""**To analyze how respondents from different area types choose most disagreements (factors, effects, or step), 
+    revealing gaps between real-world experiences and the survey’s assumptions.**""")
+
+    # --- BAR CHART SECTION ---
+    # We use your exact hovertemplate logic
+    fig = px.bar(
+        df_bar, 
+        x='Area Type', 
+        y='Percentage', 
+        color='Category',
+        barmode='group',
+        text='Percentage',
+        title="Disagreement Distribution by Category and Area Type",
+        labels={'Percentage': 'Contribution to Total (%)'},
+        custom_data=['Count'],
+        color_discrete_map={'Factor': '#1e3c72', 'Effect': '#ff4b4b', 'Step': '#ffa500'}
+    )
+
+    fig.update_traces(
+        texttemplate='%{text}%', 
+        textposition='outside',
+        hovertemplate="<br>".join([
+            "<b>Area Type:</b> %{x}",
+            "<b>Category:</b> %{fullData.name}",
+            "<b>Percentage:</b> %{y}%",
+            "<b>Raw Count:</b> %{customdata[0]}",
+            "<extra></extra>"
+        ])
+    )
+
+    fig.update_layout(
+        yaxis_range=[0, df_bar['Percentage'].max() + 10],
+        template="plotly_white",
+        legend_title="Category",
+        height=500,
+        margin=dict(t=50, b=50)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # --- STYLED TABLE SECTION ---
+    st.markdown("### 📋 Disagreement Distribution Matrix")
+    
+    # Pivot for the matrix layout
+    # We create a column for display that combines count and percentage
+    df_dist = df_bar.copy()
+    df_dist['Display'] = df_dist.apply(lambda x: f"{int(x['Count'])} ({x['Percentage']}%)", axis=1)
+    
+    final_table = df_dist.pivot(index='Area Type', columns='Category', values='Count')
+    # Reordering columns
+    final_table = final_table[['Factor', 'Effect', 'Step']]
+    
+    # Using Pandas Styling for the heatmap effect in the table
+    styled_table = final_table.style.background_gradient(cmap='YlOrRd', axis=None).format("{:.0f}")
+    
+    st.table(styled_table)
+
+    # --- INSIGHTS SECTION ---
+    st.markdown("---")
+    st.markdown("### 💡 Visualization Insights & Results")
+    
+    st.markdown("""
+    <div style="font-size: 0.9rem; color: #555; line-height: 1.6;">
+    <b>Rationale for this Visualization:</b>
+    <ul>
+        <li><b>Grouped Bar Chart:</b> This was chosen to allow a direct side-by-side comparison between categories within a single area. It visually highlights the "gap" between what respondents find problematic (Factors) versus the proposed solutions (Steps).</li>
+        <li><b>Color-Coded Matrix:</b> The gradient table provides an immediate "heat map" of where the volume of disagreement is highest, making it easier to scan than a raw CSV.</li>
+    </ul>
+
+    <b>Key Results & Patterns:</b>
+    <ol>
+        <li><b>The Urban Factor Peak:</b> Urban respondents represent the largest group of "Disagree" responses, specifically regarding the <b>Factors</b> (85 counts). This suggests that survey assumptions about urban traffic or infrastructure may conflict most with the lived reality of urban students.</li>
+        <li><b>Rural Skepticism of Factors:</b> In rural areas, the disagreement is also centered on <b>Factors</b> (16.23% of the total), while <b>Effects</b> show very low disagreement. This implies rural respondents agree on the <i>consequences</i> of the situation but disagree on the <i>causes</i> provided in the survey.</li>
+        <li><b>Suburban Consistency:</b> Suburban areas show the lowest overall disagreement counts across all categories, indicating that the survey items for suburban environments might align more closely with student experiences.</li>
+        <li><b>Step Gaps:</b> Across all areas, "Steps" (proposed solutions/actions) consistently show lower disagreement than "Factors." This indicates that while respondents disagree with the identified causes, they are more open to the proposed steps or mitigation strategies.</li>
+        <li><b>Assumption Mismatch:</b> The significantly higher counts in the "Factor" category across all areas reveal a systematic gap: the survey's theoretical "Factors" for disagreement are where the most friction exists between the researcher's assumptions and the students' actual environment.</li>
+    </ol>
+    </div>
+    """, unsafe_allow_html=True)

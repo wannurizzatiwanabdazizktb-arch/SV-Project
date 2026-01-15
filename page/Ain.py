@@ -275,65 +275,97 @@ st.markdown("""
 # ---------------------------------------------------------
 # HEATMAP & HORIZONTAL BAR CHART WITH TABLE
 # ---------------------------------------------------------
-# ---------------------------------------------------------
-    # 2. ANALYSIS CALCULATIONS
-    # ---------------------------------------------------------
-    # A. Correlation Matrix
-    corr_matrix = df[likert_cols].corr()
+import streamlit as st
+import pandas as pd
+import plotly.express as px
 
-    # B. Percentage Calculation for Top 10
-    # Assuming total respondents = 102 as per your note
-    total_respondents = 102
-    item_sums = df[likert_cols].sum().sort_values(ascending=False)
-    top_10_df = pd.DataFrame({
-        'Item Name': item_sums.index[:10],
-        'Total Count': item_sums.values[:10],
-        'Percentage (%)': (item_sums.values[:10] / total_respondents * 100).round(2)
-    })
+# Set page configuration
+st.set_page_config(page_title="Likert Data Viewer", layout="wide")
 
-    # C. Data for Stacked Bar (Grouped by Area Type)
-    # We sum the items per area type
-    area_summary = df.groupby('Area Type')[likert_cols].sum().T
-    area_perc = area_summary.div(area_summary.sum(axis=1), axis=0) * 100
+# 1. DATA LOADING FUNCTION
+@st.cache_data
+def load_raw_data():
+    try:
+        url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+        df = pd.read_csv(url)
+        return df, None
+    except Exception as e:
+        return None, str(e)
 
-    # ---------------------------------------------------------
-    # 3. VISUALIZATIONS
-    # ---------------------------------------------------------
+# 2. DATA PREPARATION (Internal Logic to match your snippet)
+# This assumes you have logic that generates 'df_summary' 
+# For this example, I am creating a placeholder logic based on your snippet requirements
+def prepare_heatmap_summary(df):
+    # This is where your logic for 'Category', 'Area', 'Highest Item', etc. goes
+    # Example structure based on your px.imshow requirements:
+    summary = df.melt(id_vars=['Area Type'], var_name='Item', value_name='Disagreement')
     
-    st.title("📊 Advanced Disagreement Analysis")
+    # Simple grouping to create a summary (you can adjust this to your specific categories)
+    df_summary = summary.groupby(['Area Type']).agg(
+        Total_Disagreement=('Disagreement', 'sum'),
+        Highest_Item=('Item', 'first'), # Replace with your logic for highest item
+        Lowest_Item=('Item', 'last')    # Replace with your logic for lowest item
+    ).reset_index()
+    
+    # Renaming to match your Plotly code
+    df_summary.columns = ['Area', 'Total Disagreement', 'Highest Item', 'Lowest Item']
+    df_summary['Category'] = "General Analysis" # Placeholder category
+    return df_summary
 
-    # --- HEATMAP SECTION ---
-    st.subheader("🔥 Item Correlation Heatmap")
-    fig_heat, ax_heat = plt.subplots(figsize=(12, 10))
-    sns.heatmap(corr_matrix, annot=False, cmap='RdYlGn', ax=ax_heat, center=0)
-    plt.xticks(rotation=45, ha='right', fontsize=8)
-    plt.yticks(fontsize=8)
-    st.pyplot(fig_heat)
+# ---------------------------------------------------------
+# EXECUTION
+# ---------------------------------------------------------
+df, error = load_raw_data()
 
-    # --- STACKED BAR SECTION ---
-    st.subheader("📊 Distribution of Disagreement by Area Type (%)")
-    fig_bar, ax_bar = plt.subplots(figsize=(12, 7))
-    area_perc.plot(kind='bar', stacked=True, ax=ax_bar, color=['#ff9999','#66b3ff','#99ff99'])
-    plt.ylabel("Percentage of Total Disagreement")
-    plt.legend(title="Area Type", bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.xticks(rotation=45, ha='right', fontsize=8)
-    st.pyplot(fig_bar)
+if df is not None:
+    # Pre-process the summary for the heatmap
+    # Note: Use your actual df_summary generation logic here
+    df_summary = prepare_heatmap_summary(df)
 
-    # --- TABLES SECTION ---
-    col_t1, col_t2 = st.columns([1, 1])
+    # 1. Pivot the data
+    heatmap_data = df_summary.pivot(index='Category', columns='Area', values='Total Disagreement')
+    highest_items = df_summary.pivot(index='Category', columns='Area', values='Highest Item')
+    lowest_items = df_summary.pivot(index='Category', columns='Area', values='Lowest Item')
 
-    with col_t1:
-        st.write("### 🏆 Top 10 Disagreement Items (%)")
-        st.dataframe(top_10_df, hide_index=True, use_container_width=True)
+    # 2. Build the Heatmap with Plotly Express
+    fig = px.imshow(
+        heatmap_data,
+        labels=dict(x="Area Type", y="Analysis Category", color="Total Disagreement"),
+        x=heatmap_data.columns,
+        y=heatmap_data.index,
+        color_continuous_scale='Reds',
+        aspect="auto",
+        text_auto=True 
+    )
 
-    with col_t2:
-        st.write("### 🔗 Correlation Table (Top Interactions)")
-        # Showing a simplified version of strong correlations
-        corr_unstack = corr_matrix.unstack().reset_index()
-        corr_unstack.columns = ['Item A', 'Item B', 'Correlation']
-        # Filter out self-correlation and duplicates
-        top_corr = corr_unstack[corr_unstack['Item A'] != corr_unstack['Item B']].sort_values(by='Correlation', ascending=False).head(10)
-        st.dataframe(top_corr, hide_index=True, use_container_width=True)
+    # 3. Customize Tooltip
+    fig.update_traces(
+        hovertemplate="<br>".join([
+            "<b>Area:</b> %{x}",
+            "<b>Category:</b> %{y}",
+            "<b>Total Disagreement:</b> %{z}",
+            "<extra></extra>",
+            "------------------------------",
+            "<b>🏆 Highest Item:</b> %{customdata[0]}",
+            "<b>📉 Lowest Item:</b> %{customdata[1]}"
+        ]),
+        customdata=list(zip(highest_items.values, lowest_items.values))
+    )
+
+    fig.update_layout(
+        title="Detailed Disagreement Heatmap (Hover for Items)",
+        title_x=0.5,
+        xaxis_title="Geographic Area",
+        yaxis_title="Metric Category",
+        template="plotly_white",
+        margin=dict(l=20, r=20, t=50, b=20)
+    )
+
+    # 4. DISPLAY IN STREAMLIT
+    st.plotly_chart(fig, use_container_width=True)
+
+else:
+    st.error(f"Error loading data: {error}")
 
     # --- YOUR ORIGINAL EXPANDER & MATRIX ---
     st.markdown("---")

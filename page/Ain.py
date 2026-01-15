@@ -305,7 +305,7 @@ pivot_low = df_summary.pivot(index='Category', columns='Area', values='Lowest It
 
 # --- 2. STREAMLIT UI ---
 
-with st.expander("Heatmap and Horizontal Bar Graph", expanded=False):
+with st.expander("HHEATMAP & HORIZONTAL BAR CHART", expanded=False):
     
     # Objective Section
     st.markdown("### Objective")
@@ -408,7 +408,7 @@ total_sum = df_bar['Count'].sum()
 df_bar['Percentage'] = (df_bar['Count'] / total_sum * 100).round(2)
 
 # --- 2. STREAMLIT UI ---
-with st.expander("Disagreement Analysis: Percentage Distribution Matrix", expanded=False):
+with st.expander("STACKED BAR CHART", expanded=False):
     
     # Objective Section
     st.markdown("### Objective")
@@ -636,3 +636,130 @@ if df_raw is not None:
         """, unsafe_allow_html=True)
 else:
     st.error("Dataset not found. Please check your GitHub link.")
+
+# ---------------------------------------------------------
+# GROUPED HORINZONTAL BAR CHART WITH TABLE
+# ---------------------------------------------------------
+
+# --- 1. DATA PREPARATION ---
+@st.cache_data
+def load_urban_analysis():
+    # Loading the data
+    url = "https://raw.githubusercontent.com/wannurizzatiwanabdazizktb-arch/SV-Project/refs/heads/main/disagree_summary(Ain).csv"
+    df_raw = pd.read_csv(url)
+    
+    # Extract Urban data and transform
+    urban_df = df_raw[df_raw['Area Type'] == 'Urban areas'].copy()
+    
+    if urban_df.empty:
+        return None, "Urban data not found."
+
+    # Melt for processing
+    df_melted = urban_df.melt(id_vars=['Area Type'], var_name='Full_Item', value_name='Count')
+    
+    # Split Item and Category
+    def split_item_cat(full_name):
+        parts = full_name.rsplit(' ', 1)
+        return parts[0], parts[1]
+    
+    df_melted[['Likert Item', 'Category']] = df_melted['Full_Item'].apply(lambda x: pd.Series(split_item_cat(x)))
+    
+    # Calculate Percentages within Categories (for Bar Chart)
+    cat_sums = df_melted.groupby('Category')['Count'].transform('sum')
+    df_melted['Pct_Category'] = (df_melted['Count'] / cat_sums * 100).round(2)
+    
+    # Calculate Percentages relative to Urban Total (for Table)
+    total_urban = df_melted['Count'].sum()
+    df_melted['Pct_Total'] = (df_melted['Count'] / total_urban * 100).round(2)
+    
+    df_melted['Type'] = 'Total Disagreement'
+    
+    return df_melted, total_urban
+
+df_urban_full, total_count = load_urban_analysis()
+
+# --- 2. STREAMLIT UI ---
+if df_urban_full is not None:
+    with st.expander("GROUPED HORINZONTAL BAR CHART", expanded=False):
+        
+        # Objective Section
+        st.markdown("### Objective")
+        st.info("""**To analyze how the majority most clearly reject urban respondent rate with comparison on strongly disagree (1) and disagree (2).**""")
+
+        # --- HORIZONTAL BAR CHART ---
+        # Note: customdata maps [Category, Count, Type] to indices [0, 1, 2] for the tooltip
+        fig = px.bar(
+            df_urban_full,
+            x="Pct_Category",
+            y="Likert Item",
+            color="Category",
+            orientation='h',
+            text="Pct_Category",
+            title="Urban Disagreement Analysis: Breakdown (24 Items)",
+            height=850,
+            template="plotly_white",
+            color_discrete_sequence=px.colors.sequential.Oranges_r,
+            custom_data=["Category", "Count", "Type"]
+        )
+
+        fig.update_traces(
+            texttemplate='%{text}%',
+            textposition='outside',
+            hovertemplate="<br>".join([
+                "<b>Item:</b> %{y}",
+                "<b>Category:</b> %{customdata[0]}",
+                "<b>Disagreement Type:</b> %{customdata[2]}",
+                "<b>Count:</b> %{customdata[1]}",
+                "<b>Percentage:</b> %{x}%",
+                "<extra></extra>"
+            ])
+        )
+
+        fig.update_layout(
+            xaxis_title="Percentage within Category (%)",
+            yaxis_title="Likert Item",
+            yaxis={'categoryorder':'total ascending'},
+            margin=dict(l=200, r=50, t=80, b=50)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        # --- DETAILED DATA TABLE ---
+        st.markdown(f"### Detailed Disagreement Analysis: Urban Respondents (Total Count: {int(total_count)})")
+        
+        # Prepare table for display
+        df_table = df_urban_full[['Likert Item', 'Category', 'Count', 'Pct_Total']].copy()
+        df_table.columns = ['Likert Item', 'Category', 'Total', 'Percentage of Urban Total']
+        
+        # Styling with Oranges gradient
+        styled_urban = df_table.sort_values(by="Total", ascending=False).style.background_gradient(
+            subset=['Total'], cmap='Oranges'
+        ).format({"Percentage of Urban Total": "{:.2f}%"})
+        
+        st.dataframe(styled_urban, use_container_width=True, hide_index=True)
+
+        # --- INSIGHTS SECTION ---
+        st.markdown("---")
+        st.markdown("### Visualization Rationale & Result Insights")
+        
+        st.markdown("""
+        <div style="font-size: 0.9rem; color: #555; line-height: 1.6;">
+        <b>Why Choose the Horizontal Bar Chart?</b>
+        <ul>
+            <li><b>Readability of Labels:</b> With 24 distinct Likert items, a vertical chart would cause text overlap. The horizontal orientation ensures every item name is fully legible.</li>
+            <li><b>Category Weighting:</b> By calculating the percentage within each category (Factor/Effect/Step), we can see which items are the "leading" causes of disagreement within their respective groups.</li>
+        </ul>
+
+        <b>Key Results & Urban Patterns:</b>
+        <ol>
+            <li><b>Urban Concentration in 'Factors':</b> The analysis reveals that urban respondents focus their disagreement heavily on the "Factor" items, specifically relating to structural or operational issues.</li>
+            <li><b>The 'Unintended Road Accidents' Effect:</b> In the Effects category, "Unintended Road Accidents" shows a significantly higher rejection rate, suggesting urban students are highly skeptical of the survey's link between the study variables and accident outcomes.</li>
+            <li><b>Solution Acceptance:</b> Urban respondents show the least amount of "Strongly Disagree" (1) and "Disagree" (2) in the 'Steps' category. This indicates that even though they reject the stated 'Factors', they generally align with the proposed mitigation steps.</li>
+            <li><b>High Raw Volume:</b> Compared to Rural or Suburban data, the Urban raw counts are significantly higher, indicating that Urban environments present the most friction or "rejection" regarding the survey's assumptions.</li>
+            <li><b>Item Ranking:</b> The sorting order reveals that urban rejection is not random; it is highly concentrated in items involving physical infrastructure and traffic flow factors.</li>
+        </ol>
+        </div>
+        """, unsafe_allow_html=True)
+else:
+    st.error("Could not load Urban data. Please ensure 'Urban areas' exists in the Area Type column.")
+    

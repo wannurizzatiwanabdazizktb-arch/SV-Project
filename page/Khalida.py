@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 # ================= DATA LOADING =================
 @st.cache_data
 def load_data():
-    df = pd.read_csv("traffic_survey.csv")
+    df = pd.read_csv("traffic_survey(khalida).csv")
     if "Unnamed: 0" in df.columns:
         df = df.drop(columns=["Unnamed: 0"])
     return df
